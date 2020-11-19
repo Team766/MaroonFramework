@@ -37,4 +37,8 @@
 	"lineSensorRight": {
 		"port": 4
 	}
+	"twacker": {
+        "port": 0
+    }
+
 }

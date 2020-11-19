@@ -4,6 +4,7 @@ import com.team766.framework.Procedure;
 import com.team766.framework.Context;
 import com.team766.frc2020.Robot;
 import com.team766.frc2020.procedures.*;
+
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
@@ -26,11 +27,24 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
+		context.takeOwnership(Robot.drive);
+		context.takeOwnership(Robot.launcher);
+		context.takeOwnership(Robot.intake);
 		while (true) {
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			
+			if (m_joystick0.getButtonPressed(1)){
+				context.startAsync(new Launch());
+			}
+			if (m_joystick0.getButtonPressed(2)){
+				context.startAsync(new StartIntake());
+			}
+			if (m_joystick0.getButtonPressed(3)){
+				context.startAsync(new StopIntake());
+			}
 
+
+			Robot.drive.arcadeDrive(m_joystick0.getAxis(1), m_joystick0.getAxis(0));
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 		}
 	}
