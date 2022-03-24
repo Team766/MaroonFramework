@@ -148,6 +148,14 @@ public class CANTalonSpeedController extends BaseCTRESpeedController implements 
 	}
 
 	@Override
+	public void setCurrentLimit(double ampsLimit) {
+		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakCurrentLimit(0));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakCurrentDuration(10));
+		errorCodeToException(ExceptionTarget.LOG, m_device.configContinuousCurrentLimit((int)ampsLimit));
+		m_device.enableCurrentLimit(true);
+	}
+
+	@Override
 	public void restoreFactoryDefault() {
 		errorCodeToException(ExceptionTarget.LOG, m_device.configFactoryDefault());
 	}

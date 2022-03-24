@@ -205,6 +205,10 @@ public class CANSparkMaxSpeedController extends CANSparkMax implements CANSpeedC
 		revErrorToException(ExceptionTarget.LOG, getPIDController().setOutputRange(minOutput, maxOutput));
 	}
 
+	public void setCurrentLimit(double ampsLimit) {
+		revErrorToException(ExceptionTarget.LOG, setSmartCurrentLimit((int)ampsLimit));
+	}
+
 	@Override
 	public void restoreFactoryDefault() {
 		revErrorToException(ExceptionTarget.LOG, restoreFactoryDefaults());

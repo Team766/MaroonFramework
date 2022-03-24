@@ -171,6 +171,12 @@ public class CANVictorSpeedController extends BaseCTRESpeedController implements
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputReverse(minOutput));
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputForward(maxOutput));
 	}
+	
+	@Override
+	public void setCurrentLimit(double ampsLimit) {
+		LoggerExceptionUtils.logException(
+			new UnsupportedOperationException("VictorSPX does not support current limiting"));
+	}
 
 	@Override
 	public void restoreFactoryDefault() {
