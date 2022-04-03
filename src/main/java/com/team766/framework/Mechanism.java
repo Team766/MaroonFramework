@@ -6,13 +6,29 @@ import com.team766.logging.Severity;
 
 public abstract class Mechanism extends Loggable {
 	private Context m_owningContext = null;
-	private boolean m_runningPeriodic = false;
+	private Thread m_runningPeriodic = null;
 	
 	public Mechanism() {
-		Scheduler.getInstance().add(() -> {
-			this.m_runningPeriodic = true;
-			this.run();
-			this.m_runningPeriodic = false;
+		Scheduler.getInstance().add(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Mechanism.this.m_runningPeriodic = Thread.currentThread();
+					Mechanism.this.run();
+				}
+				finally {
+					Mechanism.this.m_runningPeriodic = null;
+				}
+			}
+
+			@Override
+			public String toString() {
+				String repr = Mechanism.this.getName();
+				if (Mechanism.this.m_runningPeriodic != null) {
+					repr += " running\n" + StackTraceUtils.getStackTrace(m_runningPeriodic);
+				}
+				return repr;
+			}
 		});
 	}
 
@@ -21,7 +37,7 @@ public abstract class Mechanism extends Loggable {
 	}
 	
 	protected void checkContextOwnership() {
-		if (Context.currentContext() != m_owningContext && !m_runningPeriodic) {
+		if (Context.currentContext() != m_owningContext && m_runningPeriodic == null) {
 			String message = getName() + " tried to be used by " + Context.currentContext().getContextName();
 			if (m_owningContext != null) {
 				message += " while owned by " + m_owningContext.getContextName();

@@ -44,7 +44,7 @@ public final class Context implements Runnable, LaunchedContext {
 		m_previousWaitPoint = null;
 		m_controlOwner = ControlOwner.MAIN_THREAD;
 		m_state = State.RUNNING;
-		m_thread = new Thread(this::threadFunction);
+		m_thread = new Thread(this::threadFunction, getContextName());
 		m_thread.start();
 		Scheduler.getInstance().add(this);
 	}
@@ -65,7 +65,13 @@ public final class Context implements Runnable, LaunchedContext {
 
 	@Override
 	public String toString() {
-		return getContextName();
+		String repr = getContextName();
+		if (currentContext() == this) {
+			repr += " running";
+		}
+		repr += "\n";
+		repr += StackTraceUtils.getStackTrace(m_thread);
+		return repr;
 	}
 
 	private String getExecutionPoint() {
@@ -132,6 +138,7 @@ public final class Context implements Runnable, LaunchedContext {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			LoggerExceptionUtils.logException(ex);
+			Logger.get(Category.PROCEDURES).logRaw(Severity.WARNING, "Context " + getContextName() + " died");
 		} finally {
 			synchronized (m_threadSync) {
 				m_state = State.DONE;
