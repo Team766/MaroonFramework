@@ -4,6 +4,7 @@ import com.team766.logging.Category;
 import com.team766.logging.LogEntry;
 import com.team766.logging.LogEntryRenderer;
 import com.team766.logging.Logger;
+import com.team766.logging.LogWriter;
 import com.team766.logging.Severity;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -27,7 +28,7 @@ public class LogViewer implements WebServer.Handler {
                             entry.getCategory(),
                             timeFormat.format(new Date(entry.getTime() / 1000000)),
                             entry.getSeverity(),
-                            LogEntryRenderer.renderLogEntry(entry, null));
+                            LogEntryRenderer.renderLogEntry(entry, LogWriter.instance));
         }
         r += "</table>";
         return r;
@@ -43,9 +44,9 @@ public class LogViewer implements WebServer.Handler {
                             "category",
                             categoryName,
                             Stream.concat(
-                                            Stream.of(ALL_ERRORS_NAME, ALL_MESSAGES_NAME),
-                                            Arrays.stream(Category.values()).map(Category::name))
-                                    .toArray(String[]::new)),
+                                            Stream.of(ALL_ERRORS_NAME),
+                                            Arrays.stream(Category.values()).map(Category::name)
+                                    )::iterator),
                     "<input type=\"submit\" value=\"View\">",
                     "</p></form>",
                     makeLogEntriesTable(entries),
@@ -114,7 +115,7 @@ public class LogViewer implements WebServer.Handler {
         } else if (categoryName.equals(ALL_MESSAGES_NAME)) {
             return makeAllMessagesPage();
         } else {
-            Category category = Enum.valueOf(Category.class, categoryName);
+			Category category = Category.valueOf(categoryName);
             return makePage(category.name(), Logger.get(category).recentEntries());
         }
     }

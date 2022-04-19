@@ -12,10 +12,10 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 import com.team766.logging.Category;
-import com.team766.logging.Logger;
 import com.team766.logging.LogEntry;
 import com.team766.logging.LogEntryRenderer;
 import com.team766.logging.LogReader;
+import com.team766.logging.LogWriter;
 import com.team766.logging.Severity;
 
 public class ReadLogs implements WebServer.Handler {
@@ -45,22 +45,24 @@ public class ReadLogs implements WebServer.Handler {
 	}
 
 	private String makePage(final String id) {
-		String r =
-				String.join("\n",
-						new String[] {
-								"<p>Free disk space: " + NumberFormat.getNumberInstance(Locale.US)
-										.format(new File(Logger.logFilePathBase).getUsableSpace())
+		String r = String.join("\n",
+				new String[] {
+						LogWriter.logFilePathBase == null
+								? ""
+								: "<p>Free disk space: " + NumberFormat.getNumberInstance(Locale.US)
+										.format(new File(LogWriter.logFilePathBase)
+												.getUsableSpace())
 										+ "</p>",
-								"<form action=\"" + ENDPOINT + "\"><p>",
-								HtmlElements.buildDropDown("logFile", "",
-										Logger.logFilePathBase == null ? new String[0]
-												: new File(Logger.logFilePathBase).list()),
-								HtmlElements.buildDropDown("category", "", Stream
-										.concat(Stream.of("", ALL_ERRORS_NAME),
-												Arrays.stream(Category.values())
-														.map(Category::name))
-										.toArray(String[]::new)),
-								"<input type=\"submit\" value=\"Open Log\">", "</p></form>", });
+						"<form action=\"" + ENDPOINT + "\"><p>",
+						HtmlElements.buildDropDown("logFile", "",
+								LogWriter.logFilePathBase == null ? Stream.<String>of()::iterator
+										: Arrays.stream(new File(LogWriter.logFilePathBase)
+												.list())::iterator),
+						HtmlElements.buildDropDown("category", "",
+								Stream.concat(Stream.of("", ALL_ERRORS_NAME),
+										Arrays.stream(Category.values())
+												.map(Category::name))::iterator),
+						"<input type=\"submit\" value=\"Open Log\">", "</p></form>",});
 		if (id != null) {
 			r += String.join("\n", new String[] {"<h1>Log: " + readerDescriptions.get(id) + "</h1>",
 					makeLogEntriesTable(logReaders.get(id), readerStreams.get(id)),
@@ -74,7 +76,7 @@ public class ReadLogs implements WebServer.Handler {
 			final Function<Stream<LogEntry>, Stream<LogEntry>> filter) {
 		LogReader reader;
 		try {
-			reader = new LogReader(new File(Logger.logFilePathBase, logFile).getAbsolutePath());
+			reader = new LogReader(new File(LogWriter.logFilePathBase, logFile).getAbsolutePath());
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

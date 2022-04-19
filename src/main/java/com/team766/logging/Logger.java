@@ -1,10 +1,7 @@
 package com.team766.logging;
 
-import com.team766.config.ConfigFileReader;
 import com.team766.library.CircularBuffer;
 import edu.wpi.first.wpilibj.DataLogManager;
-import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -20,9 +17,9 @@ public final class Logger {
 
             LoggerExceptionUtils.logException(e);
 
-            if (m_logWriter != null) {
+			if (LogWriter.instance != null) {
                 try {
-                    m_logWriter.close();
+					LogWriter.instance.close();
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
@@ -32,41 +29,19 @@ public final class Logger {
         }
     }
 
-    private static final int MAX_NUM_RECENT_ENTRIES = 100;
+	private static final int MAX_NUM_RECENT_ENTRIES = 1000;
 
     private static EnumMap<Category, Logger> m_loggers =
             new EnumMap<Category, Logger>(Category.class);
-    private static LogWriter m_logWriter = null;
     private CircularBuffer<LogEntry> m_recentEntries =
             new CircularBuffer<LogEntry>(MAX_NUM_RECENT_ENTRIES);
     private static Object s_lastWriteTimeSync = new Object();
     private static long s_lastWriteTime = 0L;
-
-    public static String logFilePathBase = null;
+	private Severity s_minSeverity = Severity.INFO;
 
     static {
         for (Category category : Category.values()) {
             m_loggers.put(category, new Logger(category));
-        }
-        try {
-            ConfigFileReader config_file = ConfigFileReader.getInstance();
-            if (config_file != null) {
-                logFilePathBase = config_file.getString("logFilePath").get();
-                new File(logFilePathBase).mkdirs();
-                final String timestamp =
-                        new SimpleDateFormat("yyyyMMdd'T'HHmmss").format(new Date());
-                final String logFilePath = new File(logFilePathBase, timestamp).getAbsolutePath();
-                m_logWriter = new LogWriter(logFilePath);
-                get(Category.CONFIGURATION).logRaw(Severity.INFO, "Logging to " + logFilePath);
-            } else {
-                get(Category.CONFIGURATION)
-                        .logRaw(
-                                Severity.ERROR,
-                                "Config file is not available. Logs will only be in-memory and will be lost when the robot is turned off.");
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            LoggerExceptionUtils.logException(e);
         }
 
         Thread.setDefaultUncaughtExceptionHandler(new LogUncaughtException());
@@ -80,6 +55,10 @@ public final class Logger {
         return m_loggers.get(category);
     }
 
+	public void setSeverityFilter(Severity threshold) {
+		s_minSeverity = threshold;
+	}
+
     static long getTime() {
         long nowNanosec = new Date().getTime() * 1000000;
         synchronized (s_lastWriteTimeSync) {
@@ -87,7 +66,7 @@ public final class Logger {
             // because the log viewer uses an entry's timestamp as a unique ID,
             // and we don't want two different log entries to accidentally
             // compare as equal.
-            nowNanosec = s_lastWriteTime = Math.max(nowNanosec, s_lastWriteTime);
+			nowNanosec = s_lastWriteTime = Math.max(nowNanosec, s_lastWriteTime + 1);
         }
         return nowNanosec;
     }
@@ -102,50 +81,54 @@ public final class Logger {
         return Collections.unmodifiableCollection(m_recentEntries);
     }
 
-    public void logData(final Severity severity, final String format, final Object... args) {
-        var entry =
-                LogEntry.newBuilder()
+	public void logData(final Severity severity, final String format, final Object... args) {
+		if (severity.compareTo(s_minSeverity) < 0) {
+			return;
+		}
+		var entry =
+				LogEntry.newBuilder()
                         .setTime(getTime())
                         .setSeverity(severity)
-                        .setCategory(m_category);
+                        .setCategory(m_category)
+						.setMessageStr(format);
         String message = String.format(format, args);
-        entry.setMessageStr(message);
-        m_recentEntries.add(entry.build());
-        entry.setMessageStr(format);
 
         for (Object arg : args) {
             var logValue = LogValue.newBuilder();
             SerializationUtils.valueToProto(arg, logValue);
             entry.addArg(logValue.build());
         }
-        if (m_logWriter != null) {
-            m_logWriter.logStoredFormat(entry);
-        }
-        if (alsoLogToDataLog) {
-            DataLogManager.log(message);
-        }
+		LogEntry logEntry = LogWriter.instance.logStoredFormat(entry);
+		m_recentEntries.add(logEntry);
+		if (alsoLogToDataLog) {
+			DataLogManager.log(message);
+		}
     }
 
-    public void logRaw(final Severity severity, final String message) {
-        var entry =
-                LogEntry.newBuilder()
+	public void logRaw(final Severity severity, final String message) {
+		if (severity.compareTo(s_minSeverity) < 0) {
+			return;
+		}
+		var entry =
+				LogEntry.newBuilder()
                         .setTime(getTime())
                         .setSeverity(severity)
                         .setCategory(m_category)
                         .setMessageStr(message)
                         .build();
+		LogWriter.instance.log(entry);
         m_recentEntries.add(entry);
-        if (m_logWriter != null) {
-            m_logWriter.log(entry);
-        }
         if (alsoLogToDataLog) {
             DataLogManager.log(message);
         }
     }
 
-    void logOnlyInMemory(final Severity severity, final String message) {
-        var entry =
-                LogEntry.newBuilder()
+	void logOnlyInMemory(final Severity severity, final String message) {
+		if (severity.compareTo(s_minSeverity) < 0) {
+			return;
+		}
+		var entry =
+				LogEntry.newBuilder()
                         .setTime(getTime())
                         .setSeverity(severity)
                         .setCategory(m_category)

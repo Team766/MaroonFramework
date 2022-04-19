@@ -63,7 +63,7 @@ public class AutonomousSelector implements WebServer.Handler {
 			"<h1>Autonomous Mode Selector</h1>",
 			"<h3 id=\"current-mode\">Current Mode: " + selectedAutonModeNameUI + "</h1>",
 			"<form>",
-			"<p>" + HtmlElements.buildDropDown("AutoMode", selectedAutonModeNameUI, m_autonModeNames) + "</p>",
+			"<p>" + HtmlElements.buildDropDown("AutoMode", selectedAutonModeNameUI, Arrays.stream(m_autonModeNames)::iterator) + "</p>",
 			"<input type=\"submit\" value=\"Submit\"></form>",
 			"<script>",
 			"  function refreshAutoMode() {",

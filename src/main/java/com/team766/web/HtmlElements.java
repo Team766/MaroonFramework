@@ -2,7 +2,7 @@ package com.team766.web;
 
 class HtmlElements {
 	public static String buildDropDown(final String valueName, final String current,
-			final String... options) {
+			final Iterable<String> options) {
 		String id = valueName.replace(' ', '_');
 		String out = "<select name=\"" + id + "\">";
 
