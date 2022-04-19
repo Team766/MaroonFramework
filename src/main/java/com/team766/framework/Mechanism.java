@@ -2,6 +2,7 @@ package com.team766.framework;
 
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
 public abstract class Mechanism extends Loggable {
@@ -54,9 +55,16 @@ public abstract class Mechanism extends Loggable {
 			Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, context.getContextName() + " is inheriting ownership of " + getName() + " from " + parentContext.getContextName());
 		} else {
 			Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, context.getContextName() + " is taking ownership of " + getName());
-			if (m_owningContext != null && m_owningContext != context) {
+			while (m_owningContext != null && m_owningContext != context) {
 				Logger.get(Category.PROCEDURES).logRaw(Severity.WARNING, "Stopping previous owner of " + getName() + ": " + m_owningContext.getContextName());
 				m_owningContext.stop();
+				var stoppedContext = m_owningContext;
+				context.yield();
+				if (m_owningContext == stoppedContext) {
+					Logger.get(Category.PROCEDURES).logRaw(Severity.ERROR, "Previous owner of " + getName() + ", " + m_owningContext.getContextName() + " did not release ownership when requested. Release will be forced.");
+					m_owningContext.releaseOwnership(this);
+					break;
+				}
 			}
 		}
 		m_owningContext = context;
@@ -64,7 +72,7 @@ public abstract class Mechanism extends Loggable {
 
 	void releaseOwnership(Context context) {
 		if (m_owningContext != context) {
-			Logger.get(Category.PROCEDURES).logRaw(Severity.ERROR, context.getContextName() + " tried to release ownership of " + getName() + " but it doesn't own it");
+			LoggerExceptionUtils.logException(new Exception(context.getContextName() + " tried to release ownership of " + getName() + " but it doesn't own it"));
 			return;
 		}
 		Logger.get(Category.PROCEDURES).logRaw(Severity.INFO, context.getContextName() + " is releasing ownership of " + getName());
