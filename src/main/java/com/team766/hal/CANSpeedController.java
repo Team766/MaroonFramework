@@ -21,6 +21,7 @@ public interface CANSpeedController extends SpeedController {
 		Position,
 		Velocity,
 		Current,
+		Voltage,
 		Follower,
 		MotionProfile,
 		MotionMagic,
