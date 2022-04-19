@@ -60,6 +60,13 @@ public class Talon implements CANSpeedController {
 
 	@Override
 	public void set(ControlMode mode, double value) {
+		if (mode == ControlMode.Voltage) {
+			// This is just simulating Voltage as PercentOutput, since the
+			// simulator currently doesn't include a simulation of electrical
+			// load.
+			// TODO: Real simulation of Voltage control mode
+			value = value / 12.0;
+		}
 		if (mode == ControlMode.PercentOutput) {
 			value = clamp(value, -1.0, 1.0);
 		}

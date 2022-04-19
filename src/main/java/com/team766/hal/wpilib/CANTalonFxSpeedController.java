@@ -54,6 +54,9 @@ public class CANTalonFxSpeedController extends BaseCTRESpeedController implement
 		case MotionProfileArc:
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfileArc;
 			break;
+		case Voltage:
+			m_device.setVoltage(value);
+			return;
 		case Disabled:
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
 			useFourTermSet = false;
