@@ -18,7 +18,7 @@ import com.team766.web.WebServer;
 
 public class Robot extends MyRobot {
 	// Declare mechanisms here
-	
+	public static Drive drive;
 	
 	private static OI m_oi;
 	
@@ -45,7 +45,7 @@ public class Robot extends MyRobot {
 	@Override
 	public void robotInit() {
 		// Initialize mechanisms here
-		
+		drive = new Drive();
 		
 		m_oi = new OI();
 	}
