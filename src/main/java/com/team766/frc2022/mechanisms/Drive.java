@@ -1,6 +1,7 @@
 package com.team766.frc2022.mechanisms;
 
 import com.team766.framework.Mechanism;
+import com.team766.frc2022.Pose;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.SpeedController;
 import com.team766.hal.EncoderReader;
@@ -83,6 +84,10 @@ public class Drive extends Mechanism {
 
 		//Small angle approximation
 		return (leftDeltaDist + rightDeltaDist) / 2.0;
+	}
+
+	public Pose getCurrPose() {
+		return new Pose(m_x, m_y, m_theta);
 	}
 
 	private double deltaY(double leftDeltaDist, double rightDeltaDist, double thetaDelta) {
