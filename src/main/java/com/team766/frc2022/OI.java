@@ -37,7 +37,7 @@ public class OI extends Procedure {
 			if(m_joystick0.getButtonPressed(1)) {
 				log("Reseting encoders");
 				Robot.drive.resetEncoders();
-				Robot.drive.restPose();
+				Robot.drive.resetPose();
 			}
 
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
