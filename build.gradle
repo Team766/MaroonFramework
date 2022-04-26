@@ -89,6 +89,11 @@ jar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
+allprojects {
+    group 'com.team766'
+    version '1.0.0'
+}
+
 publishing {
     repositories {
         maven {
