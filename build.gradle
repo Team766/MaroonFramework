@@ -91,7 +91,7 @@ jar {
 }
 
 allprojects {
-    group 'com.team766'
+    group 'com.rofree'
     version '1.0.0'
 }
 
