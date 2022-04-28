@@ -88,9 +88,9 @@ public class Drive extends Mechanism {
 	}
 
 	public Pose getCurrPose() {
-		//return new Pose(m_x, m_y, m_theta);
+		return new Pose(m_x, m_y, m_theta);
 		//TODO: Revert this
-		return new Pose(metersToInches(m_positionReader.getX()), metersToInches(m_positionReader.getY()), degreesToRadians(m_positionReader.getHeading()) + Math.PI / 2d);
+		//return new Pose(metersToInches(m_positionReader.getX()), metersToInches(m_positionReader.getY()), degreesToRadians(m_positionReader.getHeading()) + Math.PI / 2d);
 	}
 
 	private double deltaY(double leftDeltaDist, double rightDeltaDist, double thetaDelta) {

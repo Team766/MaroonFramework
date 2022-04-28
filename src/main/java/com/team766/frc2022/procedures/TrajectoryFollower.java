@@ -13,10 +13,10 @@ import com.team766.frc2022.mechanisms.Drive;
 public class TrajectoryFollower extends Procedure {
 
 	private Trajectory trajectory;
-	private double ROBOT_VELOCITY = 0.5; //ConfigFileReader.getInstance().getDouble("TrajectoryFollower.velocity").get();
+	private double ROBOT_VELOCITY = 1; //ConfigFileReader.getInstance().getDouble("TrajectoryFollower.velocity").get();
 
 	public TrajectoryFollower() {
-		ArrayList<Pose> waypoints = new ArrayList<Pose>(Arrays.asList(new Pose(0, 0, 0), new Pose(100, 0, 0), new Pose(150, 100, 0), new Pose(50, 100, 0)));
+		ArrayList<Pose> waypoints = new ArrayList<Pose>(Arrays.asList(new Pose(0, 0, 0), new Pose(100, 0, 0), new Pose(150, 100, 0), new Pose(50, 100, 0), new Pose(0, 0, 0)));
 		trajectory = new Trajectory(waypoints);
 	}
 
@@ -57,14 +57,14 @@ public class TrajectoryFollower extends Procedure {
 			Robot.drive.setVelocities(leftVelocity, rightVelocity);
 			*/
 
-			final double VELOCITY_PROPORTION = 0.05;
+			final double VELOCITY_PROPORTION = 0.08;
 			double leftVelocity = ROBOT_VELOCITY - VELOCITY_PROPORTION * crossProduct;
 			double rightVelocity = ROBOT_VELOCITY + VELOCITY_PROPORTION * crossProduct;
 			Robot.drive.setVelocities(leftVelocity, rightVelocity);
 
 			if(i > 500) {
-				log("%s x (%f, %f) = %f", robotVector, deltaX, deltaY, crossProduct);
-				log("Applying (%f, %f) +- %f %f to %s -> %s", leftVelocity, rightVelocity, crossProduct, VELOCITY_PROPORTION * crossProduct, currPose, driveToPose);
+				//log("%s x (%f, %f) = %f", robotVector, deltaX, deltaY, crossProduct);
+				//log("Applying (%f, %f) +- %f %f to %s -> %s", leftVelocity, rightVelocity, crossProduct, VELOCITY_PROPORTION * crossProduct, currPose, driveToPose);
 
 				i = 0;
 			}
