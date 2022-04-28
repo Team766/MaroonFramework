@@ -1,5 +1,6 @@
 package com.team766.frc2022.mechanisms;
 
+import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.frc2022.Pose;
 import com.team766.hal.RobotProvider;
@@ -27,7 +28,7 @@ public class Drive extends Mechanism {
 	private double m_prevRightDistance;
 	private double m_prevTheta;
 
-	private static final double WHEEL_TRACK = 26.5; //in
+	public static final double WHEEL_TRACK = 26.5; //in
 
 	public Drive() {
 		m_leftMotor = RobotProvider.instance.getMotor("drive.leftMotor");
@@ -87,7 +88,9 @@ public class Drive extends Mechanism {
 	}
 
 	public Pose getCurrPose() {
-		return new Pose(m_x, m_y, m_theta);
+		//return new Pose(m_x, m_y, m_theta);
+		//TODO: Revert this
+		return new Pose(metersToInches(m_positionReader.getX()), metersToInches(m_positionReader.getY()), degreesToRadians(m_positionReader.getHeading()) + Math.PI / 2d);
 	}
 
 	private double deltaY(double leftDeltaDist, double rightDeltaDist, double thetaDelta) {
@@ -141,6 +144,14 @@ public class Drive extends Mechanism {
 		m_prevTheta = currTheta;
 	}
 
+	public double getHeading() {
+		return m_theta;
+	}
+
+	private double metersToInches(double distance) {
+		return distance * 39.3701;
+	}
+
 	private double inchesToMeters(double distance) {
 		return distance * 0.0254;
 	}
@@ -151,6 +162,12 @@ public class Drive extends Mechanism {
 
 	private double degreesToRadians(double degrees) {
 		return degrees * (Math.PI / 180d);
+	}
+
+	public void setVelocities(double vLeft, double vRight) {
+		double speedScalar = 0.1; //ConfigFileReader.getInstance().getDouble("Drive.VELOCITY_SCALAR").get();
+		m_leftMotor.set(vLeft * speedScalar);
+		m_rightMotor.set(vRight * speedScalar);
 	}
 
 	public void run() {
