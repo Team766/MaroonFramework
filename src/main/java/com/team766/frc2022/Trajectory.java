@@ -7,6 +7,7 @@ import com.team766.framework.Context;
 import com.team766.framework.Procedure;
 import com.team766.hal.PositionReader;
 import com.team766.logging.Severity;
+import org.apache.commons.math3.analysis.interpolation;
 
 public class Trajectory extends Procedure {
 	//TODO:
@@ -161,6 +162,13 @@ public class Trajectory extends Procedure {
 			return option1;
 		}
 		return option2;
+	}
+
+	public PolynomialSplineFunction _splineInterpolation (Pose upper){
+		Pose lower = currPose;
+		SplineInterpolator interpolator = new SplineInterpolator();
+		return interpolator.interpolate([lower.m_x, upper.m_x], [lower.m_y, upper.m_y]);
+
 	}
 
 	public boolean isDone() {
