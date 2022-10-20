@@ -17,11 +17,14 @@ public class DriveDistance extends Procedure {
 
 		Robot.drive.resetEncoders();
 
-		Robot.drive.setDrivePower(0.25);
+		Robot.drive.setDrivePower(0.2);
 
 		context.waitFor(() -> Robot.drive.getEncoderDistance() >= targetDistance);
 
 		Robot.drive.setDrivePower(0.0);
+
+		// Wait for robot to come to a stop.
+		context.waitForSeconds(0.5);
 	}
 
 }

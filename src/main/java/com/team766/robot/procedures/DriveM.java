@@ -7,14 +7,16 @@ import com.team766.robot.Robot;
 
 public class DriveM extends Procedure {
 
-	private static final double SIDE_LENGTH = 60;
-	private static final double CORNER_ANGLE = 40;
+	private static final double SIDE_LENGTH = 40;
+	private static final double CORNER_ANGLE = 45;
 
 	public DriveM() {
 		loggerCategory = Category.AUTONOMOUS;
 	}
 
 	public void run(Context context) {
+		context.waitForSeconds(5);
+
 		context.takeOwnership(Robot.drive);
 		Robot.drive.resetGyro();
 
@@ -45,6 +47,9 @@ public class DriveM extends Procedure {
 		// Fourth side
 		new DriveDistance(SIDE_LENGTH).run(context);
 		log("Fourth side complete");
+
+		// Shoot ball!
+		new AutoShoot().run(context);
 	}
 
 }

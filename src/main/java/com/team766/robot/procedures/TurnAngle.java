@@ -20,6 +20,9 @@ public class TurnAngle extends Procedure {
 		Robot.drive.setDrivePower(0.0);
 		Robot.drive.setTargetHeading(targetAngle);
 		context.waitFor(() -> Robot.drive.atAngle());
+
+		// Wait for robot to come to a stop.
+		context.waitForSeconds(0.5);
 	}
 
 }

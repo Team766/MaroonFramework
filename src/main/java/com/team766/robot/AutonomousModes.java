@@ -15,6 +15,7 @@ public class AutonomousModes {
 
 		new AutonomousMode("DriveM", () -> new DriveM()),
 		new AutonomousMode("DriveDistance", () -> new DriveDistance(40)),
+		new AutonomousMode("TurnAngle", () -> new TurnAngle(-90)),
 		new AutonomousMode("DriveSquare", () -> new DriveSquare()),
 
 		new AutonomousMode("DoNothing", () -> new DoNothing()),

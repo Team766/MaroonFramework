@@ -2,6 +2,7 @@ package com.team766.robot.procedures;
 
 import com.team766.framework.Procedure;
 import com.team766.logging.Category;
+import com.team766.robot.Robot;
 import com.team766.framework.Context;
 
 public class DriveSquare extends Procedure {
@@ -14,6 +15,11 @@ public class DriveSquare extends Procedure {
 	}
 
 	public void run(Context context) {
+		context.waitForSeconds(5);
+
+		context.takeOwnership(Robot.drive);
+		Robot.drive.resetGyro();
+
 		// First side
 		new DriveDistance(SIDE_LENGTH).run(context);
 		log("First side complete");
