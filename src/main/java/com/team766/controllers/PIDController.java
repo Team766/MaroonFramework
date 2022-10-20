@@ -40,10 +40,14 @@ public class PIDController {
 	private ValueProvider<Double> maxoutput_high = new MissingValue<Double>();
 	private ValueProvider<Double> endthreshold;
 
-	private double setpoint = 0;
+	private double setpoint = Double.NaN;
+	private boolean clamp = true;
+
+	private boolean needsUpdate = true;
 
 	private double cur_error = 0;
 	private double prev_error = 0;
+	private double error_rate = 0;
 	private double total_error = 0;
 
 	private double output_value = 0;
@@ -161,6 +165,20 @@ public class PIDController {
 	public void setSetpoint(double set) {
 		setpoint = set;
 		total_error = 0;
+		needsUpdate = true;
+	}
+
+	public void disable() {
+		setpoint = Double.NaN;
+		total_error = 0;
+		needsUpdate = true;
+	}
+
+	/**
+	 * @param set True if you want the output to be clamped
+	 */
+	public void setClamp(boolean set) {
+		clamp = set;
 	}
 
 	/**
@@ -174,6 +192,7 @@ public class PIDController {
 		Kp = new ConstantValueProvider<Double>(P);
 		Ki = new ConstantValueProvider<Double>(I);
 		Kd = new ConstantValueProvider<Double>(D);
+		needsUpdate = true;
 	}
 	
 	/** Same as calculate() except that it prints debugging information
@@ -181,18 +200,23 @@ public class PIDController {
 	 * @param cur_input The current input to be plugged into the PID controller
 	 * @param smart True if you want the output to be dynamically adjusted to the motor controller
 	 */
-	public void calculateDebug(double cur_input, boolean smart) {
+	public void calculateDebug(double cur_input) {
 		print = true;
-		calculate(cur_input, smart);
+		calculate(cur_input);
 	}
 
 	/**
 	 * Calculate PID value. Run only once per loop. Use getOutput to get output.
 	 * 
 	 * @param cur_input Input value from sensor
-	 * @param clamp True if you want the output to be clamped
 	 */
-	public void calculate(double cur_input, boolean clamp) {
+	public void calculate(double cur_input) {
+		if (Double.isNaN(setpoint)) {
+			// Setpoint has not been set yet.
+			output_value = 0;
+			return;
+		}
+
 		cur_error = (setpoint - cur_input);
 		/*
 		if (isDone()) {
@@ -203,6 +227,8 @@ public class PIDController {
 		*/
 		
 		double delta_time = timeProvider.get() - lastTime;
+
+		error_rate = (cur_error - prev_error) / delta_time;
 
 		total_error += cur_error * delta_time;
 
@@ -216,7 +242,7 @@ public class PIDController {
 		double out =
 				Kp.valueOr(0.0) * cur_error +
 				Ki.valueOr(0.0) * total_error +
-				Kd.valueOr(0.0) * ((cur_error - prev_error) / delta_time) +
+				Kd.valueOr(0.0) * error_rate +
 				Kff.valueOr(0.0) * setpoint;
 		prev_error = cur_error;
 
@@ -226,6 +252,8 @@ public class PIDController {
 			output_value = clip(out);
 		else
 			output_value = out;
+		
+		needsUpdate = false;
 
 		lastTime = timeProvider.get();
 		
@@ -238,7 +266,10 @@ public class PIDController {
 	}
 
 	public boolean isDone() {
-		return Math.abs(cur_error) < endthreshold.get();
+		final double TIME_HORIZON = 0.5;
+		return !needsUpdate &&
+			Math.abs(cur_error) < endthreshold.get() &&
+			Math.abs(cur_error + error_rate * TIME_HORIZON) < endthreshold.get();
 	}
 
 	/**

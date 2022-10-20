@@ -36,6 +36,7 @@ public class LocalMotorController implements MotorController {
 		this.pidController = new PIDController(
 			pGain, iGain, dGain, ffGain, outputMaxLow, outputMaxHigh,
 			new ConstantValueProvider<Double>(0.0));
+		this.pidController.setClamp(false);
 
 		Scheduler.getInstance().add(new Runnable() {
 			@Override
@@ -72,11 +73,11 @@ public class LocalMotorController implements MotorController {
 						setPower(setpoint);
 						break;
 					case Position:
-						pidController.calculate(getSensorPosition(), false);
+						pidController.calculate(getSensorPosition());
 						setPower(pidController.getOutput());
 						break;
 					case Velocity:
-						pidController.calculate(getSensorVelocity(), false);
+						pidController.calculate(getSensorVelocity());
 						setPower(pidController.getOutput());
 						break;
 					case Voltage:
