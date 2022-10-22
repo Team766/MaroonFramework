@@ -70,6 +70,10 @@ public class Point extends LoggingBase {
 		}
 	}
 
+	public Point add(Point p) {
+		return new Point(getX() + p.getX(), getY() + p.getY());
+	}
+
 	public String toString() {
 		return "X: " + getX() + " Y: " + getY();
 	}
