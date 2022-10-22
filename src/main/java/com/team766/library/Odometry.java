@@ -2,6 +2,7 @@ package com.team766.library;
 
 import com.team766.framework.LoggingBase;
 import com.team766.math.PointDir;
+import com.team766.math.Point;
 import com.team766.hal.MotorController;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.team766.logging.Category;
@@ -11,7 +12,6 @@ public class Odometry extends LoggingBase {
 
 	private RateLimiter odometryLimiter;
 
-	//Each successive motor should be adjacent to previous on robot
 	private MotorController[] motorList;
 	//The order of CANCoders should be the same as in motorList
 	private CANCoder[] CANCoderList;
@@ -31,6 +31,9 @@ public class Odometry extends LoggingBase {
 	public static final int ENCODER_TO_REVOLUTION_CONSTANT = 2048;
 
 	public static final double DISTANCE_BETWEEN_WHEELS = 24 * 2.54;
+
+	//In the same order as motorList, relative to the center of the robot
+	private Point[] wheelPositions = {new Point(DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2), new Point(DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2), new Point(-DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2), new Point(-DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2)};
 
 	public Odometry(MotorController[] motors, CANCoder[] CANCoders, double rateLimiterTime) {
 		loggerCategory = Category.ODOMETRY;
@@ -81,9 +84,8 @@ public class Odometry extends LoggingBase {
 		gyroPosition = Robot.gyro.getGyroYaw();
 
 		for (int i = 0; i < motorCount; i++) {
-			//Note: I haven't decided whether or not to add this. It assumes the wheels form a regular polygon, with the first point in the top-right
-			prevPositions[i] = new PointDir(currentPosition.getX() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.cos(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currentPosition.getY() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.sin(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currPositions[i].getHeading());
-
+			//prevPositions[i] = new PointDir(currentPosition.getX() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.cos(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currentPosition.getY() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.sin(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currPositions[i].getHeading());
+			prevPositions[i] = new PointDir(currentPosition.add(wheelPositions[i]), currPositions[i].getHeading());
 			currPositions[i].setHeading(CANCoderList[i].getAbsolutePosition() + gyroPosition);
 			angleChange = currPositions[i].getHeading() - prevPositions[i].getHeading();
 			if (angleChange != 0) {
