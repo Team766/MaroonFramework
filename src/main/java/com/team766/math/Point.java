@@ -29,6 +29,11 @@ public class Point extends LoggingBase {
 		this.y = y;
 	}
 
+	public void set(Point P) {
+		this.x = P.getX();
+		this.y = P.getY();
+	}
+
 	public void setX(double x) {
 		this.x = x;
 	}

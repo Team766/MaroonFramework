@@ -44,9 +44,12 @@ public class Drive extends Mechanism {
 
 	private static PointDir currentPosition;
 
-	MotorController[] motorList;
-	CANCoder[] CANCoderList;
-	Odometry swerveOdometry;
+	private MotorController[] motorList;
+	private CANCoder[] CANCoderList;
+	private Point[] wheelPositions;
+	private Odometry swerveOdometry;
+
+	public static final double DISTANCE_BETWEEN_WHEELS = 24 * 2.54 / 100;
 	
 	public Drive() {
 		
@@ -110,9 +113,10 @@ public class Drive extends Mechanism {
 		currentPosition = new PointDir(0, 0, 0);
 		motorList = new MotorController[]{m_DriveFrontRight, m_DriveFrontLeft, m_DriveBackLeft, m_DriveBackRight};
 		CANCoderList = new CANCoder[]{e_FrontRight, e_FrontLeft, e_BackLeft, e_BackRight};
+		wheelPositions = new Point[]{new Point(DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2), new Point(DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2), new Point(-DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2), new Point(-DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2)};
 		log("MotorList Length: " + motorList.length);
 		log("CANCoderList Length: " + CANCoderList.length);
-		swerveOdometry = new Odometry(motorList, CANCoderList, 0.05);
+		swerveOdometry = new Odometry(motorList, CANCoderList, wheelPositions, 11.0446616728 * 2.54 / 100, 6.75, 2048, 0.05);
 	}
 	//If you want me to repeat code, then no.
 	public double pythagorean(double x, double y) {

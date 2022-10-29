@@ -25,17 +25,15 @@ public class Odometry extends LoggingBase {
 
 	private PointDir currentPosition;
 
-	//In Centimeters
-	private static final double WHEEL_CIRCUMFERENCE = 11.0446616728 * 2.54;
-	public static final double GEAR_RATIO = 6.75;
-	public static final int ENCODER_TO_REVOLUTION_CONSTANT = 2048;
-
-	public static final double DISTANCE_BETWEEN_WHEELS = 24 * 2.54;
+	//In Meters
+	private static double WHEEL_CIRCUMFERENCE;
+	public static double GEAR_RATIO;
+	public static int ENCODER_TO_REVOLUTION_CONSTANT;
 
 	//In the same order as motorList, relative to the center of the robot
-	private Point[] wheelPositions = {new Point(DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2), new Point(DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2), new Point(-DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2), new Point(-DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2)};
-
-	public Odometry(MotorController[] motors, CANCoder[] CANCoders, double rateLimiterTime) {
+	private Point[] wheelPositions;
+	
+	public Odometry(MotorController[] motors, CANCoder[] CANCoders, Point[] wheelLocations, double wheelCircumference, double gearRatio, int encoderToRevolutionConstant, double rateLimiterTime) {
 		loggerCategory = Category.ODOMETRY;
 
 		odometryLimiter = new RateLimiter(rateLimiterTime);
@@ -47,6 +45,11 @@ public class Odometry extends LoggingBase {
 		currPositions = new PointDir[motorCount];
 		prevEncoderValues = new double[motorCount];
 		currEncoderValues = new double[motorCount];
+
+		wheelPositions = wheelLocations;
+		WHEEL_CIRCUMFERENCE = wheelCircumference;
+		GEAR_RATIO = gearRatio;
+		ENCODER_TO_REVOLUTION_CONSTANT = encoderToRevolutionConstant;
 
 		currentPosition = new PointDir(0, 0, 0);
 		for (int i = 0; i < motorCount; i++) {
@@ -64,7 +67,7 @@ public class Odometry extends LoggingBase {
 	public void resetCurrentPosition() {
 		currentPosition.set(0, 0);
 		for (int i = 0; i < motorCount; i++) {
-			prevPositions[i].set(0,0);
+			prevPositions[i].set(currentPosition.add(wheelPositions[i]));
 			currPositions[i].set(0,0);
 		}
 	}
@@ -85,7 +88,7 @@ public class Odometry extends LoggingBase {
 
 		for (int i = 0; i < motorCount; i++) {
 			//prevPositions[i] = new PointDir(currentPosition.getX() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.cos(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currentPosition.getY() + 0.5 * DISTANCE_BETWEEN_WHEELS / Math.sin(Math.PI / motorCount) * Math.sin(currentPosition.getHeading() + ((Math.PI + 2 * Math.PI * i) / motorCount)), currPositions[i].getHeading());
-			prevPositions[i] = new PointDir(currentPosition.add(wheelPositions[i]), currPositions[i].getHeading());
+			prevPositions[i].set(currentPosition.add(wheelPositions[i]), currPositions[i].getHeading());
 			currPositions[i].setHeading(CANCoderList[i].getAbsolutePosition() + gyroPosition);
 			angleChange = currPositions[i].getHeading() - prevPositions[i].getHeading();
 			if (angleChange != 0) {

@@ -27,6 +27,11 @@ public class PointDir extends Point {
 		heading = h;
 	}
 
+	public void set(Point P, double h) {
+		super.set(P);
+		heading = h;
+	}
+
 	public void setHeading(double h) {
 		heading = h;
 	}
