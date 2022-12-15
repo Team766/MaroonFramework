@@ -65,14 +65,10 @@ public class Point extends LoggingBase {
 		return s;
 	}
 
-	//Gets a unit vector between the point and another point. Used for swerve drive method input.
+	//Gets a vector with length scale between the point and another point. Used for swerve drive method input.
 	public Point scaleVector(Point inputPoint, double scale) {
 		double d = distance(inputPoint);
-		if (d > scale) {
-			return new Point((inputPoint.getX() - getX()) * Math.sqrt(scale) / d, (inputPoint.getY() - getY()) * Math.sqrt(scale) / d);
-		} else {
-			return new Point(inputPoint.getX() - getX(), inputPoint.getY() - getY());
-		}
+		return new Point((inputPoint.getX() - getX()) * scale / d, (inputPoint.getY() - getY()) * scale / d);
 	}
 
 	public Point add(Point p) {

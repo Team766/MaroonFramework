@@ -19,8 +19,8 @@ public class FollowPoints extends Procedure {
 	private Procedure[] proceduresAtPoints;
 	private static double radius = ConfigFileReader.getInstance().getDouble("trajectory.radius").get();
 	private static double leniency = ConfigFileReader.getInstance().getDouble("trajectory.leniency").get();
+	private static double speed = ConfigFileReader.getInstance().getDouble("trajectory.speed").get();
 	private double finalHeader;
-	private double turning;
 
 	public FollowPoints() {
 		parsePointList();
@@ -89,6 +89,7 @@ public class FollowPoints extends Procedure {
 	}
 
 	public void run(Context context) {
+		speed = ConfigFileReader.getInstance().getDouble("trajectory.speed").get();
 		context.takeOwnership(Robot.drive);
 		context.takeOwnership(Robot.gyro);
 		log("Starting FollowPoints");
@@ -116,10 +117,10 @@ public class FollowPoints extends Procedure {
 				//Robot.drive.setDrivePower(straightVelocity + Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity), straightVelocity - Math.signum(diff) * Math.min(Math.abs(diff) * theBrettConstant, 1 - straightVelocity));
 				
 				Robot.drive.setGyro(Robot.gyro.getGyroYaw());
-				Robot.drive.swerveDrive(new PointDir(currentPos.scaleVector(targetPoint, 0.25), 0));
+				Robot.drive.swerveDrive(new PointDir(currentPos.scaleVector(targetPoint, speed), 0));
 				log("Current Position: " + currentPos.toString());
 				log("Target Point: " + targetPoint.toString());
-				log("Unit Vector: " + new PointDir(currentPos.scaleVector(targetPoint, 0.25), 0).toString());
+				log("Unit Vector: " + new PointDir(currentPos.scaleVector(targetPoint, speed), 0).toString());
 
 				context.yield();
 			}
