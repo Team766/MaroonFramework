@@ -28,7 +28,11 @@ public class OI extends Procedure {
 		while (true) {
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			
+			if (joystick0.getButtonPressed(1)){
+				Robot.candle.animate();
+			} else {
+				Robot.candle.reset();
+			}
 
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
 		}
