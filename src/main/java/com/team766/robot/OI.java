@@ -25,11 +25,14 @@ public class OI extends Procedure {
 	}
 	
 	public void run(Context context) {
+		context.takeOwnership(Robot.candle);
 		while (true) {
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
-			if (joystick0.getButtonPressed(1)){
-				Robot.candle.animate();
+			if (joystick0.getButton(1)){
+				Robot.candle.animate1();
+			} else if (joystick0.getButton(2)){
+				Robot.candle.rainbowanimate();
 			} else {
 				Robot.candle.reset();
 			}
