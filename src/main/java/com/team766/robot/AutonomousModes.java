@@ -15,7 +15,7 @@ public class AutonomousModes {
 		//    new AutonomousMode("DriveFast", () -> new DriveStraight(1.0)),
 		//    new AutonomousMode("DriveSlow", () -> new DriveStraight(0.4)),
 		new AutonomousMode("FollowPoints", () -> new FollowPoints()),
-		new AutonomousMode("FollowPointsH", () -> new FollowPoints(new Point[]{new Point(0, 0), new Point(200, 0), new Point(100, 0), new Point(100, 100), new Point(200, 100), new Point(0, 100)})),
+		new AutonomousMode("FollowPointsH", () -> new FollowPoints(new Point[]{new Point(0, 0), new Point(2, 0), new Point(1, 0), new Point(1, 1), new Point(2, 1), new Point(0, 1)})),
 		new AutonomousMode("DoNothing", () -> new DoNothing()),
 	};
 }
