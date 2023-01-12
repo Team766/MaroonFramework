@@ -98,20 +98,20 @@ public class Odometry extends LoggingBase {
 				currPositions[i].setX(prevPositions[i].getX() + (Math.cos(Math.toRadians(prevPositions[i].getHeading())) * deltaX - Math.sin(Math.toRadians(prevPositions[i].getHeading())) * deltaY) * WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
 				currPositions[i].setY(prevPositions[i].getY() + (Math.sin(Math.toRadians(prevPositions[i].getHeading())) * deltaX + Math.cos(Math.toRadians(prevPositions[i].getHeading())) * deltaY) * WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
 			} else {
-				currPositions[i].setX(prevPositions[i].getX() + (currEncoderValues[i] - prevEncoderValues[i]) * Math.cos(Math.toRadians(prevPositions[i].getHeading())) * WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
-				currPositions[i].setY(prevPositions[i].getY() + (currEncoderValues[i] - prevEncoderValues[i]) * Math.sin(Math.toRadians(prevPositions[i].getHeading())) * WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
+				currPositions[i].setX(prevPositions[i].getX() + (currEncoderValues[i] - prevEncoderValues[i]) * Math.cos(Math.toRadians(prevPositions[i].getHeading())) * Math.cos(Robot.gyro.getGyroPitch()) * WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
+				currPositions[i].setY(prevPositions[i].getY() + (currEncoderValues[i] - prevEncoderValues[i]) * Math.sin(Math.toRadians(prevPositions[i].getHeading())) * Math.cos(Robot.gyro.getGyroRoll()) * WHEEL_CIRCUMFERENCE / (GEAR_RATIO * ENCODER_TO_REVOLUTION_CONSTANT));
 			}
 		}
 	}
 
 	private void findRobotPosition() {
-		double avgX = 0;
-		double avgY = 0;
+		double sumX = 0;
+		double sumY = 0;
 		for (int i = 0; i < motorCount; i++) {
-			avgX += currPositions[i].getX();
-			avgY += currPositions[i].getY();
+			sumX += currPositions[i].getX();
+			sumY += currPositions[i].getY();
 		}
-		currentPosition.set(avgX / motorCount, avgY / motorCount, gyroPosition);
+		currentPosition.set(sumX / motorCount, sumY / motorCount, gyroPosition);
 	}
 
 	//Intended to be placed inside Robot.drive.run()
