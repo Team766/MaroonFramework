@@ -116,8 +116,8 @@ public class Drive extends Mechanism {
 		wheelPositions = new Point[]{new Point(DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2), new Point(DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2), new Point(-DISTANCE_BETWEEN_WHEELS / 2, -DISTANCE_BETWEEN_WHEELS / 2), new Point(-DISTANCE_BETWEEN_WHEELS / 2, DISTANCE_BETWEEN_WHEELS / 2)};
 		log("MotorList Length: " + motorList.length);
 		log("CANCoderList Length: " + CANCoderList.length);
-		//Originally, I had 11.0446616728 * 2.54, but I measured it and changed it to 
-		swerveOdometry = new Odometry(motorList, CANCoderList, wheelPositions, 28.05 / 100, 6.75, 2048, 0.05);
+		//The wheelCircumference is somewhere between 30.4cm and 30.6cm
+		swerveOdometry = new Odometry(motorList, CANCoderList, wheelPositions, 30.5 / 100, 6.75, 2048, 0.05);
 	}
 	//If you want me to repeat code, then no.
 	public double pythagorean(double x, double y) {
