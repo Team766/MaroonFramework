@@ -143,22 +143,4 @@ protobuf {
   }
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/Team766/MaroonFramework")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-    publications {
-        gpr(MavenPublication) {
-            artifactId "maroonframework"
-            from(components.java)
-        }
-    }
-}
 
