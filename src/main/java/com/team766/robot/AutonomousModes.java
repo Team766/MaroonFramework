@@ -2,8 +2,8 @@ package com.team766.robot;
 
 import com.team766.framework.AutonomousMode;
 import com.team766.robot.procedures.*;
-import com.team766.math.Point;
-import com.team766.math.PointDir;
+import com.team766.odometry.Point;
+import com.team766.odometry.PointDir;
 
 public class AutonomousModes {
 	public static final AutonomousMode[] AUTONOMOUS_MODES = new AutonomousMode[] {

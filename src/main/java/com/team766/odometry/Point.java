@@ -1,4 +1,4 @@
-package com.team766.math;
+package com.team766.odometry;
 
 import com.team766.framework.LoggingBase;
 import java.lang.Math;

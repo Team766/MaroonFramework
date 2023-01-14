@@ -16,9 +16,9 @@ import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
-import com.team766.math.Point;
-import com.team766.math.PointDir;
-import com.team766.library.Odometry;
+import com.team766.odometry.Odometry;
+import com.team766.odometry.Point;
+import com.team766.odometry.PointDir;
 
 
 public class Drive extends Mechanism {
