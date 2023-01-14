@@ -2,8 +2,8 @@ package com.team766.controllers;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.hal.RobotProvider;
-import com.team766.library.ConstantValueProvider;
-import com.team766.library.MissingValue;
+import com.team766.library.SetValueProvider;
+import com.team766.library.SettableValueProvider;
 import com.team766.library.ValueProvider;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -32,18 +32,21 @@ public class PIDController {
 	private int printCounter = 0;
 	private boolean print = false;
 
-	private ValueProvider<Double> Kp;
-	private ValueProvider<Double> Ki;
-	private ValueProvider<Double> Kd;
-	private ValueProvider<Double> Kff;
-	private ValueProvider<Double> maxoutput_low = new MissingValue<Double>();
-	private ValueProvider<Double> maxoutput_high = new MissingValue<Double>();
-	private ValueProvider<Double> endthreshold;
+	private final ValueProvider<Double> Kp;
+	private final ValueProvider<Double> Ki;
+	private final ValueProvider<Double> Kd;
+	private final ValueProvider<Double> Kff;
+	private final ValueProvider<Double> maxoutput_low;
+	private final ValueProvider<Double> maxoutput_high;
+	private final ValueProvider<Double> endthreshold;
 
-	private double setpoint = 0;
+	private double setpoint = Double.NaN;
+
+	private boolean needsUpdate = true;
 
 	private double cur_error = 0;
 	private double prev_error = 0;
+	private double error_rate = 0;
 	private double total_error = 0;
 
 	private double output_value = 0;
@@ -82,20 +85,20 @@ public class PIDController {
 	 */
 	public PIDController(double P, double I, double D, double outputmax_low,
 	                     double outputmax_high, double threshold) {
-		Kp = new ConstantValueProvider<Double>(P);
-		Ki = new ConstantValueProvider<Double>(I);
-		Kd = new ConstantValueProvider<Double>(D);
-		Kff = new MissingValue<Double>();
-		maxoutput_low = new ConstantValueProvider<Double>(outputmax_low);
-		maxoutput_high = new ConstantValueProvider<Double>(outputmax_high);
-		endthreshold = new ConstantValueProvider<Double>(threshold);
+		Kp = new SetValueProvider<Double>(P);
+		Ki = new SetValueProvider<Double>(I);
+		Kd = new SetValueProvider<Double>(D);
+		Kff = new SetValueProvider<Double>();
+		maxoutput_low = new SetValueProvider<Double>(outputmax_low);
+		maxoutput_high = new SetValueProvider<Double>(outputmax_high);
+		endthreshold = new SetValueProvider<Double>(threshold);
 		setTimeProvider(RobotProvider.getTimeProvider());
 	}
 
 	public PIDController(double P, double I, double D, double FF, double outputmax_low,
 	                     double outputmax_high, double threshold) {
 		this(P,I,D,outputmax_low,outputmax_high,threshold);
-		Kff = new ConstantValueProvider<Double>(FF);
+		((SetValueProvider<Double>)Kff).set(FF);
 	}
 
 	private void setTimeProvider(TimeProviderI timeProvider) {
@@ -130,24 +133,24 @@ public class PIDController {
 	 * @param timeProvider
 	 */
 	public PIDController(double P, double I, double D, double threshold, TimeProviderI timeProvider) {
-		Kp = new ConstantValueProvider<Double>(P);
-		Ki = new ConstantValueProvider<Double>(I);
-		Kd = new ConstantValueProvider<Double>(D);
-		Kff = new MissingValue<Double>();
-		maxoutput_low = new MissingValue<Double>();
-		maxoutput_high = new MissingValue<Double>();
-		endthreshold = new ConstantValueProvider<Double>(threshold);
+		Kp = new SetValueProvider<Double>(P);
+		Ki = new SetValueProvider<Double>(I);
+		Kd = new SetValueProvider<Double>(D);
+		Kff = new SetValueProvider<Double>();
+		maxoutput_low = new SetValueProvider<Double>();
+		maxoutput_high = new SetValueProvider<Double>();
+		endthreshold = new SetValueProvider<Double>(threshold);
 		setTimeProvider(timeProvider);
 	}
 
 	public PIDController(double P, double I, double D, double FF, double threshold, TimeProviderI timeProvider) {
-		Kp = new ConstantValueProvider<Double>(P);
-		Ki = new ConstantValueProvider<Double>(I);
-		Kd = new ConstantValueProvider<Double>(D);
-		Kff = new ConstantValueProvider<Double>(FF);
-		maxoutput_low = new MissingValue<Double>();
-		maxoutput_high = new MissingValue<Double>();
-		endthreshold = new ConstantValueProvider<Double>(threshold);
+		Kp = new SetValueProvider<Double>(P);
+		Ki = new SetValueProvider<Double>(I);
+		Kd = new SetValueProvider<Double>(D);
+		Kff = new SetValueProvider<Double>(FF);
+		maxoutput_low = new SetValueProvider<Double>();
+		maxoutput_high = new SetValueProvider<Double>();
+		endthreshold = new SetValueProvider<Double>(threshold);
 		setTimeProvider(timeProvider);
 	}
 
@@ -160,7 +163,13 @@ public class PIDController {
 	 */
 	public void setSetpoint(double set) {
 		setpoint = set;
-		total_error = 0;
+		needsUpdate = true;
+	}
+
+	public void disable() {
+		setpoint = Double.NaN;
+		needsUpdate = true;
+		reset();
 	}
 
 	/**
@@ -171,9 +180,30 @@ public class PIDController {
 	 * @param D Derivative value used in the PID controller
 	 */
 	public void setConstants(double P, double I, double D) {
-		Kp = new ConstantValueProvider<Double>(P);
-		Ki = new ConstantValueProvider<Double>(I);
-		Kd = new ConstantValueProvider<Double>(D);
+		((SettableValueProvider<Double>)Kp).set(P);
+		((SettableValueProvider<Double>)Ki).set(I);
+		((SettableValueProvider<Double>)Kd).set(D);
+		needsUpdate = true;
+	}
+
+	public void setP(double P) {
+		((SettableValueProvider<Double>)Kp).set(P);
+		needsUpdate = true;
+	}
+
+	public void setI(double I) {
+		((SettableValueProvider<Double>)Ki).set(I);
+		needsUpdate = true;
+	}
+
+	public void setD(double D) {
+		((SettableValueProvider<Double>)Kd).set(D);
+		needsUpdate = true;
+	}
+
+	public void setFF(double FF) {
+		((SettableValueProvider<Double>)Kff).set(FF);
+		needsUpdate = true;
 	}
 	
 	/** Same as calculate() except that it prints debugging information
@@ -181,18 +211,23 @@ public class PIDController {
 	 * @param cur_input The current input to be plugged into the PID controller
 	 * @param smart True if you want the output to be dynamically adjusted to the motor controller
 	 */
-	public void calculateDebug(double cur_input, boolean smart) {
+	public void calculateDebug(double cur_input) {
 		print = true;
-		calculate(cur_input, smart);
+		calculate(cur_input);
 	}
 
 	/**
 	 * Calculate PID value. Run only once per loop. Use getOutput to get output.
 	 * 
 	 * @param cur_input Input value from sensor
-	 * @param clamp True if you want the output to be clamped
 	 */
-	public void calculate(double cur_input, boolean clamp) {
+	public void calculate(double cur_input) {
+		if (Double.isNaN(setpoint)) {
+			// Setpoint has not been set yet.
+			output_value = 0;
+			return;
+		}
+
 		cur_error = (setpoint - cur_input);
 		/*
 		if (isDone()) {
@@ -203,6 +238,10 @@ public class PIDController {
 		*/
 		
 		double delta_time = timeProvider.get() - lastTime;
+
+		if (delta_time > 0) { // This condition basically only false in the simulator
+			error_rate = (cur_error - prev_error) / delta_time;
+		}
 
 		total_error += cur_error * delta_time;
 
@@ -216,16 +255,15 @@ public class PIDController {
 		double out =
 				Kp.valueOr(0.0) * cur_error +
 				Ki.valueOr(0.0) * total_error +
-				Kd.valueOr(0.0) * ((cur_error - prev_error) / delta_time) +
+				Kd.valueOr(0.0) * error_rate +
 				Kff.valueOr(0.0) * setpoint;
 		prev_error = cur_error;
 
 		pr("Pre-clip output: " + out);
 		
-		if (clamp)
-			output_value = clip(out);
-		else
-			output_value = out;
+		output_value = clip(out);
+		
+		needsUpdate = false;
 
 		lastTime = timeProvider.get();
 		
@@ -238,7 +276,10 @@ public class PIDController {
 	}
 
 	public boolean isDone() {
-		return Math.abs(cur_error) < endthreshold.get();
+		final double TIME_HORIZON = 0.5;
+		return !needsUpdate &&
+			Math.abs(cur_error) < endthreshold.get() &&
+			Math.abs(cur_error + error_rate * TIME_HORIZON) < endthreshold.get();
 	}
 
 	/**
@@ -247,7 +288,9 @@ public class PIDController {
 	public void reset() {
 		cur_error = 0;
 		prev_error = 0;
+		error_rate = 0;
 		total_error = 0;
+		needsUpdate = true;
 	}
 
 	/**
@@ -259,13 +302,11 @@ public class PIDController {
 	 */
 	private double clip(double clipped) {
 		double out = clipped;
-		double outputMaxLow = maxoutput_low.valueOr(-1.0);
-		double outputMaxHigh = maxoutput_high.valueOr(1.0);
-		if (out > outputMaxHigh) {
-			out = outputMaxHigh;
+		if (maxoutput_high.hasValue() && out > maxoutput_high.get()) {
+			out = maxoutput_high.get();
 		}
-		if (out < outputMaxLow) {
-			out = outputMaxLow;
+		if (maxoutput_low.hasValue() && out < maxoutput_low.get()) {
+			out = maxoutput_low.get();
 		}
 		return out;
 	}
@@ -278,12 +319,20 @@ public class PIDController {
 		return cur_error;
 	}
 
-	public void setMaxoutputHigh(double in) {
-		maxoutput_high = new ConstantValueProvider<Double>(in);
+	public void setMaxoutputHigh(Double in) {
+		if (in == null) {
+			((SettableValueProvider<Double>)maxoutput_high).clear();
+		} else {
+			((SettableValueProvider<Double>)maxoutput_high).set(in);
+		}
 	}
 
-	public void setMaxoutputLow(double in) {
-		maxoutput_low = new ConstantValueProvider<Double>(in);
+	public void setMaxoutputLow(Double in) {
+		if (in == null) {
+			((SettableValueProvider<Double>)maxoutput_low).clear();
+		} else {
+			((SettableValueProvider<Double>)maxoutput_low).set(in);
+		}
 	}
 	
 	public double getSetpoint(){
