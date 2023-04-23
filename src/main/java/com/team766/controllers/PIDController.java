@@ -9,6 +9,19 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
+
+import com.revrobotics.SparkMaxAbsoluteEncoder;
+import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.revrobotics.CANSparkMax;
+import com.team766.framework.Mechanism;
+import com.team766.hal.MotorController;
+import com.team766.library.RateLimiter;
+
+
 /**
  * When attempting to move something with a control loop, a PID controller can 
  * smoothly decrease the error.  This class is used for the elevator, driving during
