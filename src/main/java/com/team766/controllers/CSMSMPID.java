@@ -1,13 +1,13 @@
-package com.team766.controllers;
+wpackage com.team766.controllers;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.hal.RobotProvider;
 import com.team766.library.SetValueProvider;
 import com.team766.library.SettableValueProvider;
 import com.team766.library.ValueProvider;
-import com.team766.logging.Category; //Todo: ?
+import com.team766.logging.Category;
 import com.team766.logging.Logger;
-import com.team766.logging.Severity; // Todo: ?
+import com.team766.logging.Severity;
 
 
 import com.revrobotics.SparkMaxAbsoluteEncoder;
@@ -24,24 +24,22 @@ import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
 
 
-public class CSMSMPID{
+public class CanSparkMaxSmartMotionPIDController{
 	// The attributes of the class include references to the motor controller, SparkMax controller, PID controller, and absolute encoder
-	private MotorController mc1;
-	private CANSparkMax csm1;
-	private SparkMaxPIDController pid1;
-	private SparkMaxAbsoluteEncoder abs1;
+	private MotorController mc;
+	private CANSparkMax csm;
+	private SparkMaxPIDController pid;
+	private SparkMaxAbsoluteEncoder abs;
 	//PID Related Variables
 	private static double dz1 = 0; 
-	private static double maxpos1 = 0;
-	private static double minpos1 = 0;
-	private static double maxvel1 = 0;
-	private static double maxaccel1 = 0;
-	private static double maxspeed1 = 0;
-	private static double minspeed1 = 0;
-	private static double currentPos = 0;
-	private static double combo;
+	private static double setPointPosition = 0;
+	private static double comboOfTimesInsideDeadzone = 0;
+	private static double minPos = 0;
+	private static double maxPos = 0;
 
-	//antigrav variable
+	private bool isAbsoluteEncoderEnabled;
+
+	//antigrav coefficient
 	private static double antiGravK;
 	//enum for which state the PID is in
 	public enum PIDSTATE{
@@ -49,36 +47,38 @@ public class CSMSMPID{
 		OFF,
 		ANTIGRAV
 	}
-	//the state of the PID2
+	//the state of the PID
 	private PIDSTATE theState = PIDSTATE.OFF;
 	
 	//constructor for the class with no absolute encoder
-	public CSMSMPID(String configName) throws Exception{
-			//loggerCategory = Category.MECHANISMS;
+	public CanSparkMaxSmartMotionPIDController(String configName) throws RuntimeException{
+			loggerCategory = Category.MECHANISMS;
 
 			try{
-				mc1 = RobotProvider.instance.getMotor(configName);
-				csm1 = (CANSparkMax)mc1;
-				pid1 = csm1.getPIDController();
+				mc = RobotProvider.instance.getMotor(configName);
+				csm = (CANSparkMax)mc;
+				pid = csm.getPIDController();
+				isAbsoluteEncoderEnabled = true;
 			}catch (IllegalArgumentException ill){
-				throw new Exception("Error instantiating the PID controller: " + ill);
+				throw new RuntimeException("Error instantiating the PID controller: " + ill);
 			}
-			
+
 		
 	}
 	//constructor for the class with an absolute encoder
-	public CSMSMPID(String configName, double absEncoderOffset) throws Exception{
-			//loggerCategory = Category.MECHANISMS;
+	public CanSparkMaxSmartMotionPIDController(String configName, double absEncoderOffset) throws RuntimeException{
+			loggerCategory = Category.MECHANISMS;
 
 			try{
-				mc1 = RobotProvider.instance.getMotor(configName);
-				csm1 = (CANSparkMax)mc1;
-				pid1 = csm1.getPIDController();
-				abs1 = csm1.getAbsoluteEncoder(Type.kDutyCycle);
-				abs1.setZeroOffset(absEncoderOffset);
-				pid1.setFeedbackDevice(abs1);
+				mc = RobotProvider.instance.getMotor(configName);
+				csm = (CANSparkMax)mc;
+				pid = csm.getPIDController();
+				abs = csm.getAbsoluteEncoder(Type.kDutyCycle);
+				abs.setZeroOffset(absEncoderOffset);
+				pid.setFeedbackDevice(abs);
+				isAbsoluteEncoderEnabled = false;
 			}catch (IllegalArgumentException ill){
-				throw new Exception("Error instantiating the CLE PID controller: " + ill);
+				throw new RuntimeException("Error instantiating the CLE PID controller: " + ill);
 			}
 			
 			
@@ -89,26 +89,26 @@ public class CSMSMPID{
 	}
 	//changing all PID values at once
 	public void setPIDF(double p, double i, double d, double ff){
-		pid1.setP(p);
-		pid1.setI(i);
-		pid1.setD(d);
-		pid1.setFF(ff);
+		pid.setP(p);
+		pid.setI(i);
+		pid.setD(d);
+		pid.setFF(ff);
 	}
 	//changing the P value
 	public void setP(double p){
-		pid1.setP(p);
+		pid.setP(p);
 	}
 	//changing the I value
 	public void setI(double i){
-		pid1.setI(i);
+		pid.setI(i);
 	}
 	//changing the D value
 	public void setD(double d){
-		pid1.setD(d);
+		pid.setD(d);
 	}
 	//changing the FF value
 	public void setFf(double ff){
-		pid1.setFF(ff);
+		pid.setFF(ff);
 	}
 	
 	//setting the antigravity constants2
@@ -117,12 +117,12 @@ public class CSMSMPID{
 	}
 
 	private void antigrav(){
-		mc1.set(antiGravK * Math.sin(mc1.getSensorPosition()));
+		mc.set(antiGravK * Math.sin(mc.getSensorPosition()));
 	}
 
 	//adding a built in closed loop error (not tested yet)
 	public void setSmartMotionAllowedClosedLoopError(double error){
-		pid1.setSmartMotionAllowedClosedLoopError(error, 0);
+		pid.setSmartMotionAllowedClosedLoopError(error, 0);
 	}
 	//changing the deadzone
 	public void setDeadzone(double dz){
@@ -130,29 +130,25 @@ public class CSMSMPID{
 	}
 	//changing the output range of the speed of the motors
 	public void setOutputRange(double min, double max){
-		maxspeed1 = max;
-		minspeed1 = min;
-		pid1.setOutputRange(min, max);
+		pid.setOutputRange(min, max);
 	}
 	//changing the neutral mode of the motor (brake/coast)
 	public void setMotorMode(NeutralMode mode){
-		mc1.setNeutralMode(mode);
+		mc.setNeutralMode(mode);
 	}
-	//setting the maximum and minimul locations that the motor can go to
+	//setting the maximum and minimum locations that the motor can go to
 	public void setMinMaxLocation(double min, double max){
 		maxpos1 = max;
 		minpos1 = min;
 	}
 	//setting the maximum velocity of the motor
 	public void setMaxVel(double max){
-		maxvel1 = max;
-		pid1.setSmartMotionMaxVelocity(max, 0);
-		pid1.setSmartMotionMinOutputVelocity(0, 0);
+		pid.setSmartMotionMaxVelocity(max, 0);
+		pid.setSmartMotionMinOutputVelocity(0, 0);
 	}
 	//setting the maximum acceleration of the motor
 	public void setMaxAccel(double max){
-		maxaccel1 = max;
-		pid1.setSmartMotionMaxAccel(max, 0);
+		pid.setSmartMotionMaxAccel(max, 0);
 	}
 
 	//go to a position using the thing that wasn't tested yet and almost broke the robot...
@@ -163,22 +159,22 @@ public class CSMSMPID{
 			position = minpos1;
 		}
 
-		pid1.setReference(position, ControlType.kSmartMotion);
+		pid.setReference(position, ControlType.kSmartMotion);
 	}
 	//1st step to go to a position using the normal PID, setting what you want the position to be
-	public void setPosition(double position){
+	public void setSetpoint(double position){
 		if(position > maxpos1){
 			position = maxpos1;
 		} else if(position < minpos1){
 			position = minpos1;
 		}
 
-		currentPos = position;
+		setPointPosition = position;
 	}
 
 	public void stop(){
 		//Failsafe
-		currentPos = mc1.getSensorPosition();
+		setPointPosition = mc.getSensorPosition();
 		theState = PIDSTATE.OFF;
 	}
 
@@ -186,26 +182,36 @@ public class CSMSMPID{
 	//You need to call this function repedatly in OI
 	public void run(boolean enabled){
 		if(enabled){
+			//Checking if Abs encoder is enabled, and if so we wouldn't want positions above 1 and below 0
+			if(isAbsoluteEncoderEnabled){
+				MathUtil.clamp(minPos, 0.0, 1.0);
+				MathUtil.clamp(maxPos, 0.0, 1.0);
+			}
+			
 			switch(theState){
 				case OFF:
 					break;
 				case ANTIGRAV:
-					antigrav();
-				case PID:
-					if (mc1.getSensorPosition() <= (dz1 + mc1.getSensorPosition()) && mc1.getSensorPosition() >= (mc1.getSensorPosition() - dz1)){
-						combo ++;
+					if (mc.getSensorPosition() <= (dz1 + mc.getSensorPosition()) && mc.getSensorPosition() >= (mc.getSensorPosition() - dz1)){
+						antigrav();
 					} else {
-						combo = 0;
-						pid1.setReference(currentPos, ControlType.kSmartMotion); // todo: testing if this is allowed
+						theState = PIDSTATE.PID;
+					}
+				case PID:
+					if (mc.getSensorPosition() <= (dz1 + mc.getSensorPosition()) && mc.getSensorPosition() >= (mc.getSensorPosition() - dz1)){
+						comboOfTimesInsideDeadzone ++;
+					} else {
+						comboOfTimesInsideDeadzone = 0;
+						pid.setReference(setPointPosition, ControlType.kSmartMotion); // todo: testing if this is allowed
 					}
 		
-					if(combo >= 6){
+					if(comboOfTimesInsideDeadzone >= 6){
 						theState = PIDSTATE.ANTIGRAV;
 					}
 					break;
 			}
 		} else{
-			//log("enabled is false");
+			log("enabled is false on run loop PID controller");
 		}
 		
 	}
