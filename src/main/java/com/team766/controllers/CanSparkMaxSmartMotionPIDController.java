@@ -1,4 +1,4 @@
-wpackage com.team766.controllers;
+package com.team766.controllers;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.hal.RobotProvider;
