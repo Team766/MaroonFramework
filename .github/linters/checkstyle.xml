@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="Checker">
+   <module name="LineLength">
+      <property name="max" value="999"/>
+      <property name="fileExtensions" value="java, js"/>
+   </module>
+</module>
