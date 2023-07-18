@@ -170,6 +170,8 @@ public class CanSparkMaxSmartMotionPIDController{
 		}
 
 		setPointPosition = position;
+
+		theState = PIDSTATE.PID;
 	}
 
 	public void stop(){
