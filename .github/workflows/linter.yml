@@ -25,7 +25,7 @@ jobs:
         env:
           # Only lints new/edited files
           VALIDATE_ALL_CODEBASE: false
-          DEFAULT_BRANCH: main
+          DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_JAVA_CHECKSTYLE: true
