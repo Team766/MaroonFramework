@@ -29,4 +29,3 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_JAVA_CHECKSTYLE: true
-          JAVA_FILE_NAME: .github/linters/checkstyle.xml
