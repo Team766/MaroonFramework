@@ -31,7 +31,7 @@
   "editor.insertSpaces": false,
   "editor.tabSize": 4,
   "diffEditor.ignoreTrimWhitespace": false,
-"java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
-"java.checkstyle.configuration": "${workspaceFolder}/checkstyle.xml",
-"java.checkstyle.version": "9.3"
+  "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+  "java.checkstyle.configuration": "${workspaceFolder}/checkstyle.xml",
+  "java.checkstyle.version": "9.3"
 }
