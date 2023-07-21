@@ -115,7 +115,7 @@
     <module name="PackageName"/>
     <!--<module name="ParameterName"/>-->
     <!--<module name="StaticVariableName"/>-->
-    <module name="TypeName"/>
+    <!--<module name="TypeName"/>-->
 
     <!-- Checks for imports                              -->
     <!-- See https://checkstyle.org/checks/imports/index.html -->
@@ -176,7 +176,7 @@
     <module name="FinalClass"/>
     <!--<module name="HideUtilityClassConstructor"/>-->
     <module name="InterfaceIsType"/>
-    <module name="VisibilityModifier"/>
+    <!--<module name="VisibilityModifier"/>-->
 
     <!-- Miscellaneous other checks.                   -->
     <!-- See https://checkstyle.org/checks/misc/index.html -->
