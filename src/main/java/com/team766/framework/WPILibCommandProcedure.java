@@ -16,13 +16,13 @@ public class WPILibCommandProcedure extends Procedure {
      * @param requirements This Procedure will take ownership of the Mechanisms
      *                     given here during the time it is executing.
      */
-    public WPILibCommandProcedure(Command command, Mechanism... requirements) {
-        this.command = command;
-        this.requirements = requirements;
+    public WPILibCommandProcedure(final Command commandParam, final Mechanism... requirementsParam) {
+        this.command = commandParam;
+        this.requirements = requirementsParam;
     }
 
     @Override
-    public void run(Context context) {
+    public void run(final Context context) {
         for (Mechanism req : this.requirements) {
             context.takeOwnership(req);
         }

@@ -6,25 +6,25 @@ import com.team766.simulator.interfaces.PneumaticDevice;
 
 public class PneumaticsSystem {
 	public static final double PSI_TO_PASCALS = 6894.75729;
-	
+
 	private static class BranchCircuit {
 		public PneumaticDevice device;
 		public double regulatedPressure;
 	}
-	
+
 	private ArrayList<BranchCircuit> branchCircuits = new ArrayList<BranchCircuit>();
-	
+
 	private double systemPressure = Parameters.STARTING_PRESSURE;
 	private double compressedAirVolume = 0.0;
 	private boolean initialized = false;
-	
-	public void addDevice(PneumaticDevice device, double regulatedPressure) {
+
+	public void addDevice(final PneumaticDevice device, final double regulatedPressure) {
 		BranchCircuit circuit = new BranchCircuit();
 		circuit.device = device;
 		circuit.regulatedPressure = regulatedPressure;
 		branchCircuits.add(circuit);
 	}
-	
+
 	public void step() {
 		double flowVolume = 0.0;
 		double systemVolume = 0.0;
@@ -47,11 +47,11 @@ public class PneumaticsSystem {
 		}
 		systemPressure = compressedAirVolume / systemVolume * PhysicalConstants.ATMOSPHERIC_PRESSURE - PhysicalConstants.ATMOSPHERIC_PRESSURE;
 	}
-	
+
 	public double getSystemPressure() {
 		return systemPressure;
 	}
-	
+
 	// Simulate the system venting all of its compressed air (e.g. someone opened the release valve;
 	// to simulate the pneumatics system becoming compromised, call this method on every simulation tick)
 	public void ventPressure() {

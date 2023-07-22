@@ -21,9 +21,9 @@ public abstract class Widget {
 		}
 	}
 
-	public Widget(int sortOrder) {
+	public Widget(final int sortOrder) {
 		synchronized (c_widgets) {
-			c_widgets.put(this, (((long)sortOrder) << 32) | (c_orderCounter++));
+			c_widgets.put(this, (((long) sortOrder) << 32) | (c_orderCounter++));
 		}
 	}
 

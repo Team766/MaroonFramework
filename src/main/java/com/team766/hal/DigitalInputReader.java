@@ -7,5 +7,5 @@ public interface DigitalInputReader {
 	 *
 	 * @return the status of the digital input
 	 */
-	public boolean get();
+	boolean get();
 }

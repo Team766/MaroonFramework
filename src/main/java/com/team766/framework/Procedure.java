@@ -4,7 +4,7 @@ public abstract class Procedure extends LoggingBase implements RunnableWithConte
 	// A reusable Procedure that does nothing.
 	private static final class NoOpProcedure extends Procedure {
 		@Override
-		public void run(Context context) {
+		public void run(final Context context) {
 		}
 	}
 	public static final Procedure NO_OP = new NoOpProcedure();
@@ -14,7 +14,7 @@ public abstract class Procedure extends LoggingBase implements RunnableWithConte
 	private static synchronized int createNewId() {
 		return c_idCounter++;
 	}
-	
+
 	protected final int m_id;
 
 	public Procedure() {

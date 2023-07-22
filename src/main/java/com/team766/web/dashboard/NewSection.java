@@ -7,11 +7,11 @@ public class NewSection extends Widget {
 		this("", DEFAULT_SORT_ORDER);
 	}
 
-	public NewSection(String name) {
+	public NewSection(final String name) {
 		this(name, DEFAULT_SORT_ORDER);
 	}
 
-	public NewSection(String name, int sortOrder) {
+	public NewSection(final String name, final int sortOrder) {
 		super(sortOrder);
 
 		m_name = name;
@@ -26,5 +26,5 @@ public class NewSection extends Widget {
 		page += "</div>";
 		return page;
 	}
-	
+
 }

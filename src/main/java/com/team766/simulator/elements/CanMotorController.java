@@ -6,11 +6,10 @@ import com.team766.simulator.interfaces.ElectricalDevice;
 public class CanMotorController extends MotorController {
 
 	private int address;
-	
-	public CanMotorController(int address, ElectricalDevice downstream) {
+
+	public CanMotorController(final int addressParam, final ElectricalDevice downstream) {
 		super(downstream);
-		
-		this.address = address;
+		this.address = addressParam;
 	}
 
 	@Override

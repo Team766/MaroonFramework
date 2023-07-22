@@ -1,27 +1,29 @@
 package com.team766.simulator.interfaces;
 
 public interface MechanicalAngularDevice {
-	public class Input {
-		public Input(double angularVelocity) {
-			this.angularVelocity = angularVelocity;
+	class Input {
+		public Input(final double angularVelocityParam) {
+			this.angularVelocity = angularVelocityParam;
 		}
-		public Input(Input other) {
-			this.angularVelocity = other.angularVelocity; 
+
+		public Input(final Input other) {
+			this.angularVelocity = other.angularVelocity;
 		}
 
 		public final double angularVelocity;
 	}
-	
-	public class Output {
-		public Output(double torque) {
-			this.torque = torque;
+
+	class Output {
+		public Output(final double torqueParam) {
+			this.torque = torqueParam;
 		}
-		public Output(Output other) {
+
+		public Output(final Output other) {
 			this.torque = other.torque;
 		}
-		
+
 		public final double torque;
 	}
-	
-	public Output step(Input input);
+
+	Output step(Input input);
 }

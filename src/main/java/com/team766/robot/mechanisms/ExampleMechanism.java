@@ -13,7 +13,7 @@ public class ExampleMechanism extends Mechanism {
 		rightMotor = RobotProvider.instance.getMotor("exampleMechanism.rightMotor");
 	}
 
-	public void setMotorPower(double leftPower, double rightPower){
+	public void setMotorPower(final double leftPower, final double rightPower) {
 		checkContextOwnership();
 
 		leftMotor.set(leftPower);

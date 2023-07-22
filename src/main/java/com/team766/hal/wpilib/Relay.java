@@ -6,26 +6,28 @@ import com.team766.logging.Logger;
 import com.team766.logging.Severity;
 
 public class Relay extends edu.wpi.first.wpilibj.Relay implements RelayOutput {
-	public Relay(int channel) {
+	public Relay(final int channel) {
 		super(channel);
 	}
 
 	@Override
-	public void set(com.team766.hal.RelayOutput.Value value) {
+	public void set(final com.team766.hal.RelayOutput.Value value) {
 		edu.wpi.first.wpilibj.Relay.Value wpi_value = null;
 		switch (value) {
-		case kOff:
-			wpi_value = edu.wpi.first.wpilibj.Relay.Value.kOff;
-			break;
-		case kOn:
-			wpi_value = edu.wpi.first.wpilibj.Relay.Value.kOn;
-			break;
-		case kForward:
-			wpi_value = edu.wpi.first.wpilibj.Relay.Value.kForward;
-			break;
-		case kReverse:
-			wpi_value = edu.wpi.first.wpilibj.Relay.Value.kReverse;
-			break;
+			case kOff:
+				wpi_value = edu.wpi.first.wpilibj.Relay.Value.kOff;
+				break;
+			case kOn:
+				wpi_value = edu.wpi.first.wpilibj.Relay.Value.kOn;
+				break;
+			case kForward:
+				wpi_value = edu.wpi.first.wpilibj.Relay.Value.kForward;
+				break;
+			case kReverse:
+				wpi_value = edu.wpi.first.wpilibj.Relay.Value.kReverse;
+				break;
+			default:
+				break;
 		}
 		if (wpi_value == null) {
 			Logger.get(Category.HAL).logRaw(

@@ -13,13 +13,13 @@ public class LogReader {
 	private LogEntry.Builder m_entryBuilder;
 	private ArrayList<String> m_formatStrings;
 
-	public LogReader(String filename) throws IOException {
+	public LogReader(final String filename) throws IOException {
 		m_fileStream = new FileInputStream(filename);
 		m_dataStream = CodedInputStream.newInstance(m_fileStream);
 		m_entryBuilder = LogEntry.newBuilder();
 		m_formatStrings = new ArrayList<String>();
 	}
-	
+
 	public LogEntry readNext() throws IOException {
 		m_entryBuilder.clear();
 		m_dataStream.readMessage(m_entryBuilder, ExtensionRegistryLite.getEmptyRegistry());
@@ -35,8 +35,8 @@ public class LogReader {
 		}
 		return entry;
 	}
-	
-	String getFormatString(int index) {
+
+	String getFormatString(final int index) {
 		String str;
 		try {
 			str = m_formatStrings.get(index);

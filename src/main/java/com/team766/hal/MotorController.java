@@ -9,7 +9,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public interface MotorController extends BasicMotorController {
 
-	public enum Type {
+	enum Type {
 		VictorSP,
 		VictorSPX,
 		TalonSRX,
@@ -17,7 +17,7 @@ public interface MotorController extends BasicMotorController {
 		TalonFX,
 	}
 
-	public enum ControlMode {
+	enum ControlMode {
 		PercentOutput,
 		Position,
 		Velocity,
@@ -97,7 +97,7 @@ public interface MotorController extends BasicMotorController {
 
 	/**
 	 * Sets the motors encoder value to the given position.
-	 * 
+	 *
 	 * @param position The desired set position
 	 */
 	void setSensorPosition(double position);

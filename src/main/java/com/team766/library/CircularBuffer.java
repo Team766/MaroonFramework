@@ -7,11 +7,11 @@ public class CircularBuffer<E> extends AbstractCollection<E> {
 	private Object[] buffer;
 	private int count = 0;
 	private int headIndex = 0;
-	
-	public CircularBuffer(int bufferLength) {
+
+	public CircularBuffer(final int bufferLength) {
 		buffer = new Object[bufferLength];
 	}
-	
+
 	@Override
 	public Iterator<E> iterator() {
 		return new Iterator<E>() {
@@ -29,7 +29,7 @@ public class CircularBuffer<E> extends AbstractCollection<E> {
 			}
 		};
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public E peek() {
 		if (count == 0) {
@@ -37,7 +37,7 @@ public class CircularBuffer<E> extends AbstractCollection<E> {
 		}
 		return (E) buffer[headIndex];
 	}
-	
+
 	public E poll() {
 		if (count == 0) {
 			return null;
@@ -47,9 +47,9 @@ public class CircularBuffer<E> extends AbstractCollection<E> {
 		--count;
 		return element;
 	}
-	
+
 	@Override
-	public boolean add(E element) {
+	public boolean add(final E element) {
 		if (count < buffer.length) {
 			buffer[(headIndex + count) % buffer.length] = element;
 			++count;
@@ -59,12 +59,12 @@ public class CircularBuffer<E> extends AbstractCollection<E> {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public int size() {
 		return count;
 	}
-	
+
 	@Override
 	public void clear() {
 		count = 0;

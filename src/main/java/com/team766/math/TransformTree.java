@@ -5,42 +5,45 @@ import java.util.Hashtable;
 
 public class TransformTree {
 	private ArrayList<TransformTree> tree;
-	
+
 	private final String name;
 	private TransformTree parent;
 	private IsometricTransform transform;
-	
-	public TransformTree(String rootName) {
+
+	public TransformTree(final String rootName) {
 		this.name = rootName;
 	}
-	
-	private TransformTree(String name, TransformTree parent) {
-		this.name = name;
-		this.parent = parent;
+
+	private TransformTree(final String nameParam, final TransformTree parentParam) {
+		this.name = nameParam;
+		this.parent = parentParam;
 	}
-	
-	public TransformTree addSubordinateTransform(String name) {
-		TransformTree subtree = new TransformTree(name, this);
+
+	public TransformTree addSubordinateTransform(final String nameParam) {
+		TransformTree subtree = new TransformTree(nameParam, this);
 		tree.add(subtree);
 		return subtree;
 	}
-	
-	public void setLocalTransform(IsometricTransform xf) {
+
+	public void setLocalTransform(final IsometricTransform xf) {
 		transform = xf;
 	}
+
 	public IsometricTransform getLocalTransform() {
 		return transform;
 	}
-	
-	public IsometricTransform getTransformRelativeTo(String name) {
+
+	public IsometricTransform getTransformRelativeTo(final String nameParam) {
 		TransformTree other = getRoot().findTransform(name);
 		if (other == null) {
-			throw new IllegalArgumentException("Can't find a transform named " + name);
+			throw new IllegalArgumentException("Can't find a transform named " + nameParam);
 		}
 		return getTransformRelativeTo(other);
 	}
-	public IsometricTransform getTransformRelativeTo(TransformTree other) {
-		Hashtable<String, IsometricTransform> parentChain = new Hashtable<String, IsometricTransform>();
+
+	public IsometricTransform getTransformRelativeTo(final TransformTree other) {
+		Hashtable<String, IsometricTransform> parentChain =
+				new Hashtable<String, IsometricTransform>();
 		IsometricTransform xf = transform;
 		parentChain.put(name, xf);
 		TransformTree iterator = this.parent;
@@ -59,20 +62,20 @@ public class TransformTree {
 		}
 		throw new IllegalArgumentException("Transforms aren't part of the same tree");
 	}
-	
-	public TransformTree findTransform(String name) {
-		if (this.name == name) {
+
+	public TransformTree findTransform(final String nameParam) {
+		if (this.name == nameParam) {
 			return this;
 		}
 		for (TransformTree sub : tree) {
-			TransformTree subResult = sub.findTransform(name);
+			TransformTree subResult = sub.findTransform(nameParam);
 			if (subResult != null) {
 				return subResult;
 			}
 		}
 		return null;
 	}
-	
+
 	private TransformTree getRoot() {
 		TransformTree iterator = this;
 		while (iterator.parent != null) {

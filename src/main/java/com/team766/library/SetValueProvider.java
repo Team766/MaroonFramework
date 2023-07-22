@@ -9,7 +9,7 @@ public class SetValueProvider<E> implements SettableValueProvider<E> {
 		m_hasValue = false;
 	}
 
-	public SetValueProvider(E value) {
+	public SetValueProvider(final E value) {
 		m_value = value;
 		m_hasValue = true;
 	}
@@ -24,7 +24,7 @@ public class SetValueProvider<E> implements SettableValueProvider<E> {
 		return m_hasValue;
 	}
 
-	public void set(E value) {
+	public void set(final E value) {
 		m_value = value;
 		m_hasValue = true;
 	}

@@ -15,7 +15,7 @@ class LogEntryComparator implements Comparator<LogEntry> {
 			.build();
 
 	@Override
-	public int compare(LogEntry o1, LogEntry o2) {
+	public int compare(final LogEntry o1, final LogEntry o2) {
 		// Sort by highest severity first
 		int severityResult = -o1.getSeverity().compareTo(o2.getSeverity());
 		if (severityResult != 0) {

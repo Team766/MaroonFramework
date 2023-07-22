@@ -41,7 +41,7 @@ public class LoggerTest {
 				.setMessageStr("Test raw log")
 				.build());
 		writer.close();
-		
+
 		LogReader reader = new LogReader(logFile);
 		String logString1 = LogEntryRenderer.renderLogEntry(reader.readNext(), reader);
 		assertEquals("num: 42 str: my string", logString1);
@@ -59,7 +59,7 @@ public class LoggerTest {
 		LogWriter writer = new LogWriter(new File(workingDir.getRoot(), "stress_test.log").getPath());
 		ArrayList<Thread> threads = new ArrayList<Thread>();
 		for (int j = 0; j < NUM_THREADS; ++j) {
-			Thread t = new Thread(() ->{
+			Thread t = new Thread(() -> {
 				long end = System.currentTimeMillis() + RUN_TIME_SECONDS * 1000;
 				while (System.currentTimeMillis() < end) {
 					writer.logStoredFormat(

@@ -1,9 +1,9 @@
 package com.team766.library;
 
 public interface ValueProvider<E> {
-	public E get();
-	
-	public boolean hasValue();
+	E get();
+
+	boolean hasValue();
 
 	default E valueOr(E default_value) {
 		if (hasValue()) {

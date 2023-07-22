@@ -40,16 +40,16 @@ public class Metrics extends JPanel {
 			"#DECF3F", // yellow
 			"#F15854", // red
 		};
-	
+
 	private static class Inspector extends MouseAdapter implements KeyListener {
 		private int sourceIndex = 0;
 		private double selectedTime = Double.NaN;
 		private XYPlot plot;
-		
-		public Inspector(XYPlot plot) {
-			this.plot = plot;
+
+		Inspector(final XYPlot plotParam) {
+			this.plot = plotParam;
 		}
-		
+
 		void update() {
 			if (!Double.isNaN(selectedTime)) {
 				DataSource source = plot.getData().get(sourceIndex);
@@ -60,17 +60,16 @@ public class Metrics extends JPanel {
 				System.out.println(String.format("(%s, %f): %f", source.getName(), selectedTime, source.get(1, index)));
 			}
 		}
-		
+
 		@Override
-		public void mouseClicked(MouseEvent e) {
+		public void mouseClicked(final MouseEvent e) {
 			double x = e.getX() - plot.getPlotArea().getX();
 			selectedTime = plot.getAxisRenderer(XYPlot.AXIS_X).viewToWorld(plot.getAxis(XYPlot.AXIS_X), x, false).doubleValue();
-			
 			update();
 		}
-		
+
 		@Override
-		public void keyTyped(KeyEvent e) {
+		public void keyTyped(final KeyEvent e) {
 			if (e.getKeyChar() >= '1' && e.getKeyChar() <= '9') {
 				int index = e.getKeyChar() - '1';
 				if (index < plot.getData().size()) {
@@ -80,15 +79,17 @@ public class Metrics extends JPanel {
 				}
 			}
 		}
-		
+
 		@Override
-		public void keyReleased(KeyEvent e) {}
-		
+		public void keyReleased(final KeyEvent e) {
+		}
+
 		@Override
-		public void keyPressed(KeyEvent e) {}
+		public void keyPressed(final KeyEvent e) {
+		}
 	}
-	
-	public static JFrame makePlotFrame(Collection<Double[]> series, String[] labels) {
+
+	public static JFrame makePlotFrame(final Collection<Double[]> series, final String[] labels) {
 		JFrame frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(800, 600);
@@ -96,14 +97,14 @@ public class Metrics extends JPanel {
 		frame.setVisible(true);
 		return frame;
 	}
-	
+
 	XYPlot plot;
 	JSlider slider;
 	DataTable data;
 	JPanel plotPanel;
 	Timer playbackTimer;
-	
-	public Metrics(Collection<Double[]> series, String[] labels) {
+
+	public Metrics(final Collection<Double[]> series, final String[] labels) {
 		Double[] first = series.iterator().next();
 		@SuppressWarnings("unchecked")
 		Class<Double>[] types = new Class[first.length];
@@ -116,7 +117,8 @@ public class Metrics extends JPanel {
 			data.add(values);
 		}
 		if (first.length - 1 != labels.length) {
-			throw new IllegalArgumentException("Number of labels does not match the size of data values");
+			throw new IllegalArgumentException(
+					"Number of labels does not match the size of data values");
 		}
 		DataSource[] sources = new DataSource[labels.length];
 		for (int i = 0; i < labels.length; ++i) {
@@ -132,18 +134,18 @@ public class Metrics extends JPanel {
 			plot.getLineRenderers(source).get(0).setColor(color);
 		}
 		plot.setLegendVisible(true);
-		
+
 		InteractivePanel panel = new InteractivePanel(plot);
 		plotPanel = panel;
 		setLayout(new BorderLayout());
 		add(panel, BorderLayout.CENTER);
-		
+
 		final int TIMER_PERIOD_MS = 50;
 		playbackTimer = new Timer(TIMER_PERIOD_MS, new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(final ActionEvent e) {
 				double deltaSteps = (TIMER_PERIOD_MS / 1000.0) / Parameters.TIME_STEP;
-				int newValue = slider.getValue() + (int)deltaSteps;
+				int newValue = slider.getValue() + (int) deltaSteps;
 				if (newValue > slider.getMaximum()) {
 					newValue = slider.getMaximum();
 					playbackTimer.stop();
@@ -152,7 +154,7 @@ public class Metrics extends JPanel {
 			}
 		});
 		playbackTimer.setRepeats(true);
-		
+
 		Inspector inspector = new Inspector(plot);
 		addKeyListener(inspector);
 		panel.addMouseListener(inspector);

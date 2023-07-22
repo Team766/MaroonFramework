@@ -27,7 +27,8 @@ public class ReadLogs implements WebServer.Handler {
 	private HashMap<String, String> readerDescriptions = new HashMap<String, String>();
 	private HashMap<String, Iterator<LogEntry>> readerStreams = new HashMap<String, Iterator<LogEntry>>();
 
-	private static String makeLogEntriesTable(LogReader reader, Iterator<LogEntry> entries) {
+	private static String makeLogEntriesTable(final LogReader reader,
+			final Iterator<LogEntry> entries) {
 		String r = "<table id=\"log-entries\" border=\"1\">\n";
 		for (int i = 0; i < ENTRIES_PER_PAGE; ++i) {
 			if (!entries.hasNext()) {
@@ -35,51 +36,42 @@ public class ReadLogs implements WebServer.Handler {
 			}
 			LogEntry entry = entries.next();
 			r += String.format(
-				"<tr><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td></tr>\n",
-				entry.getCategory(), entry.getTime(), entry.getSeverity(), LogEntryRenderer.renderLogEntry(entry, reader));
+					"<tr><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td><td style=\"white-space: pre\">%s</td></tr>\n",
+					entry.getCategory(), entry.getTime(), entry.getSeverity(),
+					LogEntryRenderer.renderLogEntry(entry, reader));
 		}
 		r += "</table>";
 		return r;
 	}
 
-	private String makePage(String id) {
-		String r = String.join("\n", new String[]{
-			"<p>Free disk space: "
-				+ NumberFormat.getNumberInstance(Locale.US).format(
-					new File(Logger.logFilePathBase).getUsableSpace())
-				+ "</p>",
-			"<form action=\"" + ENDPOINT + "\"><p>",
-			HtmlElements.buildDropDown(
-				"logFile",
-				"",
-				Logger.logFilePathBase == null
-					? new String[0]
-					: new File(Logger.logFilePathBase).list()),
-			HtmlElements.buildDropDown(
-				"category",
-				"",
-				Stream.concat(
-					Stream.of("", ALL_ERRORS_NAME),
-					Arrays.stream(Category.values()).map(Category::name)
-					).toArray(String[]::new)),
-			"<input type=\"submit\" value=\"Open Log\">",
-			"</p></form>",
-		});
+	private String makePage(final String id) {
+		String r =
+				String.join("\n",
+						new String[] {
+								"<p>Free disk space: " + NumberFormat.getNumberInstance(Locale.US)
+										.format(new File(Logger.logFilePathBase).getUsableSpace())
+										+ "</p>",
+								"<form action=\"" + ENDPOINT + "\"><p>",
+								HtmlElements.buildDropDown("logFile", "",
+										Logger.logFilePathBase == null ? new String[0]
+												: new File(Logger.logFilePathBase).list()),
+								HtmlElements.buildDropDown("category", "", Stream
+										.concat(Stream.of("", ALL_ERRORS_NAME),
+												Arrays.stream(Category.values())
+														.map(Category::name))
+										.toArray(String[]::new)),
+								"<input type=\"submit\" value=\"Open Log\">", "</p></form>",});
 		if (id != null) {
-			r += String.join("\n", new String[]{
-				"<h1>Log: " + readerDescriptions.get(id) + "</h1>",
-				makeLogEntriesTable(logReaders.get(id), readerStreams.get(id)),
-				"<input type=\"button\" onclick=\"window.location = '" + ENDPOINT + "?id=" + id + "'; this.disabled=true; this.value='Loading...';\" value=\"Next page\" />",
-			});
+			r += String.join("\n", new String[] {"<h1>Log: " + readerDescriptions.get(id) + "</h1>",
+					makeLogEntriesTable(logReaders.get(id), readerStreams.get(id)),
+					"<input type=\"button\" onclick=\"window.location = '" + ENDPOINT + "?id=" + id
+							+ "'; this.disabled=true; this.value='Loading...';\" value=\"Next page\" />",});
 		}
 		return r;
 	}
 
-	private String makeReader(
-		String logFile,
-		String description,
-		Function<Stream<LogEntry>, Stream<LogEntry>> filter
-	) {
+	private String makeReader(final String logFile, final String description,
+			final Function<Stream<LogEntry>, Stream<LogEntry>> filter) {
 		LogReader reader;
 		try {
 			reader = new LogReader(new File(Logger.logFilePathBase, logFile).getAbsolutePath());
@@ -101,28 +93,18 @@ public class ReadLogs implements WebServer.Handler {
 		return id;
 	}
 
-	private String makeUnfilteredReader(String logFile) {
-		return makeReader(
-			logFile,
-			"",
-			s -> s
-		);
+	private String makeUnfilteredReader(final String logFile) {
+		return makeReader(logFile, "", s -> s);
 	}
 
-	private String makeCategoryReader(String logFile, Category category) {
-		return makeReader(
-			logFile,
-			category.name(),
-			s -> s.filter(e -> e.getCategory() == category)
-		);
+	private String makeCategoryReader(final String logFile, final Category category) {
+		return makeReader(logFile, category.name(),
+				s -> s.filter(e -> e.getCategory() == category));
 	}
 
-	private String makeAllErrorsReader(String logFile) {
-		return makeReader(
-			logFile,
-			ALL_ERRORS_NAME,
-			s -> s.filter(entry -> entry.getSeverity() == Severity.ERROR)
-		);
+	private String makeAllErrorsReader(final String logFile) {
+		return makeReader(logFile, ALL_ERRORS_NAME,
+				s -> s.filter(entry -> entry.getSeverity() == Severity.ERROR));
 	}
 
 	@Override
@@ -131,10 +113,10 @@ public class ReadLogs implements WebServer.Handler {
 	}
 
 	@Override
-	public String handle(Map<String, Object> params) {
-		String id = (String)params.get("id");
-		String logFile = (String)params.get("logFile");
-		String categoryName = (String)params.get("category");
+	public String handle(final Map<String, Object> params) {
+		String id = (String) params.get("id");
+		String logFile = (String) params.get("logFile");
+		String categoryName = (String) params.get("category");
 		if (!logReaders.containsKey(id)) {
 			id = null;
 		}

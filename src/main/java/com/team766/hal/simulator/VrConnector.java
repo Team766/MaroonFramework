@@ -21,7 +21,7 @@ public class VrConnector implements Runnable {
 		public final int messageDataIndex;
 		public final int robotPortIndex;
 
-		public PortMapping(int messageIndex, int robotIndex) {
+		PortMapping(final int messageIndex, final int robotIndex) {
 			this.messageDataIndex = messageIndex;
 			this.robotPortIndex = robotIndex;
 		}
@@ -32,13 +32,11 @@ public class VrConnector implements Runnable {
 		public final int motorCommandMessageDataIndex;
 		public final int sensorFeedbackMessageDataIndex;
 
-		public CANPortMapping(
-				int canId,
-				int motorCommandMessageDataIndex,
-				int sensorFeedbackMessageDataIndex) {
-			this.canId = canId;
-			this.motorCommandMessageDataIndex = motorCommandMessageDataIndex;
-			this.sensorFeedbackMessageDataIndex = sensorFeedbackMessageDataIndex;
+		CANPortMapping(final int canIdParam, final int motorCommandMessageDataIndexParam,
+				final int sensorFeedbackMessageDataIndexParam) {
+			this.canId = canIdParam;
+			this.motorCommandMessageDataIndex = motorCommandMessageDataIndexParam;
+			this.sensorFeedbackMessageDataIndex = sensorFeedbackMessageDataIndexParam;
 		}
 	}
 
@@ -49,33 +47,33 @@ public class VrConnector implements Runnable {
 	private static final int RESET_SIM_CHANNEL = 0;
 
 	private static final List<PortMapping> PWM_CHANNELS = Arrays.asList(
-		//new PortMapping(10, 6), // Left motor
-		//new PortMapping(11, 4), // Right motor
-		//new PortMapping(14, 1), // Auxiliary / Center motor
-		//new PortMapping(12, 0)  // Intake
+	// new PortMapping(10, 6), // Left motor
+	// new PortMapping(11, 4), // Right motor
+	// new PortMapping(14, 1), // Auxiliary / Center motor
+	// new PortMapping(12, 0) // Intake
 	);
-	private static final List<PortMapping> SOLENOID_CHANNELS = Arrays.asList(
-		new PortMapping(15, 0), // Intake arm
-		new PortMapping(13, 1)  // Catapult launch
+	private static final List<PortMapping> SOLENOID_CHANNELS = Arrays.asList(new PortMapping(15, 0), // Intake
+																										// arm
+			new PortMapping(13, 1) // Catapult launch
 	);
 	private static final List<PortMapping> RELAY_CHANNELS = Arrays.asList();
 
-	private static final List<CANPortMapping> CAN_MOTOR_CHANNELS = Arrays.asList(
-		new CANPortMapping(6, 10, 10),  // Left motor
-		new CANPortMapping(4, 11, 11),  // Right motor
-		new CANPortMapping(10, 12, 13), // Intake
-		new CANPortMapping(12, 14, 0),  // Aux/center motor
-		new CANPortMapping(14, 16, 0),  // Aux2 motor
+	private static final List<CANPortMapping> CAN_MOTOR_CHANNELS =
+			Arrays.asList(new CANPortMapping(6, 10, 10), // Left motor
+					new CANPortMapping(4, 11, 11), // Right motor
+					new CANPortMapping(10, 12, 13), // Intake
+					new CANPortMapping(12, 14, 0), // Aux/center motor
+					new CANPortMapping(14, 16, 0), // Aux2 motor
 
-		new CANPortMapping(84, 84, 84), // FLD motor
-		new CANPortMapping(85, 85, 85), // BLD motor
-		new CANPortMapping(86, 86, 86), // FRD motor
-		new CANPortMapping(87, 87, 87), // BRD motor
-		new CANPortMapping(88, 88, 88), // FLS motor
-		new CANPortMapping(89, 89, 89), // BLS motor
-		new CANPortMapping(90, 90, 90), // FRS motor
-		new CANPortMapping(91, 91, 91)  // BRS motor
-	);
+					new CANPortMapping(84, 84, 84), // FLD motor
+					new CANPortMapping(85, 85, 85), // BLD motor
+					new CANPortMapping(86, 86, 86), // FRD motor
+					new CANPortMapping(87, 87, 87), // BRD motor
+					new CANPortMapping(88, 88, 88), // FLS motor
+					new CANPortMapping(89, 89, 89), // BLS motor
+					new CANPortMapping(90, 90, 90), // FRS motor
+					new CANPortMapping(91, 91, 91) // BRS motor
+			);
 
 	/// Feedback indexes
 
@@ -85,11 +83,9 @@ public class VrConnector implements Runnable {
 	private static final int RESET_COUNTER_CHANNEL = 6;
 
 	private static final int ROBOT_MODE_CHANNEL = 3;
-	private static final Map<Integer, ProgramInterface.RobotMode> ROBOT_MODES = Map.of(
-		0, ProgramInterface.RobotMode.DISABLED,
-		1, ProgramInterface.RobotMode.AUTON,
-    	2, ProgramInterface.RobotMode.TELEOP
-	);
+	private static final Map<Integer, ProgramInterface.RobotMode> ROBOT_MODES =
+			Map.of(0, ProgramInterface.RobotMode.DISABLED, 1, ProgramInterface.RobotMode.AUTON, 2,
+					ProgramInterface.RobotMode.TELEOP);
 
 	private static final int ROBOT_X_CHANNEL = 8;
 	private static final int ROBOT_Y_CHANNEL = 9;
@@ -97,21 +93,21 @@ public class VrConnector implements Runnable {
 	private static final int BEACON_SENSOR_START = 120;
 	private static final int BEACON_SENSOR_STRIDE = 6; // (x, y, z, yaw, pitch, roll)
 
-	private static final List<PortMapping> ENCODER_CHANNELS = Arrays.asList(
-		new PortMapping(10, 0), // Left encoder
-		new PortMapping(11, 2), // Right encoder
-		new PortMapping(13, 4)  // Mechanism encoder
+	private static final List<PortMapping> ENCODER_CHANNELS = Arrays.asList(new PortMapping(10, 0), // Left
+																									// encoder
+			new PortMapping(11, 2), // Right encoder
+			new PortMapping(13, 4) // Mechanism encoder
 	);
 	private static final int GYRO_CHANNEL = 15;
 	private static final int GYRO_RATE_CHANNEL = 16;
 	private static final int GYRO_PITCH_CHANNEL = 80;
 	private static final int GYRO_ROLL_CHANNEL = 81;
-	private static final List<PortMapping> DIGITAL_CHANNELS = Arrays.asList(
-		new PortMapping(13, 0), // Intake state
-		new PortMapping(14, 1), // Ball presence
-		new PortMapping(17, 4), // Line Sensor 1
-		new PortMapping(18, 5), // Line Sensor 2
-		new PortMapping(19, 6)  // Line Sensor 3
+	private static final List<PortMapping> DIGITAL_CHANNELS = Arrays.asList(new PortMapping(13, 0), // Intake
+																									// state
+			new PortMapping(14, 1), // Ball presence
+			new PortMapping(17, 4), // Line Sensor 1
+			new PortMapping(18, 5), // Line Sensor 2
+			new PortMapping(19, 6) // Line Sensor 3
 	);
 	private static final List<PortMapping> ANALOG_CHANNELS = Arrays.asList();
 
@@ -141,34 +137,36 @@ public class VrConnector implements Runnable {
 	private int lastResetCounter = 0;
 	private double lastGyroValue = Double.NaN;
 	private long[] lastEncoderValue = new long[ProgramInterface.encoderChannels.length];
-	private long[] lastCANSensorValue = new long[ProgramInterface.canMotorControllerChannels.length];
+	private long[] lastCANSensorValue =
+			new long[ProgramInterface.canMotorControllerChannels.length];
 
-	private int getFeedback(int index) {
+	private int getFeedback(final int index) {
 		return feedback.getInt(index * 4);
 	}
 
-	private static long assembleLong(int msw, int lsw) {
-		return ((long)msw << 32) | (lsw & 0xffffffffL);
+	private static long assembleLong(final int msw, final int lsw) {
+		return ((long) msw << 32) | (lsw & 0xffffffffL);
 	}
 
-	private void putCommand(int index, int value) {
+	private void putCommand(final int index, final int value) {
 		commands.putInt(index * 4, value);
 	}
 
-	private void putCommandFloat(int index, double value) {
+	private void putCommandFloat(final int index, final double value) {
 		putCommand(index, (int) (value * 512.0));
 	}
 
-	private void putCommandTristate(int index, int value) {
-		if (value == 0)
+	private void putCommandTristate(final int index, final int value) {
+		if (value == 0) {
 			putCommand(index, 0);
-		else if (value > 0)
+		} else if (value > 0) {
 			putCommand(index, 511);
-		else
+		} else {
 			putCommand(index, -512);
+		}
 	}
 
-	private void putCommandBool(int index, boolean value) {
+	private void putCommandBool(final int index, final boolean value) {
 		putCommand(index, value ? 511 : -512);
 	}
 
@@ -231,7 +229,7 @@ public class VrConnector implements Runnable {
 			// Time is sent in milliseconds
 			ProgramInterface.simulationTime = assembleLong(
 				getFeedback(TIMESTAMP_MSW_CHANNEL), getFeedback(TIMESTAMP_LSW_CHANNEL)) * 0.001;
-			
+
 			resetCounter = getFeedback(RESET_COUNTER_CHANNEL);
 
 			ProgramInterface.robotMode = ROBOT_MODES.get(getFeedback(ROBOT_MODE_CHANNEL));
@@ -317,7 +315,8 @@ public class VrConnector implements Runnable {
 				LoggerExceptionUtils.logException(e);
 				try {
 					Thread.sleep(10);
-				} catch (InterruptedException e1) {}
+				} catch (InterruptedException e1) {
+				}
 			}
 			if (ProgramInterface.simulationTime == 0) {
 				// Wait for a connection to the simulator before starting to run the robot code.

@@ -1,7 +1,7 @@
 package com.team766.hal;
 
 public interface BeaconReader {
-	public static class BeaconPose {
+	class BeaconPose {
 		public double x;
 		public double y;
 		public double z;
@@ -10,5 +10,5 @@ public interface BeaconReader {
 		public double roll;
 	}
 
-	public abstract BeaconPose[] getBeacons();
+	BeaconPose[] getBeacons();
 }

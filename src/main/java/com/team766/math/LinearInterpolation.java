@@ -8,7 +8,7 @@ public class LinearInterpolation {
 		public E b;
 		public double t;
 	}
-	
+
 	private static <E> LerpArgs<E> getArgs(double[] t, E[] x, double q) {
 		if (t.length != x.length) {
 			throw new IllegalArgumentException("Keys and values must have the same length");
@@ -40,12 +40,12 @@ public class LinearInterpolation {
 		args.b = x[upper];
 		return args;
 	}
-	
+
 	public static double get(double[] t, Double[] x, double q) {
 		LerpArgs<Double> args = getArgs(t, x, q);
 		return args.a * (1 - args.t) + (args.b * args.t);
 	}
-	
+
 	public static <E extends Algebraic<E>> E get(double[] t, E[] x, double q) {
 		LerpArgs<E> args = getArgs(t, x, q);
 		return args.a.scale(1 - args.t).add(args.b.scale(args.t));

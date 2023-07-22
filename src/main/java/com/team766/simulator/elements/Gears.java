@@ -8,16 +8,16 @@ public class Gears implements MechanicalAngularDevice {
 
 	// Torque ratio (output / input)
 	private final double torqueRatio;
-	
+
 	private MechanicalAngularDevice upstream;
-	
-	public Gears(double torqueRatio, MechanicalAngularDevice upstream) {
-		this.torqueRatio = torqueRatio;
-		this.upstream = upstream;
+
+	public Gears(final double torqueRatioParam, final MechanicalAngularDevice upstreamParam) {
+		this.torqueRatio = torqueRatioParam;
+		this.upstream = upstreamParam;
 	}
 
 	@Override
-	public MechanicalAngularDevice.Output step(MechanicalAngularDevice.Input input) {
+	public MechanicalAngularDevice.Output step(final MechanicalAngularDevice.Input input) {
 		MechanicalAngularDevice.Input upstreamInput =
 			new MechanicalAngularDevice.Input(input.angularVelocity * torqueRatio);
 		MechanicalAngularDevice.Output upstreamOutput = upstream.step(upstreamInput);

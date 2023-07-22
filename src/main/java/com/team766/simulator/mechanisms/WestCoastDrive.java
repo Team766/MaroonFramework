@@ -20,20 +20,20 @@ import com.team766.simulator.interfaces.MechanicalDevice;
 public class WestCoastDrive extends DriveBase {
 	private DCMotor leftMotor = DCMotor.makeCIM();
 	private DCMotor rightMotor = DCMotor.makeCIM();
-	
+
 	private MotorController leftController = new PwmMotorController(6, leftMotor);
 	private MotorController rightController = new PwmMotorController(4, rightMotor);
-	
+
 	private Gears leftGears = new Gears(Parameters.DRIVE_GEAR_RATIO, leftMotor);
 	private Gears rightGears = new Gears(Parameters.DRIVE_GEAR_RATIO, rightMotor);
-	
+
 	private Wheel leftWheels = new Wheel(Parameters.DRIVE_WHEEL_DIAMETER, leftGears);
 	private static final Vector3D LEFT_WHEEL_POSITION = new Vector3D(0., 0.3302, 0.);
 	private Wheel rightWheels = new Wheel(Parameters.DRIVE_WHEEL_DIAMETER, rightGears);
 	private static final Vector3D RIGHT_WHEEL_POSITION = new Vector3D(0., -0.3302, 0.);
 	private static final double WHEEL_BASE = 0.585;
 	private static final double ENCODER_TICKS_PER_METER = Parameters.ENCODER_TICKS_PER_REVOLUTION / (Parameters.DRIVE_WHEEL_DIAMETER * Math.PI);
-	
+
 	private Vector3D robotPosition = Vector3D.ZERO;
 	private Rotation robotRotation = Rotation.IDENTITY;
 	private Vector3D linearVelocity = Vector3D.ZERO;
@@ -43,8 +43,8 @@ public class WestCoastDrive extends DriveBase {
 
 	private double leftEncoderResidual = 0;
 	private double rightEncoderResidual = 0;
-	
-	public WestCoastDrive(ElectricalSystem electricalSystem) {
+
+	public WestCoastDrive(final ElectricalSystem electricalSystem) {
 		electricalSystem.addDevice(leftController);
 		electricalSystem.addDevice(rightController);
 	}
@@ -75,16 +75,16 @@ public class WestCoastDrive extends DriveBase {
 		wheelForce = rightWheels.step(rightWheelInput).force.scalarMultiply(-1.0);
 		netForce = netForce.add(wheelForce);
 		netTorque = netTorque.add(Vector3D.crossProduct(RIGHT_WHEEL_POSITION, wheelForce));
-		
+
 		Vector3D ego_velocity = robotRotation.applyInverseTo(linearVelocity);
-		
+
 		double rateLeft = ENCODER_TICKS_PER_METER * (ego_velocity.getX() - angularVelocity.getZ() * LEFT_WHEEL_POSITION.getNorm());
 		double rateRight = ENCODER_TICKS_PER_METER * (ego_velocity.getX() + angularVelocity.getZ() * RIGHT_WHEEL_POSITION.getNorm());
 		leftEncoderResidual += rateLeft * Parameters.TIME_STEP;
 		rightEncoderResidual += rateRight * Parameters.TIME_STEP;
-		ProgramInterface.encoderChannels[0].distance += (long)leftEncoderResidual;
+		ProgramInterface.encoderChannels[0].distance += (long) leftEncoderResidual;
 		ProgramInterface.encoderChannels[0].rate = rateLeft;
-		ProgramInterface.encoderChannels[2].distance += (long)rightEncoderResidual;
+		ProgramInterface.encoderChannels[2].distance += (long) rightEncoderResidual;
 		ProgramInterface.encoderChannels[2].rate = rateRight;
 		leftEncoderResidual %= 1;
 		rightEncoderResidual %= 1;
@@ -104,11 +104,11 @@ public class WestCoastDrive extends DriveBase {
 		netTorque = netTorque.add(
 				new Vector3D(0, 0, -softSignum(angularVelocity.getZ())).scalarMultiply(
 						maxFriction * WHEEL_BASE / 2));
-		
+
 		linearAcceleration = robotRotation.applyTo(netForce).scalarMultiply(1.0 / Parameters.ROBOT_MASS);
 		linearVelocity = linearVelocity.add(linearAcceleration.scalarMultiply(Parameters.TIME_STEP));
 		robotPosition = robotPosition.add(linearVelocity.scalarMultiply(Parameters.TIME_STEP));
-		
+
 		angularAcceleration = netTorque.scalarMultiply(1.0 / Parameters.ROBOT_MOMENT_OF_INERTIA);
 		angularVelocity = angularVelocity.add(angularAcceleration.scalarMultiply(Parameters.TIME_STEP));
 		Vector3D angularDelta = angularVelocity.scalarMultiply(Parameters.TIME_STEP);
@@ -120,27 +120,27 @@ public class WestCoastDrive extends DriveBase {
 			             angularDelta.getZ()),
 			RotationConvention.VECTOR_OPERATOR);
 	}
-	
+
 	public Vector3D getPosition() {
 		return robotPosition;
 	}
-	
+
 	public Rotation getRotation() {
 		return robotRotation;
 	}
-	
+
 	public Vector3D getLinearVelocity() {
 		return linearVelocity;
 	}
-	
+
 	public Vector3D getAngularVelocity() {
 		return angularVelocity;
 	}
-	
+
 	public Vector3D getLinearAcceleration() {
 		return linearAcceleration;
 	}
-	
+
 	public Vector3D getAngularAcceleration() {
 		return angularAcceleration;
 	}

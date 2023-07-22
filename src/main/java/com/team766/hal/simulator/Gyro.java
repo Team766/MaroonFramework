@@ -3,7 +3,7 @@ package com.team766.hal.simulator;
 import com.team766.hal.GyroReader;
 import com.team766.simulator.ProgramInterface;
 
-public class Gyro implements GyroReader{
+public class Gyro implements GyroReader {
 
 	public void calibrate() {
 		reset();

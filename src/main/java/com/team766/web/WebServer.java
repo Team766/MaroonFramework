@@ -19,20 +19,24 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 /*
- * Creates an HTTP Server on the robot that can change the 
+ * Creates an HTTP Server on the robot that can change the
  * settings of it.  It is initially just used to change robot
- * values.  Hopefully this will be later updated to support 
+ * values.  Hopefully this will be later updated to support
  * graphing and even small changes in the robot's actual code.
- * 
+ *
  * Can be reached at:
  * 	roboRio-766.local:5800/values
  */
 
 public class WebServer {
-	
+
 	public interface Handler {
 		String endpoint();
-		default boolean showInMenu() { return true; }
+
+		default boolean showInMenu() {
+			return true;
+		}
+
 		String title();
 		String handle(Map<String, Object> params);
 	}
@@ -58,17 +62,17 @@ public class WebServer {
 			}
 
 			@Override
-			public String handle(Map<String, Object> params) {
+			public String handle(final Map<String, Object> params) {
 				return "";
 			}
 		});
 	}
-	
-	public void addHandler(Handler handler) {
+
+	public void addHandler(final Handler handler) {
 		pages.put(handler.endpoint(), handler);
 	}
 
-	public void start(){
+	public void start() {
 		try {
 			server = HttpServer.create(new InetSocketAddress(5800), 0);
 		} catch (IOException e) {
@@ -77,7 +81,7 @@ public class WebServer {
 		for (Map.Entry<String, Handler> page : pages.entrySet()) {
 			HttpHandler httpHandler = new HttpHandler() {
 				@Override
-				public void handle(HttpExchange exchange) throws IOException {
+				public void handle(final HttpExchange exchange) throws IOException {
 					Map<String, Object> params = parseParams(exchange);
 					String response = "<!DOCTYPE html><html><body>";
 					response += buildPageHeader();
@@ -99,7 +103,7 @@ public class WebServer {
 		addLineNumbersSvgHandler();
 		server.start();
 	}
-	
+
 	protected String buildPageHeader() {
 		String result = "";
 		result += "<style>\n";
@@ -116,21 +120,25 @@ public class WebServer {
 		result += "</style>\n";
 		result += "<p>\n";
 		for (Map.Entry<String, Handler> page : pages.entrySet()) {
-			if (page.getValue().showInMenu()) 
-			result += String.format("<a href=\"%s\">%s</a><br>\n", page.getKey(), page.getValue().title());
+			if (page.getValue().showInMenu()) {
+				result += String.format("<a href=\"%s\">%s</a><br>\n", page.getKey(),
+						page.getValue().title());
+			}
 		}
 		result += "</p>\n";
 		return result;
 	}
-	
+
 	private void addLineNumbersSvgHandler() {
 		HttpHandler httpHandler = new HttpHandler() {
 			@Override
-			public void handle(HttpExchange exchange) throws IOException {
+			public void handle(final HttpExchange exchange) throws IOException {
 				String response = "<?xml version=\"1.0\"?>\n";
-				response += "<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
+				response +=
+						"<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n";
 				response += "<svg xmlns=\"http://www.w3.org/2000/svg\">\n";
-				response += "<text x=\"0\" y=\"0\" text-anchor=\"end\" font-family=\"monospace\" font-size=\"14px\">\n";
+				response +=
+						"<text x=\"0\" y=\"0\" text-anchor=\"end\" font-family=\"monospace\" font-size=\"14px\">\n";
 				for (int i = 1; i < 1000; ++i) {
 					response += "<tspan x=\"45px\" dy=\"1.143em\">" + i + ".</tspan>\n";
 				}
@@ -145,41 +153,40 @@ public class WebServer {
 		};
 		server.createContext("/line_numbers.svg", httpHandler);
 	}
-	
-	public Map<String, Object> parseParams(HttpExchange exchange) throws IOException {
+
+	public Map<String, Object> parseParams(final HttpExchange exchange) throws IOException {
 		Map<String, Object> parameters = new HashMap<String, Object>();
 		parseGetParameters(exchange, parameters);
 		parsePostParameters(exchange, parameters);
 		return parameters;
 	}
 
-	private void parseGetParameters(HttpExchange exchange, Map<String, Object> parameters)
-		throws UnsupportedEncodingException {
+	private void parseGetParameters(final HttpExchange exchange,
+			final Map<String, Object> parameters) throws UnsupportedEncodingException {
 		URI requestedUri = exchange.getRequestURI();
 		String query = requestedUri.getRawQuery();
 		parseQuery(query, parameters);
 	}
 
-	private void parsePostParameters(HttpExchange exchange, Map<String, Object> parameters)
-		throws IOException {
+	private void parsePostParameters(final HttpExchange exchange,
+			final Map<String, Object> parameters) throws IOException {
 
 		if ("post".equalsIgnoreCase(exchange.getRequestMethod())) {
-			InputStreamReader isr =
-				new InputStreamReader(exchange.getRequestBody(), "utf-8");
+			InputStreamReader isr = new InputStreamReader(exchange.getRequestBody(), "utf-8");
 			BufferedReader br = new BufferedReader(isr);
 			String query = br.readLine();
 			parseQuery(query, parameters);
 		}
 	}
 
-	private void parseQuery(String query, Map<String, Object> parameters)
-		throws UnsupportedEncodingException {
+	private void parseQuery(final String query, final Map<String, Object> parameters)
+			throws UnsupportedEncodingException {
 
 		if (query != null) {
-			String pairs[] = query.split("[&]");
+			String[] pairs = query.split("[&]");
 
 			for (String pair : pairs) {
-				String param[] = pair.split("[=]");
+				String[] param = pair.split("[=]");
 
 				String key = null;
 				String value = null;
@@ -193,14 +200,14 @@ public class WebServer {
 
 				if (parameters.containsKey(key)) {
 					Object obj = parameters.get(key);
-					if(obj instanceof List<?>) {
+					if (obj instanceof List<?>) {
 						@SuppressWarnings("unchecked")
-						List<String> values = (List<String>)obj;
-						
+						List<String> values = (List<String>) obj;
+
 						values.add(value);
-					} else if(obj instanceof String) {
+					} else if (obj instanceof String) {
 						List<String> values = new ArrayList<String>();
-						values.add((String)obj);
+						values.add((String) obj);
 						values.add(value);
 						parameters.put(key, values);
 					}

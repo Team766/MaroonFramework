@@ -49,7 +49,7 @@ public class Dashboard implements WebServer.Handler {
 	}
 
 	@Override
-	public String handle(Map<String, Object> params) {
+	public String handle(final Map<String, Object> params) {
 		return makeDashboardPage();
 	}
 

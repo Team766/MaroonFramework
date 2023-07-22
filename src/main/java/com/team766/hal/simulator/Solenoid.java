@@ -3,15 +3,15 @@ package com.team766.hal.simulator;
 import com.team766.hal.SolenoidController;
 import com.team766.simulator.ProgramInterface;
 
-public class Solenoid implements SolenoidController{
+public class Solenoid implements SolenoidController {
 
 	private int channel;
-	
-	public Solenoid(int channel){
-		this.channel = channel;
+
+	public Solenoid(final int channelParam) {
+		this.channel = channelParam;
 	}
-	
-	public void set(boolean on) {
+
+	public void set(final boolean on) {
 		ProgramInterface.solenoidChannels[channel] = on;
 	}
 

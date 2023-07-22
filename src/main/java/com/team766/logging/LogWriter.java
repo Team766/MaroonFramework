@@ -8,20 +8,20 @@ import com.team766.library.LossyPriorityQueue;
 
 public class LogWriter {
 	private static final int QUEUE_SIZE = 50;
-	
+
 	private LossyPriorityQueue<LogEntry> m_entriesQueue;
-	
+
 	private Thread m_workerThread;
 	private boolean m_running = true;
-	
+
 	private HashMap<String, Integer> m_formatStringIndices = new HashMap<String, Integer>();
-	
+
 	private FileOutputStream m_fileStream;
 	private CodedOutputStream m_dataStream;
-	
+
 	private Severity m_minSeverity = Severity.INFO;
-	
-	public LogWriter(String filename) throws IOException {
+
+	public LogWriter(final String filename) throws IOException {
 		m_entriesQueue = new LossyPriorityQueue<LogEntry>(QUEUE_SIZE, new LogEntryComparator());
 		m_fileStream = new FileOutputStream(filename);
 		m_dataStream = CodedOutputStream.newInstance(m_fileStream);
@@ -43,9 +43,8 @@ public class LogWriter {
 						m_dataStream.writeMessageNoTag(entry);
 					} catch (IOException e) {
 						e.printStackTrace();
-						Logger.get(Category.JAVA_EXCEPTION).logOnlyInMemory(
-							Severity.ERROR,
-							LoggerExceptionUtils.exceptionToString(e));
+						Logger.get(Category.JAVA_EXCEPTION).logOnlyInMemory(Severity.ERROR,
+								LoggerExceptionUtils.exceptionToString(e));
 					}
 				}
 			}
@@ -67,17 +66,18 @@ public class LogWriter {
 
 		m_fileStream.close();
 	}
-	
-	public void setSeverityFilter(Severity threshold) {
+
+	public void setSeverityFilter(final Severity threshold) {
 		m_minSeverity = threshold;
 	}
-	
-	public void logStoredFormat(LogEntry.Builder entry) {
+
+	public void logStoredFormat(final LogEntry.Builder entry) {
 		if (entry.getSeverity().compareTo(m_minSeverity) < 0) {
 			return;
 		}
 		if (!m_running) {
-			System.out.println("Log message during shutdown: " + LogEntryRenderer.renderLogEntry(entry.build(), null));
+			System.out.println("Log message during shutdown: "
+					+ LogEntryRenderer.renderLogEntry(entry.build(), null));
 			return;
 		}
 		final String format = entry.getMessageStr();
@@ -86,7 +86,8 @@ public class LogWriter {
 			index = m_formatStringIndices.size() + 1;
 			m_formatStringIndices.put(format, index);
 			if (m_formatStringIndices.size() % 100 == 0) {
-				System.out.println("You're logging a lot of unique messages. Please switch to using logRaw()");
+				System.out.println(
+						"You're logging a lot of unique messages. Please switch to using logRaw()");
 			}
 		} else {
 			entry.clearMessageStr();
@@ -95,7 +96,7 @@ public class LogWriter {
 		m_entriesQueue.add(entry.build());
 	}
 
-	public void log(LogEntry entry) {
+	public void log(final LogEntry entry) {
 		if (entry.getSeverity().compareTo(m_minSeverity) < 0) {
 			return;
 		}

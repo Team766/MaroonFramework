@@ -8,12 +8,12 @@ class BaseCTREMotorController {
 
 	protected static final int TIMEOUT_MS = 20;
 
-	protected static enum ExceptionTarget {
+	protected enum ExceptionTarget {
 		THROW,
 		LOG,
 	}
 
-	protected static void errorCodeToException(ExceptionTarget throwEx, ErrorCode err) {
+	protected static void errorCodeToException(final ExceptionTarget throwEx, final ErrorCode err) {
 		if (err == ErrorCode.OK) {
 			return;
 		}
@@ -23,6 +23,8 @@ class BaseCTREMotorController {
 				throw ex;
 			case LOG:
 				LoggerExceptionUtils.logException(ex);
+				break;
+			default:
 				break;
 		}
 	}

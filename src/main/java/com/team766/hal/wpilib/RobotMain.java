@@ -1,7 +1,7 @@
 package com.team766.hal.wpilib;
 
 import java.io.File;
-import java.nio.file.Files;
+//import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 import com.team766.config.ConfigFileReader;
@@ -18,20 +18,22 @@ public class RobotMain extends TimedRobot {
 	// this allows for the same code to be deployed to multiple physical robots, each with their own
 	// config file with CAN bus port mappings, etc, with the actual file used for a specific robot
 	// to be "selected" via this symlink to the actual file.
-	private final static String SELECTED_CONFIG_FILE = "/home/lvuser/selectedConfig.txt";
+	private static final String SELECTED_CONFIG_FILE = "/home/lvuser/selectedConfig.txt";
 
 	// if the symlink (above) is not present, back off to this file in the deploy directory.
-	private final static String DEFAULT_CONFIG_FILE = "configs/defaultRobotConfig.txt";
+	private static final String DEFAULT_CONFIG_FILE = "configs/defaultRobotConfig.txt";
 
-	// for backwards compatibility, back off to the previous config file location if the above are not
+	// for backwards compatibility, back off to the previous config file location if the above are
+	// not
 	// found in the deploy directory.
-	private final static String LEGACY_CONFIG_FILE = "/home/lvuser/robotConfig.txt";
+	private static final String LEGACY_CONFIG_FILE = "/home/lvuser/robotConfig.txt";
 
 	private GenericRobotMain robot;
 
-	public static void main(String... args) {
+	public static void main(final String... args) {
 		Supplier<RobotMain> supplier = new Supplier<RobotMain>() {
 			RobotMain instance;
+
 			@Override
 			public RobotMain get() {
 				if (instance == null) {
@@ -52,9 +54,9 @@ public class RobotMain extends TimedRobot {
 		super(0.005);
 	}
 
-	private static String checkForAndReturnPathToConfigFile(String file) {
+	private static String checkForAndReturnPathToConfigFile(final String file) {
 		Path configPath = Filesystem.getDeployDirectory().toPath().resolve(file);
-		File configFile = configPath.toFile();	
+		File configFile = configPath.toFile();
 		if (configFile.exists()) {
 			return configFile.getPath();
 		}
@@ -66,7 +68,7 @@ public class RobotMain extends TimedRobot {
 		try {
 			String filename = null;
 			filename = checkForAndReturnPathToConfigFile(SELECTED_CONFIG_FILE);
-			
+
 			if (filename == null) {
 				filename = checkForAndReturnPathToConfigFile(DEFAULT_CONFIG_FILE);
 			}
@@ -78,7 +80,7 @@ public class RobotMain extends TimedRobot {
 			ConfigFileReader.instance = new ConfigFileReader(filename);
 			RobotProvider.instance = new WPIRobotProvider();
 			robot = new GenericRobotMain();
-			
+
 			robot.robotInit();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -88,19 +90,19 @@ public class RobotMain extends TimedRobot {
 
 	@Override
 	public void disabledInit() {
-		try{
+		try {
 			robot.disabledInit();
-		}catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			LoggerExceptionUtils.logException(e);
 		}
 	}
-	
+
 	@Override
 	public void autonomousInit() {
-		try{
+		try {
 			robot.autonomousInit();
-		}catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			LoggerExceptionUtils.logException(e);
 		}
@@ -108,9 +110,9 @@ public class RobotMain extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
-		try{
+		try {
 			robot.teleopInit();
-		}catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			LoggerExceptionUtils.logException(e);
 		}
@@ -118,10 +120,10 @@ public class RobotMain extends TimedRobot {
 
 	@Override
 	public void disabledPeriodic() {
-		try{
+		try {
 			robot.disabledPeriodic();
 			Scheduler.getInstance().run();
-		}catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			LoggerExceptionUtils.logException(e);
 		}
@@ -129,10 +131,10 @@ public class RobotMain extends TimedRobot {
 
 	@Override
 	public void autonomousPeriodic() {
-		try{
+		try {
 			robot.autonomousPeriodic();
 			Scheduler.getInstance().run();
-		}catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			LoggerExceptionUtils.logException(e);
 		}
@@ -140,10 +142,10 @@ public class RobotMain extends TimedRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		try{
+		try {
 			robot.teleopPeriodic();
 			Scheduler.getInstance().run();
-		}catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			LoggerExceptionUtils.logException(e);
 		}

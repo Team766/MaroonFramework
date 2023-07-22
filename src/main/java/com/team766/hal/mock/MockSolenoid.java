@@ -2,15 +2,15 @@ package com.team766.hal.mock;
 
 import com.team766.hal.SolenoidController;
 
-public class MockSolenoid implements SolenoidController{
+public class MockSolenoid implements SolenoidController {
 
 	private boolean pist;
-	
-	public MockSolenoid(int port){
+
+	public MockSolenoid(final int port) {
 		pist = false;
 	}
-	
-	public void set(boolean on) {
+
+	public void set(final boolean on) {
 		pist = on;
 	}
 

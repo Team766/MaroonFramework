@@ -3,7 +3,7 @@ package com.team766.hal.wpilib;
 import com.team766.hal.GyroReader;
 
 public class AnalogGyro extends edu.wpi.first.wpilibj.AnalogGyro implements GyroReader {
-	public AnalogGyro(int channel) {
+	public AnalogGyro(final int channel) {
 		super(channel);
 	}
 

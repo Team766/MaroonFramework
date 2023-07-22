@@ -16,21 +16,21 @@ public class CameraInterface implements com.team766.hal.CameraInterface {
 
 	@Override
 	public void startAutomaticCapture() {
-		try{
+		try {
 			CameraServer.startAutomaticCapture(VideoSource.enumerateSources()[0]);
-		} catch(Exception e){
+		} catch (Exception e) {
 			Logger.get(Category.CAMERA).logRaw(Severity.ERROR, e.toString());
 		}
 	}
 
 	@Override
-	public void getFrame(Mat img) {
+	public void getFrame(final Mat img) {
 		CameraServer.getVideo().grabFrame(img);
 	}
 
 	@Override
-	public void putFrame(Mat img){
-		if(vidSource == null){
+	public void putFrame(final Mat img) {
+		if (vidSource == null) {
 			vidSource = CameraServer.putVideo("VisionTracking", img.width(), img.height());
 		}
 

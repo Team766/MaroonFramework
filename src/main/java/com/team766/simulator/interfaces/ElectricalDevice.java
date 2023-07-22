@@ -1,27 +1,29 @@
 package com.team766.simulator.interfaces;
 
 public interface ElectricalDevice {
-	public class Input {
-		public Input(double voltage) {
-			this.voltage = voltage;
+	class Input {
+		public Input(final double voltageParam) {
+			this.voltage = voltageParam;
 		}
-		public Input(Input other) {
+
+		public Input(final Input other) {
 			voltage = other.voltage;
 		}
-		
+
 		public final double voltage;
 	}
-	
-	public class Output {
-		public Output(double current) {
-			this.current = current;
+
+	class Output {
+		public Output(final double currentParam) {
+			this.current = currentParam;
 		}
-		public Output(Output other) {
+
+		public Output(final Output other) {
 			current = other.current;
 		}
-		
+
 		public final double current;
 	}
-	
-	public Output step(Input input);
+
+	Output step(Input input);
 }

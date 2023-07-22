@@ -16,54 +16,55 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
 	private WPI_TalonSRX m_device;
 	private double m_feedForward = 0.0;
 
-	public CANTalonMotorController(int deviceNumber) {
+	public CANTalonMotorController(final int deviceNumber) {
 		m_device = new WPI_TalonSRX(deviceNumber);
 	}
 
 	@Override
-	public void set(ControlMode mode, double value) {
+	public void set(final ControlMode mode, final double value) {
 		com.ctre.phoenix.motorcontrol.ControlMode ctre_mode = null;
 		boolean useFourTermSet = true;
 		switch (mode) {
-		case PercentOutput:
-			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput;
-			useFourTermSet = false;
-			break;
-		case Position:
-			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Position;
-			break;
-		case Velocity:
-			// Sensor velocity is measured in units per 100ms.
-			value /= 10.0;
-			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Velocity;
-			break;
-		case Current:
-			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Current;
-			break;
-		case Follower:
-			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Follower;
-			useFourTermSet = false;
-			break;
-		case MotionProfile:
-			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfile;
-			break;
-		case MotionMagic:
-			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionMagic;
-			break;
-		case MotionProfileArc:
-			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfileArc;
-			break;
-		case Voltage:
-			m_device.setVoltage(value);
-			return;
-		case Disabled:
-			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
-			useFourTermSet = false;
-			break;
+			case PercentOutput:
+				ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.PercentOutput;
+				useFourTermSet = false;
+				break;
+			case Position:
+				ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Position;
+				break;
+			case Velocity:
+				// Sensor velocity is measured in units per 100ms.
+				value /= 10.0;
+				ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Velocity;
+				break;
+			case Current:
+				ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Current;
+				break;
+			case Follower:
+				ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Follower;
+				useFourTermSet = false;
+				break;
+			case MotionProfile:
+				ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfile;
+				break;
+			case MotionMagic:
+				ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionMagic;
+				break;
+			case MotionProfileArc:
+				ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.MotionProfileArc;
+				break;
+			case Voltage:
+				m_device.setVoltage(value);
+				return;
+			case Disabled:
+				ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
+				useFourTermSet = false;
+				break;
+			default:
+				break;
 		}
 		if (ctre_mode == null) {
-			Logger.get(Category.HAL).logRaw(
-					Severity.ERROR,
+			Logger.get(Category.HAL).logRaw(Severity.ERROR,
 					"CAN ControlMode is not translatable: " + mode);
 			ctre_mode = com.ctre.phoenix.motorcontrol.ControlMode.Disabled;
 		}
@@ -89,72 +90,78 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
 		// Sensor velocity is returned in units per 100ms.
 		return m_device.getSelectedSensorVelocity(0) * 10.0;
 	}
-	
+
 	@Override
-	public void setSensorPosition(double position){
-		errorCodeToException(ExceptionTarget.THROW, m_device.setSelectedSensorPosition(position, 0, 0));
+	public void setSensorPosition(final double position) {
+		errorCodeToException(ExceptionTarget.THROW,
+				m_device.setSelectedSensorPosition(position, 0, 0));
 	}
 
 	@Override
-	public void follow(MotorController leader) {
+	public void follow(final MotorController leader) {
 		try {
-			m_device.follow((IMotorController)leader);
+			m_device.follow((IMotorController) leader);
 		} catch (ClassCastException ex) {
-			LoggerExceptionUtils.logException(new IllegalArgumentException("Talon can only follow another CTRE motor controller", ex));
+			LoggerExceptionUtils.logException(new IllegalArgumentException(
+					"Talon can only follow another CTRE motor controller", ex));
 		}
 	}
 
 	@Override
-	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
-		errorCodeToException(ExceptionTarget.LOG, m_device.configOpenloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
+	public void setOpenLoopRamp(final double secondsFromNeutralToFull) {
+		errorCodeToException(ExceptionTarget.LOG,
+				m_device.configOpenloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
 	}
 
 	@Override
-	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
-		errorCodeToException(ExceptionTarget.LOG, m_device.configClosedloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
+	public void setClosedLoopRamp(final double secondsFromNeutralToFull) {
+		errorCodeToException(ExceptionTarget.LOG,
+				m_device.configClosedloopRamp(secondsFromNeutralToFull, TIMEOUT_MS));
 	}
 
 	@Override
-	public void setFF(double value) {
+	public void setFF(final double value) {
 		errorCodeToException(ExceptionTarget.LOG, m_device.config_kF(0, value, TIMEOUT_MS));
 	}
 
 	@Override
-	public void setP(double value) {
+	public void setP(final double value) {
 		errorCodeToException(ExceptionTarget.LOG, m_device.config_kP(0, value));
 	}
 
 	@Override
-	public void setI(double value) {
+	public void setI(final double value) {
 		errorCodeToException(ExceptionTarget.LOG, m_device.config_kI(0, value));
 	}
 
 	@Override
-	public void setD(double value) {
+	public void setD(final double value) {
 		errorCodeToException(ExceptionTarget.LOG, m_device.config_kD(0, value));
 	}
 
 	@Override
-	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
-		errorCodeToException(ExceptionTarget.LOG, m_device.configSelectedFeedbackSensor(feedbackDevice));
+	public void setSelectedFeedbackSensor(final FeedbackDevice feedbackDevice) {
+		errorCodeToException(ExceptionTarget.LOG,
+				m_device.configSelectedFeedbackSensor(feedbackDevice));
 	}
 
 	@Override
-	public void setSensorInverted(boolean inverted) {
+	public void setSensorInverted(final boolean inverted) {
 		m_device.setSensorPhase(inverted);
 	}
 
 	@Override
-	public void setOutputRange(double minOutput, double maxOutput) {
+	public void setOutputRange(final double minOutput, final double maxOutput) {
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputReverse(minOutput));
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakOutputForward(maxOutput));
 	}
 
 	@Override
-	public void setCurrentLimit(double ampsLimit) {
+	public void setCurrentLimit(final double ampsLimit) {
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakCurrentLimit(0));
 		errorCodeToException(ExceptionTarget.LOG, m_device.configPeakCurrentDuration(10));
-		errorCodeToException(ExceptionTarget.LOG, m_device.configContinuousCurrentLimit((int)ampsLimit));
+		errorCodeToException(ExceptionTarget.LOG,
+				m_device.configContinuousCurrentLimit((int) ampsLimit));
 		m_device.enableCurrentLimit(true);
 	}
 
@@ -169,12 +176,12 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
 	}
 
 	@Override
-	public void set(double power) {
+	public void set(final double power) {
 		m_device.set(power);
 	}
 
 	@Override
-	public void setInverted(boolean isInverted) {
+	public void setInverted(final boolean isInverted) {
 		m_device.setInverted(isInverted);
 	}
 
@@ -184,8 +191,8 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
 	}
 
 	@Override
-	public void setNeutralMode(NeutralMode neutralMode) {
+	public void setNeutralMode(final NeutralMode neutralMode) {
 		m_device.setNeutralMode(neutralMode);
 	}
-	
+
 }

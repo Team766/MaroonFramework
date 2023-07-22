@@ -16,30 +16,30 @@ public class Simulator implements Runnable {
 	private PneumaticsSystem pneumaticsSystem = new PneumaticsSystem();
 	private WestCoastDrive drive = new WestCoastDrive(electricalSystem);
 	private AirCompressor compressor = new AirCompressor();
-	
+
 	private double time;
 	private ArrayList<Double[]> metrics = new ArrayList<Double[]>();
 	private ArrayList<Double[]> trajectory = new ArrayList<Double[]>();
-	
+
 	public Simulator() {
 		electricalSystem.addDevice(compressor);
 		pneumaticsSystem.addDevice(compressor, 120 * PneumaticsSystem.PSI_TO_PASCALS);
 		pneumaticsSystem.addDevice(new AirReservoir(0.000574), 120 * PneumaticsSystem.PSI_TO_PASCALS); // 574 mL
 		pneumaticsSystem.addDevice(new AirReservoir(0.000574), 120 * PneumaticsSystem.PSI_TO_PASCALS); // 574 mL
 	}
-	
+
 	public void step() {
 		time += Parameters.TIME_STEP;
 		ProgramInterface.simulationTime = time;
-		
+
 		electricalSystem.step();
 		pneumaticsSystem.step();
 		drive.step();
-		
+
 		if (ProgramInterface.program != null) {
 			ProgramInterface.program.step();
 		}
-		
+
 		metrics.add(new Double[] {
 				time,
 				drive.getPosition().getX(),
@@ -58,7 +58,7 @@ public class Simulator implements Runnable {
 				drive.getLinearVelocity().getY(),
 			});
 	}
-	
+
 	public void run() {
 		metrics.clear();
 		time = 0.0;

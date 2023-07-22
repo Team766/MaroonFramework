@@ -7,9 +7,9 @@ public class MotorControllerWithSensorScale implements MotorController {
 	private MotorController delegate;
 	private double scale;
 
-	public MotorControllerWithSensorScale(MotorController delegate, double scale) {
-		this.delegate = delegate;
-		this.scale = scale;
+	public MotorControllerWithSensorScale(final MotorController delegateParam, final double scaleParam) {
+		this.delegate = delegateParam;
+		this.scale = scaleParam;
 	}
 
 	@Override
@@ -23,46 +23,50 @@ public class MotorControllerWithSensorScale implements MotorController {
 	}
 
 	@Override
-	public void set(ControlMode mode, double value) {
+	public void set(final ControlMode mode, final double value) {
 		switch (mode) {
-		case PercentOutput:
-			delegate.set(mode, value);
-			return;
-		case Position:
-			delegate.set(mode, value / scale);
-			return;
-		case Velocity:
-			delegate.set(mode, value / scale);
-			return;
-		case Current:
-			delegate.set(mode, value);
-			return;
-		case Voltage:
-			delegate.set(mode, value);
-		case Follower:
-			delegate.set(mode, value);
-			return;
-		case MotionProfile:
-			// TODO: What is value here? This assumes its a target position.
-			delegate.set(mode, value / scale);
-			return;
-		case MotionMagic:
-			// TODO: What is value here? This assumes its a target position.
-			delegate.set(mode, value / scale);
-			return;
-		case MotionProfileArc:
-			// TODO: What is value here? This assumes its a target position.
-			delegate.set(mode, value / scale);
-			return;
-		case Disabled:
-			delegate.set(mode, value);
-			return;
+			case PercentOutput:
+				delegate.set(mode, value);
+				return;
+			case Position:
+				delegate.set(mode, value / scale);
+				return;
+			case Velocity:
+				delegate.set(mode, value / scale);
+				return;
+			case Current:
+				delegate.set(mode, value);
+				return;
+			case Voltage:
+				delegate.set(mode, value);
+				return;
+			case Follower:
+				delegate.set(mode, value);
+				return;
+			case MotionProfile:
+				// TODO: What is value here? This assumes its a target position.
+				delegate.set(mode, value / scale);
+				return;
+			case MotionMagic:
+				// TODO: What is value here? This assumes its a target position.
+				delegate.set(mode, value / scale);
+				return;
+			case MotionProfileArc:
+				// TODO: What is value here? This assumes its a target position.
+				delegate.set(mode, value / scale);
+				return;
+			case Disabled:
+				delegate.set(mode, value);
+				return;
+			default:
+				break;
 		}
-		throw new UnsupportedOperationException("Unimplemented control mode in MotorControllerWithSensorScale");
+		throw new UnsupportedOperationException(
+				"Unimplemented control mode in MotorControllerWithSensorScale");
 	}
 
 	@Override
-	public void setInverted(boolean isInverted) {
+	public void setInverted(final boolean isInverted) {
 		delegate.setInverted(isInverted);
 	}
 
@@ -77,57 +81,57 @@ public class MotorControllerWithSensorScale implements MotorController {
 	}
 
 	@Override
-	public void setSensorPosition(double position) {
+	public void setSensorPosition(final double position) {
 		delegate.setSensorPosition(position / scale);
 	}
 
 	@Override
-	public void follow(MotorController leader) {
+	public void follow(final MotorController leader) {
 		delegate.follow(leader);
 	}
 
 	@Override
-	public void setNeutralMode(NeutralMode neutralMode) {
+	public void setNeutralMode(final NeutralMode neutralMode) {
 		delegate.setNeutralMode(neutralMode);
 	}
 
 	@Override
-	public void setP(double value) {
+	public void setP(final double value) {
 		delegate.setP(value * scale);
 	}
 
 	@Override
-	public void setI(double value) {
+	public void setI(final double value) {
 		delegate.setI(value * scale);
 	}
 
 	@Override
-	public void setD(double value) {
+	public void setD(final double value) {
 		delegate.setD(value * scale);
 	}
 
 	@Override
-	public void setFF(double value) {
+	public void setFF(final double value) {
 		delegate.setFF(value * scale);
 	}
 
 	@Override
-	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
+	public void setSelectedFeedbackSensor(final FeedbackDevice feedbackDevice) {
 		delegate.setSelectedFeedbackSensor(feedbackDevice);
 	}
 
 	@Override
-	public void setSensorInverted(boolean inverted) {
+	public void setSensorInverted(final boolean inverted) {
 		delegate.setSensorInverted(inverted);
 	}
 
 	@Override
-	public void setOutputRange(double minOutput, double maxOutput) {
+	public void setOutputRange(final double minOutput, final double maxOutput) {
 		delegate.setOutputRange(minOutput, maxOutput);
 	}
-	
+
 	@Override
-	public void setCurrentLimit(double ampsLimit) {
+	public void setCurrentLimit(final double ampsLimit) {
 		delegate.setCurrentLimit(ampsLimit);
 	}
 
@@ -137,12 +141,12 @@ public class MotorControllerWithSensorScale implements MotorController {
 	}
 
 	@Override
-	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
+	public void setOpenLoopRamp(final double secondsFromNeutralToFull) {
 		delegate.setOpenLoopRamp(secondsFromNeutralToFull);
 	}
 
 	@Override
-	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
+	public void setClosedLoopRamp(final double secondsFromNeutralToFull) {
 		delegate.setClosedLoopRamp(secondsFromNeutralToFull);
 	}
 
@@ -152,7 +156,7 @@ public class MotorControllerWithSensorScale implements MotorController {
 	}
 
 	@Override
-	public void set(double power) {
+	public void set(final double power) {
 		delegate.set(power);
 	}
 }

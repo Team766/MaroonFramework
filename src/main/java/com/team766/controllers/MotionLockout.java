@@ -13,7 +13,7 @@ public class MotionLockout {
 	private ValueProvider<Double> m_maxPosition;
 	private ValueProvider<Double> m_minCommand;
 	private ValueProvider<Double> m_maxCommand;
-	
+
 	public static MotionLockout loadFromConfig(String configPrefix) {
 		if (!configPrefix.endsWith(".")) {
 			configPrefix += ".";
@@ -24,26 +24,25 @@ public class MotionLockout {
 				ConfigFileReader.getInstance().getDouble(configPrefix + "minCommand"),
 				ConfigFileReader.getInstance().getDouble(configPrefix + "maxCommand"));
 	}
-	
-	public MotionLockout(double minPosition, double maxPosition, double minCommand, double maxCommand) {
+
+	public MotionLockout(final double minPosition, final double maxPosition,
+			final double minCommand, final double maxCommand) {
 		m_minPosition = new SetValueProvider<Double>(minPosition);
 		m_maxPosition = new SetValueProvider<Double>(maxPosition);
 		m_minCommand = new SetValueProvider<Double>(minCommand);
 		m_maxCommand = new SetValueProvider<Double>(maxCommand);
 	}
-	
-	public MotionLockout(
-			ValueProvider<Double> minPosition,
-			ValueProvider<Double> maxPosition,
-			ValueProvider<Double> minCommand,
-			ValueProvider<Double> maxCommand) {
+
+	public MotionLockout(final ValueProvider<Double> minPosition,
+			final ValueProvider<Double> maxPosition, final ValueProvider<Double> minCommand,
+			final ValueProvider<Double> maxCommand) {
 		m_minPosition = minPosition;
 		m_maxPosition = maxPosition;
 		m_minCommand = minCommand;
 		m_maxCommand = maxCommand;
 	}
-	
-	public double filter(double inputCommand, double sensorPosition) {
+
+	public double filter(final double inputCommand, final double sensorPosition) {
 		if (sensorPosition >= m_minPosition.get() && sensorPosition <= m_maxPosition.get()) {
 			if (inputCommand < m_minCommand.get()) {
 				return m_minCommand.get();

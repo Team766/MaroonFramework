@@ -6,8 +6,8 @@ public class DriverInterface implements WebServer.Handler {
 
 	AutonomousSelector autonomousSelector;
 
-	public DriverInterface(AutonomousSelector autonomousSelector) {
-		this.autonomousSelector = autonomousSelector;
+	public DriverInterface(final AutonomousSelector autonomousSelectorParam) {
+		this.autonomousSelector = autonomousSelectorParam;
 	}
 
 	@Override
@@ -21,10 +21,10 @@ public class DriverInterface implements WebServer.Handler {
 	}
 
 	@Override
-	public String handle(Map<String, Object> params) {
+	public String handle(final Map<String, Object> params) {
 		return Dashboard.makeDashboardPage()
 			+ LogViewer.makeAllErrorsPage()
 			+ autonomousSelector.handle(params);
 	}
-	
+
 }

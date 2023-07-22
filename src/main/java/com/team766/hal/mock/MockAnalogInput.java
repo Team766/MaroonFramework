@@ -3,10 +3,10 @@ package com.team766.hal.mock;
 import com.team766.hal.AnalogInputReader;
 
 public class MockAnalogInput implements AnalogInputReader {
-	
+
 	private double sensor = 0.0;
-	
-	public void set(double value){
+
+	public void set(final double value){
 		sensor = value;
 	}
 

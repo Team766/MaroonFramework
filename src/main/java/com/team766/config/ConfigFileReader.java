@@ -17,31 +17,31 @@ import com.team766.logging.Severity;
 /**
  * Class for loading in config from the Config file.
  * Constants that need to be tuned / changed
- * 
+ *
  * Data is read from a file in JSON format
- * 
+ *
  * @author Brett Levenson
  */
 public class ConfigFileReader {
 	// this.getClass().getClassLoader().getResource(fileName).getPath()
-	
+
 	public static ConfigFileReader instance;
 
 	private static final String KEY_DELIMITER = ".";
-	
+
 	// This is incremented each time the config file is reloaded to ensure that ConfigValues use the most recent setting.
 	private int m_generation = 0;
-	
+
 	private String m_fileName;
 	private JSONObject m_values = new JSONObject();
-	
+
 	public static ConfigFileReader getInstance() {
 		return instance;
 	}
-	
-	public ConfigFileReader(String fileName) {
+
+	public ConfigFileReader(final String fileName) {
 		m_fileName = fileName;
-		
+
 		try {
 			reloadFromFile();
 		} catch (Exception e) {
@@ -50,14 +50,14 @@ public class ConfigFileReader {
 			LoggerExceptionUtils.logException(new IOException("Failed to load config file!", e));
 		}
 	}
-	
+
 	public void reloadFromFile() throws IOException {
 		System.out.println("Loading config file: " + m_fileName);
 		String jsonString = Files.readString(Paths.get(m_fileName));
 		reloadFromJson(jsonString);
 	}
 
-	public void reloadFromJson(String jsonString) {
+	public void reloadFromJson(final String jsonString) {
 		JSONObject newValues;
 		try (StringReader reader = new StringReader(jsonString)) {
 			newValues = new JSONObject(new JSONTokener(reader));
@@ -70,70 +70,69 @@ public class ConfigFileReader {
 			try {
 				param.parseJsonValue(rawValue);
 			} catch (Exception ex) {
-				throw new ConfigValueParseException("Could not parse config value for " + param.getKey(), ex);
+				throw new ConfigValueParseException(
+						"Could not parse config value for " + param.getKey(), ex);
 			}
 		}
 		m_values = newValues;
 		++m_generation;
 	}
-	
+
 	public int getGeneration() {
 		return m_generation;
 	}
-	
-	public boolean containsKey(String key) {
+
+	public boolean containsKey(final String key) {
 		return getRawValue(key) != null;
 	}
-	
-	public SettableValueProvider<Integer[]> getInts(String key) {
+
+	public SettableValueProvider<Integer[]> getInts(final String key) {
 		return new IntegerConfigMultiValue(key);
 	}
-	
-	public SettableValueProvider<Integer> getInt(String key) {
+
+	public SettableValueProvider<Integer> getInt(final String key) {
 		return new IntegerConfigValue(key);
 	}
-	
-	public SettableValueProvider<Double[]> getDoubles(String key) {
+
+	public SettableValueProvider<Double[]> getDoubles(final String key) {
 		return new DoubleConfigMultiValue(key);
 	}
-	
-	public SettableValueProvider<Double> getDouble(String key) {
+
+	public SettableValueProvider<Double> getDouble(final String key) {
 		return new DoubleConfigValue(key);
 	}
-	
-	public SettableValueProvider<Boolean> getBoolean(String key) {
+
+	public SettableValueProvider<Boolean> getBoolean(final String key) {
 		return new BooleanConfigValue(key);
 	}
-	
-	public SettableValueProvider<String> getString(String key) {
+
+	public SettableValueProvider<String> getString(final String key) {
 		return new StringConfigValue(key);
 	}
 
-	public <E extends Enum<E>> SettableValueProvider<E> getEnum(Class<E> enumClass, String key) {
+	public <E extends Enum<E>> SettableValueProvider<E> getEnum(final Class<E> enumClass,
+			final String key) {
 		return new EnumConfigValue<E>(enumClass, key);
 	}
 
-	public <E> void setValue(String key, E value) {
+	public <E> void setValue(final String key, final E value) {
 		String[] keyParts = splitKey(key);
 		JSONObject parentObj = getParent(m_values, keyParts);
-		parentObj.putOpt(
-			keyParts[keyParts.length - 1],
-			value == null ? JSONObject.NULL : value);
+		parentObj.putOpt(keyParts[keyParts.length - 1], value == null ? JSONObject.NULL : value);
 	}
 
-	Object getRawValue(String key) {
+	Object getRawValue(final String key) {
 		return getRawValue(m_values, key);
 	}
 
-	private static Object getRawValue(JSONObject obj, String key) {
+	private static Object getRawValue(final JSONObject obj, final String key) {
 		String[] keyParts = splitKey(key);
 		JSONObject parentObj = getParent(obj, keyParts);
 		var rawValue = parentObj.opt(keyParts[keyParts.length - 1]);
 		if (rawValue instanceof JSONObject) {
-			throw new IllegalArgumentException(
-				"The config file cannot store both a single config " + 
-				"setting and a group of config settings with the name " +
-				key + " Please pick a different name");
+			throw new IllegalArgumentException("The config file cannot store both a single config "
+					+ "setting and a group of config settings with the name " + key
+					+ " Please pick a different name");
 		}
 		if (rawValue == null) {
 			parentObj.put(keyParts[keyParts.length - 1], JSONObject.NULL);
@@ -144,21 +143,21 @@ public class ConfigFileReader {
 		return rawValue;
 	}
 
-	private static String[] splitKey(String key) {
+	private static String[] splitKey(final String key) {
 		return key.split(Pattern.quote(KEY_DELIMITER));
 	}
 
-	private static JSONObject getParent(JSONObject obj, String[] keyParts) {
+	private static JSONObject getParent(JSONObject obj, final String[] keyParts) {
 		for (int i = 0; i < keyParts.length - 1; ++i) {
 			JSONObject subObj;
 			try {
-				subObj = (JSONObject)obj.opt(keyParts[i]);
+				subObj = (JSONObject) obj.opt(keyParts[i]);
 			} catch (ClassCastException ex) {
 				throw new IllegalArgumentException(
-					"The config file cannot store both a single config " + 
-					"setting and a group of config settings with the name " +
-					String.join(KEY_DELIMITER, keyParts) +
-					" Please pick a different name for one of them.");
+						"The config file cannot store both a single config "
+								+ "setting and a group of config settings with the name "
+								+ String.join(KEY_DELIMITER, keyParts)
+								+ " Please pick a different name for one of them.");
 			}
 			if (subObj == null) {
 				subObj = new JSONObject();
@@ -172,9 +171,9 @@ public class ConfigFileReader {
 	public String getJsonString() {
 		return m_values.toString(2);
 	}
-	
-	public void saveFile(String jsonString) throws IOException {
-		try(FileWriter writer = new FileWriter(m_fileName)) {
+
+	public void saveFile(final String jsonString) throws IOException {
+		try (FileWriter writer = new FileWriter(m_fileName)) {
 			writer.write(jsonString);
 		}
 		Logger.get(Category.CONFIGURATION).logRaw(Severity.INFO, "Config file written to " + m_fileName);

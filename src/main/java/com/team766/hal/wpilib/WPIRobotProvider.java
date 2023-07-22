@@ -26,7 +26,7 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
-import com.team766.simulator.elements.AirCompressor;
+// import com.team766.simulator.elements.AirCompressor;
 import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -45,7 +45,7 @@ public class WPIRobotProvider extends RobotProvider {
 		private final AtomicBoolean m_keepAlive = new AtomicBoolean();
 		private final AtomicInteger m_dataCount = new AtomicInteger();
 
-		public DataRefreshRunnable() {
+		DataRefreshRunnable() {
 			m_keepAlive.set(true);
 		}
 
@@ -102,8 +102,8 @@ public class WPIRobotProvider extends RobotProvider {
 	private PneumaticsControlModule pcm = new PneumaticsControlModule();
 
 	@Override
-	public MotorController getMotor(int index, String configPrefix, MotorController.Type type,
-			ControlInputReader localSensor) {
+	public MotorController getMotor(final int index, final String configPrefix,
+			final MotorController.Type type, ControlInputReader localSensor) {
 		if (motors[type.ordinal()][index] != null) {
 			return motors[type.ordinal()][index];
 		}
@@ -132,6 +132,8 @@ public class WPIRobotProvider extends RobotProvider {
 				motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);
 				localSensor = null;
 				break;
+			default:
+				break;
 		}
 		if (motor == null) {
 			LoggerExceptionUtils
@@ -148,16 +150,16 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public EncoderReader getEncoder(int index1, int index2) {
-		if(encoders[index1] == null) {
+	public EncoderReader getEncoder(final int index1, final int index2) {
+		if (encoders[index1] == null) {
 			encoders[index1] = new Encoder(index1, index2);
 		}
 		return encoders[index1];
 	}
 
 	@Override
-	public SolenoidController getSolenoid(int index) {
-		if(solenoids[index] == null) {
+	public SolenoidController getSolenoid(final int index) {
+		if (solenoids[index] == null) {
 			solenoids[index] = new Solenoid(index);
 		}
 		return solenoids[index];
@@ -167,15 +169,15 @@ public class WPIRobotProvider extends RobotProvider {
 	// Gyro index values:
 	// -1 = Spartan Gyro
 	// 0+ = Analog Gyro on port index
-	public GyroReader getGyro(int index) {
+	public GyroReader getGyro(final int index) {
 		if (gyros[index + 2] == null) {
 			if (index < -2) {
 				Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR, "Invalid gyro port "
 						+ index + ". Must be -2, -1, or a non-negative integer");
 				return new MockGyro();
-			} else if(index == -2) {
+			} else if (index == -2) {
 				gyros[index + 2] = new NavXGyro(I2C.Port.kOnboard);
-			} else if(index == -1) {
+			} else if (index == -1) {
 				gyros[index + 2] = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 			} else {
 				gyros[index + 2] = new AnalogGyro(index);
@@ -185,14 +187,14 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public CameraReader getCamera(String id, String value) {
+	public CameraReader getCamera(final String id, final String value) {
 		System.err.println("Camera support not yet avaible");
 		return null;
 	}
 
 	@Override
-	public JoystickReader getJoystick(int index) {
-		if(joysticks[index] == null) {
+	public JoystickReader getJoystick(final int index) {
+		if (joysticks[index] == null) {
 			joysticks[index] = new Joystick(index);
 		}
 		return joysticks[index];
@@ -204,7 +206,7 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public DigitalInputReader getDigitalInput(int index) {
+	public DigitalInputReader getDigitalInput(final int index) {
 		if (digInputs[index] == null) {
 			digInputs[index] = new DigitalInput(index);
 		}
@@ -212,16 +214,16 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public AnalogInputReader getAnalogInput(int index){
-		if(angInputs[index] == null) {
+	public AnalogInputReader getAnalogInput(final int index) {
+		if (angInputs[index] == null) {
 			angInputs[index] = new AnalogInput(index);
 		}
 		return angInputs[index];
 	}
 
 	@Override
-	public RelayOutput getRelay(int index) {
-		if(relays[index] == null) {
+	public RelayOutput getRelay(final int index) {
+		if (relays[index] == null) {
 			relays[index] = new Relay(index);
 		}
 		return relays[index];

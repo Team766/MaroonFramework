@@ -12,7 +12,7 @@ public class RangeOfMotionMotorCommandBound {
 	private ValueProvider<Double> m_minPosition;
 	private ValueProvider<Double> m_maxPosition;
 	private ValueProvider<Boolean> m_sensorInverted;
-	
+
 	public static RangeOfMotionMotorCommandBound loadFromConfig(String configPrefix) {
 		if (!configPrefix.endsWith(".")) {
 			configPrefix += ".";
@@ -22,23 +22,23 @@ public class RangeOfMotionMotorCommandBound {
 				ConfigFileReader.getInstance().getDouble(configPrefix + "maxPosition"),
 				ConfigFileReader.getInstance().getBoolean(configPrefix + "sensorInverted"));
 	}
-	
-	public RangeOfMotionMotorCommandBound(double minPosition, double maxPosition, boolean sensorInverted) {
+
+	public RangeOfMotionMotorCommandBound(final double minPosition, final double maxPosition, final boolean sensorInverted) {
 		m_minPosition = new SetValueProvider<Double>(minPosition);
 		m_maxPosition = new SetValueProvider<Double>(maxPosition);
 		m_sensorInverted = new SetValueProvider<Boolean>(sensorInverted);
 	}
-	
+
 	public RangeOfMotionMotorCommandBound(
-			ValueProvider<Double> minPosition,
-			ValueProvider<Double> maxPosition,
-			ValueProvider<Boolean> sensorInverted) {
+			final ValueProvider<Double> minPosition,
+			final ValueProvider<Double> maxPosition,
+			final ValueProvider<Boolean> sensorInverted) {
 		m_minPosition = minPosition;
 		m_maxPosition = maxPosition;
 		m_sensorInverted = sensorInverted;
 	}
-	
-	public double filter(double inputCommand, double sensorPosition) {
+
+	public double filter(double inputCommand, final double sensorPosition) {
 		double normalizedCommand = inputCommand;
 		if (m_sensorInverted.get()) {
 			normalizedCommand *= -1;

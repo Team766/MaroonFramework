@@ -1,7 +1,7 @@
 package com.team766.logging;
 
 public class LogEntryRenderer {
-	public static String renderLogEntry(LogEntry entry, LogReader reader) {
+	public static String renderLogEntry(final LogEntry entry, final LogReader reader) {
 		String message = entry.hasMessageStr() ? entry.getMessageStr()
 				: reader.getFormatString(entry.getMessageIndex());
 		final int argCount = entry.getArgCount();

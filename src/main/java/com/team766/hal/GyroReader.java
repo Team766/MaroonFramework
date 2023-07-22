@@ -9,28 +9,26 @@ public interface GyroReader {
 	 * done when the robot is first turned on while it's sitting at rest before
 	 * the competition starts.
 	 */
-	public void calibrate();
+	void calibrate();
 
 	/**
-	 * Reset the gyro. Resets the gyro to a heading of zero. This can be used if
-	 * there is significant drift in the gyro and it needs to be recalibrated
-	 * after it has been running.
+	 * Reset the gyro. Resets the gyro to a heading of zero. This can be used if there is
+	 * significant drift in the gyro and it needs to be recalibrated after it has been running.
 	 */
-	public void reset();
+	void reset();
 
 	/**
 	 * Return the actual angle in degrees that the robot is currently facing.
 	 *
-	 * The angle is based on the current accumulator value corrected by the
-	 * oversampling rate, the gyro type and the A/D calibration values. The angle
-	 * is continuous, that is it will continue from 360 to 361 degrees. This
-	 * allows algorithms that wouldn't want to see a discontinuity in the gyro
-	 * output as it sweeps past from 360 to 0 on the second time around.
+	 * The angle is based on the current accumulator value corrected by the oversampling rate, the
+	 * gyro type and the A/D calibration values. The angle is continuous, that is it will continue
+	 * from 360 to 361 degrees. This allows algorithms that wouldn't want to see a discontinuity in
+	 * the gyro output as it sweeps past from 360 to 0 on the second time around.
 	 *
-	 * @return the current heading of the robot in degrees. This heading is based
-	 *         on integration of the returned rate from the gyro.
+	 * @return the current heading of the robot in degrees. This heading is based on integration of
+	 *         the returned rate from the gyro.
 	 */
-	public double getAngle();
+	double getAngle();
 
 	/**
 	 * Return the rate of rotation of the gyro
@@ -39,23 +37,23 @@ public interface GyroReader {
 	 *
 	 * @return the current rate in degrees per second
 	 */
-	public double getRate();
+	double getRate();
 
 	/**
-	 * Returns the current pitch value (in degrees, from -180 to 180) reported by the sensor.
-	 * This is the angle that the robot is tilted forward or backward.
-	 * Should return 0 degrees if the robot is sitting flat on the floor.
+	 * Returns the current pitch value (in degrees, from -180 to 180) reported by the sensor. This
+	 * is the angle that the robot is tilted forward or backward. Should return 0 degrees if the
+	 * robot is sitting flat on the floor.
 	 *
 	 * @return pitch angle (in degrees, -180 to 180)
 	 */
-	public double getPitch();
+	double getPitch();
 
 	/**
-	 * Returns the current roll value (in degrees, from -180 to 180) reported by the sensor.
-	 * This is the angle that the robot is tilted left or right.
-	 * Should return 0 degrees if the robot is sitting flat on the floor.
+	 * Returns the current roll value (in degrees, from -180 to 180) reported by the sensor. This is
+	 * the angle that the robot is tilted left or right. Should return 0 degrees if the robot is
+	 * sitting flat on the floor.
 	 *
 	 * @return roll angle (in degrees, -180 to 180)
 	 */
-	public double getRoll();
+	double getRoll();
 }

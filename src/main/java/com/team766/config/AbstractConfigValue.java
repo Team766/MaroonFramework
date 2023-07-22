@@ -14,9 +14,9 @@ public abstract class AbstractConfigValue<E> implements SettableValueProvider<E>
 	private E m_cachedValue;
 	private boolean m_cachedHasValue;
 	private int m_cachedGeneration = -1;
-	
+
 	private static ArrayList<AbstractConfigValue<?>> c_accessedValues = new ArrayList<AbstractConfigValue<?>>();
-	
+
 	static Collection<AbstractConfigValue<?>> accessedValues() {
 		return Collections.unmodifiableCollection(c_accessedValues);
 	}
@@ -24,15 +24,15 @@ public abstract class AbstractConfigValue<E> implements SettableValueProvider<E>
 	static void resetStatics() {
 		c_accessedValues.clear();
 	}
-	
-	protected AbstractConfigValue(String key) {
+
+	protected AbstractConfigValue(final String key) {
 		m_key = key;
 		c_accessedValues.add(this);
 		// Querying for this config setting's key will add a placeholder entry
 		// in the config file if this setting does not already exist there.
 		ConfigFileReader.instance.getRawValue(m_key);
 	}
-	
+
 	private void sync() {
 		if (ConfigFileReader.instance.getGeneration() != m_cachedGeneration) {
 			m_cachedGeneration = ConfigFileReader.instance.getGeneration();
@@ -42,7 +42,9 @@ public abstract class AbstractConfigValue<E> implements SettableValueProvider<E>
 				try {
 					m_cachedValue = parseJsonValue(rawValue);
 				} catch (Exception ex) {
-					Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR, "Failed to parse " + m_key + " from the config file: " + LoggerExceptionUtils.exceptionToString(ex));
+					Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR,
+							"Failed to parse " + m_key + " from the config file: "
+									+ LoggerExceptionUtils.exceptionToString(ex));
 					m_cachedValue = null;
 					m_cachedHasValue = false;
 				}
@@ -53,13 +55,13 @@ public abstract class AbstractConfigValue<E> implements SettableValueProvider<E>
 	public String getKey() {
 		return m_key;
 	}
-	
+
 	@Override
 	public boolean hasValue() {
 		sync();
 		return m_cachedHasValue;
 	}
-	
+
 	@Override
 	public E get() {
 		sync();
@@ -69,16 +71,16 @@ public abstract class AbstractConfigValue<E> implements SettableValueProvider<E>
 		return m_cachedValue;
 	}
 
-	public void set(E value) {
+	public void set(final E value) {
 		ConfigFileReader.instance.setValue(m_key, value);
 	}
 
 	public void clear() {
 		ConfigFileReader.instance.setValue(m_key, null);
 	}
-	
+
 	protected abstract E parseJsonValue(Object configValue);
-	
+
 	@Override
 	public String toString() {
 		sync();

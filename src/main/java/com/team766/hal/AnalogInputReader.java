@@ -7,17 +7,17 @@ public interface AnalogInputReader extends ControlInputReader {
 	 *
 	 * @return A scaled sample straight from this channel.
 	 */
-	public double getVoltage();
+	double getVoltage();
 
 	// Implementation for ControlInputReader interface
 	@Override
-	public default double getPosition() {
+	default double getPosition() {
 		return getVoltage();
 	}
 
 	// Implementation for ControlInputReader interface
 	@Override
-	public default double getRate() {
+	default double getRate() {
 		throw new UnsupportedOperationException("Analog input sensor does not have support for velocity");
 	}
 }

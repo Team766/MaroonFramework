@@ -4,7 +4,7 @@ import com.team766.framework.Scheduler;
 import com.team766.framework.AutonomousMode;
 import com.team766.framework.LaunchedContext;
 import com.team766.framework.Procedure;
-import com.team766.hal.GenericRobotMain;
+// import com.team766.hal.GenericRobotMain;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.Severity;
@@ -23,7 +23,7 @@ import com.team766.web.WebServer;
 
 public final class GenericRobotMain {
 	private OI m_oi;
-	
+
 	private WebServer m_webServer;
 	private AutonomousSelector m_autonSelector;
 	private AutonomousMode m_autonMode = null;
@@ -49,10 +49,10 @@ public final class GenericRobotMain {
 
 	public void robotInit() {
 		Robot.robotInit();
-		
+
 		m_oi = new OI();
 	}
-	
+
 	public void disabledInit() {
 		m_disabledModeStartTime = RobotProvider.instance.getClock().getTime();
 	}
@@ -82,7 +82,7 @@ public final class GenericRobotMain {
 		}
 	}
 
-	public void resetAutonomousMode(String reason) {
+	public void resetAutonomousMode(final String reason) {
 		if (m_autonomous != null) {
 			m_autonomous.stop();
 			m_autonomous = null;
@@ -91,7 +91,7 @@ public final class GenericRobotMain {
 				Severity.INFO, "Resetting autonomus procedure from " + reason);
 		}
 	}
-	
+
 	public void autonomousInit() {
 		if (m_oiContext != null) {
 			m_oiContext.stop();
@@ -102,7 +102,7 @@ public final class GenericRobotMain {
 			Logger.get(Category.AUTONOMOUS).logRaw(Severity.INFO, "Continuing previous autonomus procedure " + m_autonomous.getContextName());
 		} else if (m_autonSelector.getSelectedAutonMode() == null) {
 			Logger.get(Category.AUTONOMOUS).logRaw(Severity.WARNING, "No autonomous mode selected");
-		} 
+		}
 	}
 
 	public void autonomousPeriodic() {
@@ -114,14 +114,14 @@ public final class GenericRobotMain {
 			Logger.get(Category.AUTONOMOUS).logRaw(Severity.INFO, "Starting new autonomus procedure " + autonProcedure.getName());
 		}
 	}
-	
+
 	public void teleopInit() {
 		if (m_autonomous != null) {
 			m_autonomous.stop();
 			m_autonomous = null;
 			m_autonMode = null;
 		}
-		
+
 		if (m_oiContext == null) {
 			m_oiContext = Scheduler.getInstance().startAsync(m_oi);
 		}

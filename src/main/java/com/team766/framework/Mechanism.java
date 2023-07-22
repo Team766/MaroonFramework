@@ -8,7 +8,7 @@ import com.team766.logging.Severity;
 public abstract class Mechanism extends LoggingBase {
 	private Context m_owningContext = null;
 	private Thread m_runningPeriodic = null;
-	
+
 	public Mechanism() {
 		loggerCategory = Category.MECHANISMS;
 
@@ -18,8 +18,7 @@ public abstract class Mechanism extends LoggingBase {
 				try {
 					Mechanism.this.m_runningPeriodic = Thread.currentThread();
 					Mechanism.this.run();
-				}
-				finally {
+				} finally {
 					Mechanism.this.m_runningPeriodic = null;
 				}
 			}
@@ -38,7 +37,7 @@ public abstract class Mechanism extends LoggingBase {
 	public String getName() {
 		return this.getClass().getName();
 	}
-	
+
 	protected void checkContextOwnership() {
 		if (Context.currentContext() != m_owningContext && m_runningPeriodic == null) {
 			String message = getName() + " tried to be used by " + Context.currentContext().getContextName();
@@ -51,19 +50,26 @@ public abstract class Mechanism extends LoggingBase {
 			throw new IllegalStateException(message);
 		}
 	}
-	
-	void takeOwnership(Context context, Context parentContext) {
+
+	void takeOwnership(final Context context, final Context parentContext) {
 		if (m_owningContext != null && m_owningContext == parentContext) {
-			Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, context.getContextName() + " is inheriting ownership of " + getName() + " from " + parentContext.getContextName());
+			Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO,
+					context.getContextName() + " is inheriting ownership of " + getName() + " from "
+							+ parentContext.getContextName());
 		} else {
-			Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, context.getContextName() + " is taking ownership of " + getName());
+			Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO,
+					context.getContextName() + " is taking ownership of " + getName());
 			while (m_owningContext != null && m_owningContext != context) {
-				Logger.get(Category.FRAMEWORK).logRaw(Severity.WARNING, "Stopping previous owner of " + getName() + ": " + m_owningContext.getContextName());
+				Logger.get(Category.FRAMEWORK).logRaw(Severity.WARNING,
+						"Stopping previous owner of " + getName() + ": "
+								+ m_owningContext.getContextName());
 				m_owningContext.stop();
 				var stoppedContext = m_owningContext;
 				context.yield();
 				if (m_owningContext == stoppedContext) {
-					Logger.get(Category.FRAMEWORK).logRaw(Severity.ERROR, "Previous owner of " + getName() + ", " + m_owningContext.getContextName() + " did not release ownership when requested. Release will be forced.");
+					Logger.get(Category.FRAMEWORK).logRaw(Severity.ERROR, "Previous owner of "
+							+ getName() + ", " + m_owningContext.getContextName()
+							+ " did not release ownership when requested. Release will be forced.");
 					m_owningContext.releaseOwnership(this);
 					break;
 				}
@@ -72,7 +78,7 @@ public abstract class Mechanism extends LoggingBase {
 		m_owningContext = context;
 	}
 
-	void releaseOwnership(Context context) {
+	void releaseOwnership(final Context context) {
 		if (m_owningContext != context) {
 			LoggerExceptionUtils.logException(new Exception(context.getContextName() + " tried to release ownership of " + getName() + " but it doesn't own it"));
 			return;
@@ -81,5 +87,6 @@ public abstract class Mechanism extends LoggingBase {
 		m_owningContext = null;
 	}
 
-	public void run () {}
+	public void run() {
+	}
 }

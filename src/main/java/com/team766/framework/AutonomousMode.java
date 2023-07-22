@@ -6,7 +6,7 @@ public class AutonomousMode {
 	private final Supplier<Procedure> m_constructor;
 	private final String m_name;
 
-	public AutonomousMode(String name, Supplier<Procedure> constructor) {
+	public AutonomousMode(final String name, final Supplier<Procedure> constructor) {
 		m_constructor = constructor;
 		m_name = name;
 	}

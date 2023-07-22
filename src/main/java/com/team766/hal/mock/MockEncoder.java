@@ -2,18 +2,18 @@ package com.team766.hal.mock;
 
 import com.team766.hal.EncoderReader;
 
-public class MockEncoder implements EncoderReader{
-	
+public class MockEncoder implements EncoderReader {
+
 	private double distance = 0;
 	private double rate = 0;
 	private double distancePerPulse = 1;
-	
-	public MockEncoder(int a, int b){
+
+	public MockEncoder(final int a, final int b) {
 	}
-	
+
 	@Override
 	public int get() {
-		return (int)Math.round(distance / distancePerPulse);
+		return (int) Math.round(distance / distancePerPulse);
 	}
 
 	@Override
@@ -41,17 +41,17 @@ public class MockEncoder implements EncoderReader{
 		return this.rate;
 	}
 
-	public void setDistance(double distance) {
-		this.distance = distance;
+	public void setDistance(final double distanceParam) {
+		this.distance = distanceParam;
 	}
-	
-	public void setRate(double rate){
-		this.rate = rate;
+
+	public void setRate(final double rateParam) {
+		this.rate = rateParam;
 	}
 
 	@Override
-	public void setDistancePerPulse(double distancePerPulse) {
-		this.distancePerPulse = distancePerPulse;
+	public void setDistancePerPulse(final double distancePerPulseParam) {
+		this.distancePerPulse = distancePerPulseParam;
 	}
 
 }

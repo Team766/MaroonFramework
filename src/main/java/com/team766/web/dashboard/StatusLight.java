@@ -7,30 +7,30 @@ public class StatusLight extends Widget {
 	private int m_height = 150;
 	private String m_style = "";
 
-	public StatusLight(String name) {
+	public StatusLight(final String name) {
 		this(name, DEFAULT_SORT_ORDER);
 	}
 
-	public StatusLight(String name, int sortOrder) {
+	public StatusLight(final String name, final int sortOrder) {
 		super(sortOrder);
 
 		m_name = name;
 	}
 
-	public void setName(String name) {
+	public void setName(final String name) {
 		m_name = name;
 	}
 
-	public void setSize(int width, int height) {
+	public void setSize(final int width, final int height) {
 		m_width = width;
 		m_height = height;
 	}
 
-	public void setColor(String color) {
+	public void setColor(final String color) {
 		m_color = color;
 	}
 
-	public void setStyle(String style) {
+	public void setStyle(final String style) {
 		m_style = style;
 	}
 

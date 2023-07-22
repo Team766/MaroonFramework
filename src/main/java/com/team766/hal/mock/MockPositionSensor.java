@@ -23,16 +23,16 @@ public class MockPositionSensor implements PositionReader {
 		return heading;
 	}
 
-	public void setX(double x) {
-		this.x = x;
+	public void setX(final double xParam) {
+		this.x = xParam;
 	}
 
-	public void setY(double y) {
-		this.y = y;
+	public void setY(final double yParam) {
+		this.y = yParam;
 	}
 
-	public void setHeading(double heading) {
-		this.heading = heading;
+	public void setHeading(final double headingParam) {
+		this.heading = headingParam;
 	}
 
 }

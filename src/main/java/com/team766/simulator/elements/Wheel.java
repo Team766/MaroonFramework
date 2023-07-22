@@ -12,21 +12,21 @@ public class Wheel implements MechanicalDevice {
 	// TODO: Add transverse friction
 	// TODO: Add traction limit/wheel slip (static vs kinetic friction)
 	// TODO: Add rotational inertia
-	
+
 	private static final Vector3D FORWARD = new Vector3D(-1, 0, 0);
-	
+
 	// Diameter of the wheel in meters
 	private final double diameter;
-	
+
 	private MechanicalAngularDevice upstream;
-	
-	public Wheel(double diameter, MechanicalAngularDevice upstream) {
-		this.diameter = diameter;
-		this.upstream = upstream;
+
+	public Wheel(final double diameterParam, final MechanicalAngularDevice upstreamParam) {
+		this.diameter = diameterParam;
+		this.upstream = upstreamParam;
 	}
 
 	@Override
-	public MechanicalDevice.Output step(MechanicalDevice.Input input) {
+	public MechanicalDevice.Output step(final MechanicalDevice.Input input) {
 		MechanicalAngularDevice.Input upstreamInput =
 			new MechanicalAngularDevice.Input(FORWARD.dotProduct(input.velocity) * 2. / diameter);
 		MechanicalAngularDevice.Output upstreamOutput = upstream.step(upstreamInput);

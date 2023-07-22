@@ -20,7 +20,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 	private Function<Boolean, REVLibError> sensorInvertedSetter;
 	private boolean sensorInverted = false;
 
-	public CANSparkMaxMotorController(int deviceId) {
+	public CANSparkMaxMotorController(final int deviceId) {
 		super(deviceId, MotorType.kBrushless);
 
 		// Set default feedback device. This ensures that our implementations of
@@ -29,12 +29,12 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 		setSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 	}
 
-	private static enum ExceptionTarget {
+	private enum ExceptionTarget {
 		THROW,
 		LOG,
 	}
 
-	private static void revErrorToException(ExceptionTarget throwEx, REVLibError err) {
+	private static void revErrorToException(final ExceptionTarget throwEx, final REVLibError err) {
 		if (err == REVLibError.kOk) {
 			return;
 		}
@@ -44,6 +44,8 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 				throw ex;
 			case LOG:
 				LoggerExceptionUtils.logException(ex);
+				break;
+			default:
 				break;
 		}
 	}
@@ -59,7 +61,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 	}
 
 	@Override
-	public void set(ControlMode mode, double value) {
+	public void set(final ControlMode mode, final double value) {
 		switch (mode) {
 			case Current:
 				getPIDController().setReference(value, CANSparkMax.ControlType.kCurrent);
@@ -92,21 +94,22 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 	}
 
 	@Override
-	public void setSensorPosition(double position) {
+	public void setSensorPosition(final double position) {
 		revErrorToException(ExceptionTarget.THROW, sensorPositionSetter.apply(position));
 	}
 
 	@Override
-	public void follow(MotorController leader) {
+	public void follow(final MotorController leader) {
 		try {
-			revErrorToException(ExceptionTarget.LOG, super.follow((CANSparkMax)leader));
+			revErrorToException(ExceptionTarget.LOG, super.follow((CANSparkMax) leader));
 		} catch (ClassCastException ex) {
-			LoggerExceptionUtils.logException(new IllegalArgumentException("Spark Max can only follow another Spark Max", ex));
+			LoggerExceptionUtils.logException(new IllegalArgumentException(
+					"Spark Max can only follow another Spark Max", ex));
 		}
 	}
 
 	@Override
-	public void setNeutralMode(NeutralMode neutralMode) {
+	public void setNeutralMode(final NeutralMode neutralMode) {
 		switch (neutralMode) {
 			case Brake:
 				revErrorToException(ExceptionTarget.LOG, setIdleMode(IdleMode.kBrake));
@@ -115,66 +118,72 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 				revErrorToException(ExceptionTarget.LOG, setIdleMode(IdleMode.kCoast));
 				break;
 			default:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("Unsupported neutral mode " + neutralMode));
+				LoggerExceptionUtils.logException(
+						new IllegalArgumentException("Unsupported neutral mode " + neutralMode));
 				break;
 		}
 	}
 
 	@Override
-	public void setP(double value) {
+	public void setP(final double value) {
 		revErrorToException(ExceptionTarget.LOG, getPIDController().setP(value));
 	}
 
 	@Override
-	public void setI(double value) {
+	public void setI(final double value) {
 		revErrorToException(ExceptionTarget.LOG, getPIDController().setI(value));
 	}
 
 	@Override
-	public void setD(double value) {
+	public void setD(final double value) {
 		revErrorToException(ExceptionTarget.LOG, getPIDController().setD(value));
 	}
 
 	@Override
-	public void setFF(double value) {
+	public void setFF(final double value) {
 		revErrorToException(ExceptionTarget.LOG, getPIDController().setFF(value));
 	}
 
 	@Override
-	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
+	public void setSelectedFeedbackSensor(final FeedbackDevice feedbackDevice) {
 		switch (feedbackDevice) {
-			case Analog: {
+			case Analog:
 				SparkMaxAnalogSensor analog = getAnalog(SparkMaxAnalogSensor.Mode.kAbsolute);
 				revErrorToException(ExceptionTarget.LOG, analog.setInverted(sensorInverted));
 				sensorPositionSupplier = analog::getPosition;
 				sensorVelocitySupplier = analog::getVelocity;
 				sensorPositionSetter = (pos) -> REVLibError.kOk;
 				sensorInvertedSetter = analog::setInverted;
-				revErrorToException(ExceptionTarget.LOG, getPIDController().setFeedbackDevice(analog));
+				revErrorToException(ExceptionTarget.LOG,
+						getPIDController().setFeedbackDevice(analog));
 				return;
-			}
 			case CTRE_MagEncoder_Absolute:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
+				LoggerExceptionUtils.logException(
+						new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
 			case CTRE_MagEncoder_Relative:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
-			case IntegratedSensor: {
+				LoggerExceptionUtils.logException(
+						new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
+			case IntegratedSensor:
 				RelativeEncoder encoder = getEncoder();
-				// NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the integrated sensor returns an error.
+				// NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the
+				// integrated sensor returns an error.
 				// revErrorToException(ExceptionTarget.LOG, encoder.setInverted(sensorInverted));
 				sensorPositionSupplier = encoder::getPosition;
 				sensorVelocitySupplier = encoder::getVelocity;
 				sensorPositionSetter = encoder::setPosition;
-				// NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the integrated sensor returns an error.
+				// NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the
+				// integrated sensor returns an error.
 				// sensorInvertedSetter = encoder::setInverted;
 				sensorInvertedSetter = (inverted) -> REVLibError.kOk;
-				revErrorToException(ExceptionTarget.LOG, getPIDController().setFeedbackDevice(encoder));
+				revErrorToException(ExceptionTarget.LOG,
+						getPIDController().setFeedbackDevice(encoder));
 				return;
-			}
 			case None:
 				return;
 			case PulseWidthEncodedPosition:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("SparkMax does not support PWM sensors"));
-			case QuadEncoder: {
+				LoggerExceptionUtils.logException(
+						new IllegalArgumentException("SparkMax does not support PWM sensors"));
+			case QuadEncoder:
 				// TODO: should we pass a real counts-per-rev scale here?
 				RelativeEncoder encoder = getAlternateEncoder(1);
 				revErrorToException(ExceptionTarget.LOG, encoder.setInverted(sensorInverted));
@@ -182,39 +191,47 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 				sensorVelocitySupplier = encoder::getVelocity;
 				sensorPositionSetter = encoder::setPosition;
 				sensorInvertedSetter = encoder::setInverted;
-				revErrorToException(ExceptionTarget.LOG, getPIDController().setFeedbackDevice(encoder));
+				revErrorToException(ExceptionTarget.LOG,
+						getPIDController().setFeedbackDevice(encoder));
 				return;
-			}
 			case RemoteSensor0:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("SparkMax does not support remote sensors"));
+				LoggerExceptionUtils.logException(
+						new IllegalArgumentException("SparkMax does not support remote sensors"));
 			case RemoteSensor1:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("SparkMax does not support remote sensors"));
+				LoggerExceptionUtils.logException(
+						new IllegalArgumentException("SparkMax does not support remote sensors"));
 			case SensorDifference:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("SparkMax does not support SensorDifference"));
+				LoggerExceptionUtils.logException(
+						new IllegalArgumentException("SparkMax does not support SensorDifference"));
 			case SensorSum:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("SparkMax does not support SensorSum"));
+				LoggerExceptionUtils.logException(
+						new IllegalArgumentException("SparkMax does not support SensorSum"));
 			case SoftwareEmulatedSensor:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("SparkMax does not support SoftwareEmulatedSensor"));
+				LoggerExceptionUtils.logException(new IllegalArgumentException(
+						"SparkMax does not support SoftwareEmulatedSensor"));
 			case Tachometer:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("SparkMax does not support Tachometer"));
+				LoggerExceptionUtils.logException(
+						new IllegalArgumentException("SparkMax does not support Tachometer"));
 			default:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("Unsupported sensor type " + feedbackDevice));
+				LoggerExceptionUtils.logException(
+						new IllegalArgumentException("Unsupported sensor type " + feedbackDevice));
 		}
 	}
 
 	@Override
-	public void setSensorInverted(boolean inverted) {
+	public void setSensorInverted(final boolean inverted) {
 		sensorInverted = inverted;
 		revErrorToException(ExceptionTarget.LOG, sensorInvertedSetter.apply(inverted));
 	}
 
 	@Override
-	public void setOutputRange(double minOutput, double maxOutput) {
-		revErrorToException(ExceptionTarget.LOG, getPIDController().setOutputRange(minOutput, maxOutput));
+	public void setOutputRange(final double minOutput, final double maxOutput) {
+		revErrorToException(ExceptionTarget.LOG,
+				getPIDController().setOutputRange(minOutput, maxOutput));
 	}
 
-	public void setCurrentLimit(double ampsLimit) {
-		revErrorToException(ExceptionTarget.LOG, setSmartCurrentLimit((int)ampsLimit));
+	public void setCurrentLimit(final double ampsLimit) {
+		revErrorToException(ExceptionTarget.LOG, setSmartCurrentLimit((int) ampsLimit));
 	}
 
 	@Override
@@ -223,13 +240,12 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 	}
 
 	@Override
-	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
+	public void setOpenLoopRamp(final double secondsFromNeutralToFull) {
 		revErrorToException(ExceptionTarget.LOG, setOpenLoopRampRate(secondsFromNeutralToFull));
 	}
 
 	@Override
-	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
+	public void setClosedLoopRamp(final double secondsFromNeutralToFull) {
 		revErrorToException(ExceptionTarget.LOG, setClosedLoopRampRate(secondsFromNeutralToFull));
 	}
-	
 }

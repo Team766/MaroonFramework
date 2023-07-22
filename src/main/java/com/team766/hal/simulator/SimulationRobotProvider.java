@@ -18,16 +18,18 @@ import com.team766.hal.SolenoidController;
 import com.team766.hal.MotorController;
 import com.team766.simulator.ProgramInterface;
 
-public class SimulationRobotProvider extends RobotProvider{
+public class SimulationRobotProvider extends RobotProvider {
 
 	private MotorController[] motors = new MotorController[100];
 	private int m_dsUpdateNumber = 0;
 
 	@Override
-	public MotorController getMotor(int index, String configPrefix, MotorController.Type type, ControlInputReader localSensor) {
-		if(motors[index] == null) {
+	public MotorController getMotor(final int index, final String configPrefix,
+			final MotorController.Type type, final ControlInputReader localSensor) {
+		if (motors[index] == null) {
 			if (localSensor != null) {
-				motors[index] = new LocalMotorController(configPrefix, new SimBasicMotorController(index), localSensor);
+				motors[index] = new LocalMotorController(configPrefix,
+						new SimBasicMotorController(index), localSensor);
 			} else {
 				motors[index] = new SimMotorController(configPrefix, index);
 			}
@@ -36,45 +38,45 @@ public class SimulationRobotProvider extends RobotProvider{
 	}
 
 	@Override
-	public EncoderReader getEncoder(int index1, int index2) {
-		if(encoders[index1] == null) {
+	public EncoderReader getEncoder(final int index1, final int index2) {
+		if (encoders[index1] == null) {
 			encoders[index1] = new Encoder(index1, index2);
 		}
 		return encoders[index1];
 	}
 
 	@Override
-	public SolenoidController getSolenoid(int index) {
-		if(solenoids[index] == null) {
+	public SolenoidController getSolenoid(final int index) {
+		if (solenoids[index] == null) {
 			solenoids[index] = new Solenoid(index);
 		}
 		return solenoids[index];
 	}
 
 	@Override
-	public GyroReader getGyro(int index) {
-		if(gyros[0] == null) {
+	public GyroReader getGyro(final int index) {
+		if (gyros[0] == null) {
 			gyros[0] = new Gyro();
 		}
 		return gyros[0];
 	}
 
 	@Override
-	public CameraReader getCamera(String id, String value) {
-		if(!cams.containsKey(id)) {
+	public CameraReader getCamera(final String id, final String value) {
+		if (!cams.containsKey(id)) {
 			cams.put(id, new Camera());
 		}
 		return cams.get(id);
 	}
 
 	@Override
-	public JoystickReader getJoystick(int index) {
+	public JoystickReader getJoystick(final int index) {
 		return ProgramInterface.joystickChannels[index];
 	}
-	
+
 	@Override
-	public DigitalInputReader getDigitalInput(int index) {
-		if(digInputs[index] == null) {
+	public DigitalInputReader getDigitalInput(final int index) {
+		if (digInputs[index] == null) {
 			digInputs[index] = new DigitalInput(index);
 		}
 		return digInputs[index];
@@ -84,17 +86,17 @@ public class SimulationRobotProvider extends RobotProvider{
 	public CameraInterface getCamServer() {
 		return null;
 	}
-	
+
 	@Override
-	public AnalogInputReader getAnalogInput(int index) {
-		if(angInputs[index] == null) {
+	public AnalogInputReader getAnalogInput(final int index) {
+		if (angInputs[index] == null) {
 			angInputs[index] = new AnalogInput(index);
 		}
 		return angInputs[index];
 	}
-	
-	public RelayOutput getRelay(int index) {
-		if(relays[index] == null) {
+
+	public RelayOutput getRelay(final int index) {
+		if (relays[index] == null) {
 			relays[index] = new Relay(index);
 		}
 		return relays[index];

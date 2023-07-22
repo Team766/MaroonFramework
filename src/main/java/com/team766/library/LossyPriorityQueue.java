@@ -14,12 +14,12 @@ public class LossyPriorityQueue<E> {
 	private final PriorityQueue<E> m_items;
 	private final int m_capacity;
 
-	public LossyPriorityQueue(int capacity, Comparator<E> comparator) {
+	public LossyPriorityQueue(final int capacity, final Comparator<E> comparator) {
 		m_capacity = capacity;
 		m_items = new PriorityQueue<E>(m_capacity, comparator);
 	}
 
-	public void add(E element) {
+	public void add(final E element) {
 		m_lock.lock();
 		try {
 			while (m_items.size() > m_capacity - 1) {
@@ -47,7 +47,7 @@ public class LossyPriorityQueue<E> {
 			m_lock.unlock();
 		}
 	}
-	
+
 	public void waitForEmpty() throws InterruptedException {
 		m_lock.lock();
 		try {

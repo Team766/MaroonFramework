@@ -6,11 +6,11 @@ package com.team766.hal;
  */
 
 public interface RelayOutput {
-	
-	public void set(Value val);
-		
-	enum Value{
+
+	void set(Value val);
+
+	enum Value {
 		kOff, kOn, kForward, kReverse
 	}
-	
+
 }

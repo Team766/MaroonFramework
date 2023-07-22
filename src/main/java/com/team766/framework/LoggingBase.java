@@ -9,19 +9,19 @@ public abstract class LoggingBase {
 
 	public abstract String getName();
 
-	protected void log(String message) {
+	protected void log(final String message) {
 		log(Severity.INFO, message);
 	}
 
-	protected void log(Severity severity, String message) {
+	protected void log(final Severity severity, final String message) {
 		Logger.get(loggerCategory).logRaw(severity, getName() + ": " + message);
 	}
-	
-	protected void log(String format, Object... args) {
+
+	protected void log(final String format, final Object... args) {
 		log(Severity.INFO, format, args);
 	}
 
-	protected void log(Severity severity, String format, Object... args) {
+	protected void log(final Severity severity, final String format, final Object... args) {
 		Logger.get(loggerCategory).logData(severity, getName() + ": " + format, args);
 	}
 }

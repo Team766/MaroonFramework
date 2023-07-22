@@ -12,29 +12,29 @@ import com.team766.simulator.ProgramInterface;
 import com.team766.simulator.Simulator;
 
 public class RobotMain {
-	static enum Mode {
+	enum Mode {
 		MaroonSim,
 		VrConnector,
 	}
 
 	private GenericRobotMain robot;
 	private Runnable simulator;
-	
-	public RobotMain(Mode mode) {
+
+	public RobotMain(final Mode mode) {
 		try {
-			// TODO: update this to come from deploy directory? 
+			// TODO: update this to come from deploy directory?
 			ConfigFileReader.instance = new ConfigFileReader("simConfig.txt");
 			RobotProvider.instance = new SimulationRobotProvider();
-			
+
 			Scheduler.getInstance().reset();
-			
+
 			robot = new GenericRobotMain();
-			
+
 			robot.robotInit();
-			
+
 			ProgramInterface.program = new Program() {
 				ProgramInterface.RobotMode prevRobotMode = null;
-				
+
 				@Override
 				public void step() {
 					switch (ProgramInterface.robotMode) {
@@ -62,6 +62,8 @@ public class RobotMain {
 							robot.teleopPeriodic();
 							Scheduler.getInstance().run();
 							break;
+						default:
+							break;
 					}
 				}
 
@@ -76,22 +78,25 @@ public class RobotMain {
 		}
 
 		switch (mode) {
-		case MaroonSim:
-			simulator = new Simulator();
-			break;
-		case VrConnector:
-			ProgramInterface.robotMode = ProgramInterface.RobotMode.DISABLED;
-			try {
-				simulator = new VrConnector();
-			} catch (IOException ex) {
-				throw new RuntimeException("Error initializing communication with 3d Simulator", ex);
-			}
-			break;
+			case MaroonSim:
+				simulator = new Simulator();
+				break;
+			case VrConnector:
+				ProgramInterface.robotMode = ProgramInterface.RobotMode.DISABLED;
+				try {
+					simulator = new VrConnector();
+				} catch (IOException ex) {
+					throw new RuntimeException("Error initializing communication with 3d Simulator",
+							ex);
+				}
+				break;
+			default:
+				break;
 		}
 
 	}
-	
-	public void run(){
+
+	public void run() {
 		try {
 			simulator.run();
 		} catch (Exception exc) {
@@ -99,8 +104,8 @@ public class RobotMain {
 			LoggerExceptionUtils.logException(exc);
 		}
 	}
-	
-	public static void main(String[] args) {
+
+	public static void main(final String[] args) {
 		if (args.length != 1) {
 			System.err.println("Needs -maroon_sim or -vr_connector");
 			System.exit(1);

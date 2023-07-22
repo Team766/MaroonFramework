@@ -17,7 +17,7 @@ public class Scheduler implements Runnable {
 		c_monitor.setDaemon(true);
 		c_monitor.start();
 	}
-	
+
 	public static Scheduler getInstance() {
 		return c_instance;
 	}
@@ -31,7 +31,7 @@ public class Scheduler implements Runnable {
 			} catch (InterruptedException e) {
 			}
 
-			if (c_instance.m_running != null && 
+			if (c_instance.m_running != null &&
 				c_instance.m_iterationCount == lastIterationCount &&
 				c_instance.m_running == lastRunning) {
 				Logger.get(Category.FRAMEWORK).logRaw(
@@ -54,28 +54,28 @@ public class Scheduler implements Runnable {
 			lastRunning = c_instance.m_running;
 		}
 	}
-	
+
 	private LinkedList<Runnable> m_runnables = new LinkedList<Runnable>();
 	private int m_iterationCount = 0;
 	private Runnable m_running = null;
-	
-	public void add(Runnable runnable) {
+
+	public void add(final Runnable runnable) {
 		m_runnables.add(runnable);
 	}
-	
-	public void cancel(Runnable runnable) {
+
+	public void cancel(final Runnable runnable) {
 		m_runnables.remove(runnable);
 	}
-	
+
 	public void reset() {
 		m_runnables.clear();
 	}
-	
-	public LaunchedContext startAsync(RunnableWithContext func) {
+
+	public LaunchedContext startAsync(final RunnableWithContext func) {
 		return new Context(func);
 	}
 
-	public LaunchedContext startAsync(Runnable func) {
+	public LaunchedContext startAsync(final Runnable func) {
 		return new Context(func);
 	}
 

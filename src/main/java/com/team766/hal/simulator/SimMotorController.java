@@ -6,11 +6,12 @@ import com.team766.hal.LocalMotorController;
 import com.team766.simulator.ProgramInterface;
 
 public class SimMotorController extends LocalMotorController {
-	public SimMotorController(String configPrefix, int address) {
+	public SimMotorController(final String configPrefix, final int address) {
 		this(configPrefix, ProgramInterface.canMotorControllerChannels[address]);
 	}
 
-	SimMotorController(String configPrefix, ProgramInterface.CANMotorControllerCommunication channel) {
+	SimMotorController(final String configPrefix,
+			final ProgramInterface.CANMotorControllerCommunication channel) {
 		super(configPrefix, new SimBasicMotorController(channel), new ControlInputReader() {
 			@Override
 			public double getPosition() {
@@ -25,15 +26,16 @@ public class SimMotorController extends LocalMotorController {
 	}
 }
 
+
 class SimBasicMotorController implements BasicMotorController {
 	private final ProgramInterface.CANMotorControllerCommunication channel;
 
-	public SimBasicMotorController(int address) {
+	SimBasicMotorController(final int address) {
 		this(ProgramInterface.canMotorControllerChannels[address]);
 	}
 
-	public SimBasicMotorController(ProgramInterface.CANMotorControllerCommunication channel) {
-		this.channel = channel;
+	SimBasicMotorController(final ProgramInterface.CANMotorControllerCommunication channelParam) {
+		this.channel = channelParam;
 	}
 
 	@Override
@@ -50,5 +52,6 @@ class SimBasicMotorController implements BasicMotorController {
 	}
 
 	@Override
-	public void restoreFactoryDefault() {}
+	public void restoreFactoryDefault() {
+	}
 }

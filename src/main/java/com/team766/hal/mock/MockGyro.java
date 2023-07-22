@@ -2,13 +2,13 @@ package com.team766.hal.mock;
 
 import com.team766.hal.GyroReader;
 
-public class MockGyro implements GyroReader{
+public class MockGyro implements GyroReader {
 
 	private double angle = 0;
 	private double rate = 0;
 	private double pitch = 0;
 	private double roll = 0;
-	
+
 	public void calibrate() {
 		reset();
 	}
@@ -33,20 +33,20 @@ public class MockGyro implements GyroReader{
 		return roll;
 	}
 
-	public void setAngle(double angle) {
-		this.angle = angle;
+	public void setAngle(final double angleParam) {
+		this.angle = angleParam;
 	}
 
-	public void setRate(double rate) {
-		this.rate = rate;
+	public void setRate(final double rateParam) {
+		this.rate = rateParam;
 	}
-	
-	public void setPitch(double pitch) {
-		this.pitch = pitch;
+
+	public void setPitch(final double pitchParam) {
+		this.pitch = pitchParam;
 	}
-	
-	public void setRoll(double roll) {
-		this.roll = roll;
+
+	public void setRoll(final double rollParam) {
+		this.roll = rollParam;
 	}
 
 }

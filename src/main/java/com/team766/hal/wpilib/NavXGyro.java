@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj.I2C;
 public class NavXGyro implements GyroReader {
 	private AHRS m_gyro;
 
-	public NavXGyro(I2C.Port port) {
+	public NavXGyro(final I2C.Port port) {
 		m_gyro = new AHRS(port);
 		// NOTE: It takes a bit of time until the gyro reader thread updates
 		// the connected status, so we can't check it immediately.
@@ -51,5 +51,5 @@ public class NavXGyro implements GyroReader {
 	public double getRoll() {
 		return m_gyro.getRoll();
 	}
-	
+
 }

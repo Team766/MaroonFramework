@@ -8,16 +8,16 @@ abstract class AbstractConfigMultiValue<E> extends AbstractConfigValue<E[]> {
 	private final IntFunction<E[]> m_arrayFactory;
 
 	@SuppressWarnings("unchecked")
-	protected AbstractConfigMultiValue(String key, Class<E> elementClass) {
+	protected AbstractConfigMultiValue(final String key, final Class<E> elementClass) {
 		super(key);
-		m_arrayFactory = (int length) -> (E[])Array.newInstance(elementClass, length);
+		m_arrayFactory = (int length) -> (E[]) Array.newInstance(elementClass, length);
 	}
 
 	@Override
-	protected final E[] parseJsonValue(Object configValue) {
+	protected final E[] parseJsonValue(final Object configValue) {
 		JSONArray jsonArray;
 		try {
-			jsonArray = (JSONArray)configValue;
+			jsonArray = (JSONArray) configValue;
 		} catch (ClassCastException ex) {
 			final E[] valueArray = m_arrayFactory.apply(1);
 			valueArray[0] = parseJsonElement(configValue);

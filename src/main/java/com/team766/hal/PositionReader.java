@@ -6,19 +6,19 @@ public interface PositionReader {
 	 *
 	 * @return the current position coordinate in meters
 	 */
-	public double getX();
+	double getX();
 
 	/**
 	 * Return the position of the robot along the global Y axis.
 	 *
 	 * @return the current position coordinate in meters
 	 */
-	public double getY();
+	double getY();
 
 	/**
 	 * Return the angle that the robot is currently facing.
 	 *
 	 * @return the current heading angle in degrees
 	 */
-	public double getHeading();
+	double getHeading();
 }

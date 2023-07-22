@@ -6,8 +6,8 @@ public class RateLimiter {
 	private final double periodSeconds;
 	private double nextTime = 0;
 
-	public RateLimiter(double periodSeconds) {
-		this.periodSeconds = periodSeconds;
+	public RateLimiter(final double periodSecondsParam) {
+		this.periodSeconds = periodSecondsParam;
 	}
 
 	public boolean next() {

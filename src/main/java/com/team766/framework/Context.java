@@ -13,7 +13,7 @@ import com.team766.logging.Severity;
 
 /**
  * Context is the framework's representation of a single thread of execution.
- * 
+ *
  * We may want to have multiple procedures running at the same time on a robot.
  * For example, the robot could be raising an arm mechanism while also driving.
  * Each of those procedures would have a separate Context. Each of those
@@ -22,7 +22,7 @@ import com.team766.logging.Severity;
  * time. If a procedure wants to call multiple other procedures at the same
  * time, it has to create new Contexts for them (using the {@link #startAsync}
  * method).
- * 
+ *
  * Use the Context instance passed to your procedure whenever you want your
  * procedure to wait for something. For example, to have your procedure pause
  * for a certain amount of time, call context.waitForSeconds. Multiple Contexts
@@ -33,7 +33,7 @@ import com.team766.logging.Severity;
  * (this often happens if your procedure has a while loop), then it should
  * periodically call context.yield() (for example, at the start of each
  * iteration of the while loop) to still allow other Contexts to run.
- * 
+ *
  * This cooperative multitasking paradigm is used by the framework to ensure
  * that only one Context is actually running at a time, which allows us to avoid
  * needing to deal with concurrency issues like data race conditions. Even
@@ -44,7 +44,7 @@ import com.team766.logging.Severity;
  * model execution of the program as a sequence of imperative commands"), rather
  * than as state machines or in continuation-passing style, which can be much
  * more complicated to reason about, especially for new programmers.
- * 
+ *
  * Currently, threads of execution are implemented using OS threads, but this
  * should be considered an implementation detail and may change in the future.
  * Even though the framework creates multiple OS threads, it uses Java's
@@ -61,14 +61,14 @@ public final class Context implements Runnable, LaunchedContext {
 	 * the number of OS context switches required), it makes the code simpler
 	 * and more modular.
 	 */
-	private static enum ControlOwner {
+	private enum ControlOwner {
 		MAIN_THREAD,
 		SUBROUTINE,
 	}
 	/**
 	 * Indicates the lifetime state of this Context.
 	 */
-	private static enum State {
+	private enum State {
 		/**
 		 * The Context has been started (a Context is started immediately upon
 		 * construction).
@@ -89,7 +89,7 @@ public final class Context implements Runnable, LaunchedContext {
 
 	/**
 	 * Returns the currently-executing Context.
-	 * 
+	 *
 	 * This is maintained for things like checking Mechanism ownership, but
 	 * intentionally only has package-private visibility - code outside of the
 	 * framework should ideally pass around references to the current context
@@ -145,17 +145,18 @@ public final class Context implements Runnable, LaunchedContext {
 	 * finishes executing.
 	 */
 	private Set<Mechanism> m_ownedMechanisms = new HashSet<Mechanism>();
-	
+
 	/*
 	 * Constructors are intentionally private or package-private. New contexts
 	 * should be created with {@link Context#startAsync} or
 	 * {@link Scheduler#startAsync}.
 	 */
 
-	private Context(RunnableWithContext func, Context parentContext) {
+	private Context(final RunnableWithContext func, final Context parentContext) {
 		m_func = func;
 		m_parentContext = parentContext;
-		Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, "Starting context " + getContextName() + " for " + func.toString());
+		Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO,
+				"Starting context " + getContextName() + " for " + func.toString());
 		m_threadSync = new Object();
 		m_previousWaitPoint = null;
 		m_controlOwner = ControlOwner.MAIN_THREAD;
@@ -164,20 +165,21 @@ public final class Context implements Runnable, LaunchedContext {
 		m_thread.start();
 		Scheduler.getInstance().add(this);
 	}
-	Context(RunnableWithContext func) {
+
+	Context(final RunnableWithContext func) {
 		this(func, null);
 	}
 
-	private Context(Runnable func, Context parentContext) {
+	private Context(final Runnable func, final Context parentContext) {
 		this((context) -> func.run());
 	}
-	Context(Runnable func) {
+
+	Context(final Runnable func) {
 		this(func, null);
 	}
-	
+
 	/**
-	 * Returns a string meant to uniquely identify this Context (e.g. for use in
-	 * logging).
+	 * Returns a string meant to uniquely identify this Context (e.g. for use in logging).
 	 */
 	public String getContextName() {
 		return "Context/" + Integer.toHexString(hashCode()) + "/" + m_func.toString();
@@ -195,31 +197,26 @@ public final class Context implements Runnable, LaunchedContext {
 	}
 
 	/**
-	 * Walks up the call stack until it reaches a frame that isn't from the
-	 * Context class, then returns a string representation of that frame. This
-	 * is used to generate a concise string representation of from where the
-	 * user called into framework code.
+	 * Walks up the call stack until it reaches a frame that isn't from the Context class, then
+	 * returns a string representation of that frame. This is used to generate a concise string
+	 * representation of from where the user called into framework code.
 	 */
 	private String getExecutionPoint() {
 		StackWalker walker = StackWalker.getInstance();
 		return walker
 				.walk(s -> s.dropWhile(f -> f.getClassName() != Context.this.getClass().getName())
 						.filter(f -> f.getClassName() != Context.this.getClass().getName())
-						.findFirst()
-						.map(StackFrame::toString)
-						.orElse(null));
+						.findFirst().map(StackFrame::toString).orElse(null));
 	}
-	
+
 	/**
-	 * Wait until the baton (see the class comments) has been passed to this
-	 * thread.
-	 * 
-	 * @param thisOwner the thread from which this function is being called
-	 *     (and thus the baton-passing state that should be waited for)
-	 * @throws ContextStoppedException if stop() is called on this Context while
-	 *     waiting.
+	 * Wait until the baton (see the class comments) has been passed to this thread.
+	 *
+	 * @param thisOwner the thread from which this function is being called (and thus the
+	 *        baton-passing state that should be waited for)
+	 * @throws ContextStoppedException if stop() is called on this Context while waiting.
 	 */
-	private void waitForControl(ControlOwner thisOwner) {
+	private void waitForControl(final ControlOwner thisOwner) {
 		// If this is being called from the worker thread, log from where in the
 		// user's code that the context is waiting. This is provided as a
 		// convenience so the user can track the progress of execution through
@@ -227,7 +224,8 @@ public final class Context implements Runnable, LaunchedContext {
 		if (thisOwner == ControlOwner.SUBROUTINE) {
 			String waitPointTrace = getExecutionPoint();
 			if (waitPointTrace != null && !waitPointTrace.equals(m_previousWaitPoint)) {
-				Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG, getContextName() + " is waiting at " + waitPointTrace);
+				Logger.get(Category.FRAMEWORK).logRaw(Severity.DEBUG,
+						getContextName() + " is waiting at " + waitPointTrace);
 				m_previousWaitPoint = waitPointTrace;
 			}
 		}
@@ -245,23 +243,23 @@ public final class Context implements Runnable, LaunchedContext {
 			}
 		}
 	}
-	
+
 	/**
-	 * Pass the baton (see the class comments) to the other thread and then wait
-	 * for it to be passed back.
-	 * 
-	 * @param thisOwner the thread from which this function is being called
-	 *     (and thus the baton-passing state that should be waited for)
+	 * Pass the baton (see the class comments) to the other thread and then wait for it to be passed
+	 * back.
+	 *
+	 * @param thisOwner the thread from which this function is being called (and thus the
+	 *        baton-passing state that should be waited for)
 	 * @param desiredOwner the thread to which the baton should be passed
-	 * @throws ContextStoppedException if stop() is called on this Context while
-	 *     waiting.
+	 * @throws ContextStoppedException if stop() is called on this Context while waiting.
 	 */
-	private void transferControl(ControlOwner thisOwner, ControlOwner desiredOwner) {
+	private void transferControl(final ControlOwner thisOwner, final ControlOwner desiredOwner) {
 		synchronized (m_threadSync) {
 			// Make sure we currently have the baton before trying to give it to
 			// someone else.
 			if (m_controlOwner != thisOwner) {
-				throw new IllegalStateException("Subroutine had control owner " + m_controlOwner + " but assumed control owner " + thisOwner);
+				throw new IllegalStateException("Subroutine had control owner " + m_controlOwner
+						+ " but assumed control owner " + thisOwner);
 			}
 			// Pass the baton.
 			m_controlOwner = desiredOwner;
@@ -275,7 +273,7 @@ public final class Context implements Runnable, LaunchedContext {
 			waitForControl(thisOwner);
 		}
 	}
-	
+
 	/**
 	 * This is the entry point for this Context's worker thread.
 	 */
@@ -286,13 +284,16 @@ public final class Context implements Runnable, LaunchedContext {
 		try {
 			// Call into the user's code.
 			m_func.run(this);
-			Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, "Context " + getContextName() + " finished");
+			Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO,
+					"Context " + getContextName() + " finished");
 		} catch (ContextStoppedException ex) {
-			Logger.get(Category.FRAMEWORK).logRaw(Severity.WARNING, getContextName() + " was stopped");
+			Logger.get(Category.FRAMEWORK).logRaw(Severity.WARNING,
+					getContextName() + " was stopped");
 		} catch (Exception ex) {
 			ex.printStackTrace();
 			LoggerExceptionUtils.logException(ex);
-			Logger.get(Category.FRAMEWORK).logRaw(Severity.WARNING, "Context " + getContextName() + " died");
+			Logger.get(Category.FRAMEWORK).logRaw(Severity.WARNING,
+					"Context " + getContextName() + " died");
 		} finally {
 			for (Mechanism m : m_ownedMechanisms) {
 				// Don't use this.releaseOwnership here, because that would cause a
@@ -311,45 +312,43 @@ public final class Context implements Runnable, LaunchedContext {
 			m_ownedMechanisms.clear();
 		}
 	}
-	
+
 	/**
-	 * Pauses the execution of this Context until the given predicate returns
-	 * true. Yields to other Contexts in the meantime.
-	 * 
-	 * Note that the predicate will be evaluated repeatedly (possibly on a
-	 * different thread) while the Context is paused to determine whether it
-	 * should continue waiting.
+	 * Pauses the execution of this Context until the given predicate returns true. Yields to other
+	 * Contexts in the meantime.
+	 *
+	 * Note that the predicate will be evaluated repeatedly (possibly on a different thread) while
+	 * the Context is paused to determine whether it should continue waiting.
 	 */
-	public void waitFor(BooleanSupplier predicate) {
+	public void waitFor(final BooleanSupplier predicate) {
 		if (!predicate.getAsBoolean()) {
 			m_blockingPredicate = predicate;
 			transferControl(ControlOwner.SUBROUTINE, ControlOwner.MAIN_THREAD);
 		}
 	}
-	
+
 	/**
-	 * Pauses the execution of this Context until the given LaunchedContext has
-	 * finished running.
+	 * Pauses the execution of this Context until the given LaunchedContext has finished running.
 	 */
-	public void waitFor(LaunchedContext otherContext) {
+	public void waitFor(final LaunchedContext otherContext) {
 		waitFor(otherContext::isDone);
 	}
 
 	/**
-	 * Pauses the execution of this Context until all of the given
-	 * LaunchedContexts have finished running.
+	 * Pauses the execution of this Context until all of the given LaunchedContexts have finished
+	 * running.
 	 */
-	public void waitFor(LaunchedContext... otherContexts) {
+	public void waitFor(final LaunchedContext... otherContexts) {
 		waitFor(() -> Arrays.stream(otherContexts).allMatch(LaunchedContext::isDone));
 	}
 
 	/**
-	 * Momentarily pause execution of this Context to allow other Contexts to
-	 * execute. Execution of this Context will resume as soon as possible after
-	 * the other Contexts have been given a chance to run.
-	 * 
-	 * Procedures should call this periodically if they wouldn't otherwise call
-	 * one of the wait* methods for a while.
+	 * Momentarily pause execution of this Context to allow other Contexts to execute. Execution of
+	 * this Context will resume as soon as possible after the other Contexts have been given a
+	 * chance to run.
+	 *
+	 * Procedures should call this periodically if they wouldn't otherwise call one of the wait*
+	 * methods for a while.
 	 */
 	public void yield() {
 		m_blockingPredicate = null;
@@ -359,7 +358,7 @@ public final class Context implements Runnable, LaunchedContext {
 	/**
 	 * Pauses the execution of this Context for the given length of time.
 	 */
-	public void waitForSeconds(double seconds) {
+	public void waitForSeconds(final double seconds) {
 		double startTime = RobotProvider.instance.getClock().getTime();
 		waitFor(() -> RobotProvider.instance.getClock().getTime() - startTime > seconds);
 	}
@@ -367,28 +366,28 @@ public final class Context implements Runnable, LaunchedContext {
 	/**
 	 * Start running a new Context so the given procedure can run in parallel.
 	 */
-	public LaunchedContext startAsync(RunnableWithContext func) {
+	public LaunchedContext startAsync(final RunnableWithContext func) {
 		return new Context(func, this);
 	}
 
 	/**
 	 * Start running a new Context so the given procedure can run in parallel.
 	 */
-	public LaunchedContext startAsync(Runnable func) {
+	public LaunchedContext startAsync(final Runnable func) {
 		return new Context(func, this);
 	}
 
 	/**
 	 * Interrupt the running of this Context and force it to terminate.
-	 * 
-	 * A ContextStoppedException will be raised on this Context at the point
-	 * where the Context most recently waited or yielded -- if this Context is
-	 * currently executing, a ContextStoppedException will be raised
-	 * immediately.
+	 *
+	 * A ContextStoppedException will be raised on this Context at the point where the Context most
+	 * recently waited or yielded -- if this Context is currently executing, a
+	 * ContextStoppedException will be raised immediately.
 	 */
 	@Override
 	public void stop() {
-		Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO, "Stopping requested of " + getContextName());
+		Logger.get(Category.FRAMEWORK).logRaw(Severity.INFO,
+				"Stopping requested of " + getContextName());
 		synchronized (m_threadSync) {
 			if (m_state != State.DONE) {
 				m_state = State.CANCELED;
@@ -398,20 +397,21 @@ public final class Context implements Runnable, LaunchedContext {
 			}
 		}
 	}
-	
+
 	/**
 	 * Entry point for the Scheduler to execute this Context.
-	 * 
-	 * This should only be called from framework code; it is public only as an
-	 * implementation detail.
+	 *
+	 * This should only be called from framework code; it is public only as an implementation
+	 * detail.
 	 */
 	@Override
-	public final void run() {
+	public void run() {
 		if (m_state == State.DONE) {
 			Scheduler.getInstance().cancel(this);
 			return;
 		}
-		if (m_state == State.CANCELED || m_blockingPredicate == null || m_blockingPredicate.getAsBoolean()) {
+		if (m_state == State.CANCELED || m_blockingPredicate == null
+				|| m_blockingPredicate.getAsBoolean()) {
 			transferControl(ControlOwner.MAIN_THREAD, ControlOwner.SUBROUTINE);
 		}
 	}
@@ -422,32 +422,31 @@ public final class Context implements Runnable, LaunchedContext {
 	public boolean isDone() {
 		return m_state == State.DONE;
 	}
-	
+
 	/**
 	 * Take ownership of the given Mechanism with this Context.
-	 * 
-	 * Only one Context can own a Mechanism at one time. If any Context
-	 * previously owned this Mechanism, it will be terminated.
-	 * Ownership of this Mechanism can be released by calling releaseOwnership,
-	 * or it will be automatically released when this Context finishes running.
-	 * 
+	 *
+	 * Only one Context can own a Mechanism at one time. If any Context previously owned this
+	 * Mechanism, it will be terminated. Ownership of this Mechanism can be released by calling
+	 * releaseOwnership, or it will be automatically released when this Context finishes running.
+	 *
 	 * @see Mechanism#takeOwnership(Context, Context)
 	 */
-	public void takeOwnership(Mechanism mechanism) {
+	public void takeOwnership(final Mechanism mechanism) {
 		mechanism.takeOwnership(this, m_parentContext);
 		m_ownedMechanisms.add(mechanism);
 	}
 
 	/**
 	 * Release ownership of the given Mechanism.
-	 * 
-	 * It is an error to call this method with a Mechanism that was not
-	 * previously passed to takeOwnership.
-	 * 
+	 *
+	 * It is an error to call this method with a Mechanism that was not previously passed to
+	 * takeOwnership.
+	 *
 	 * @see #takeOwnership(Mechanism)
 	 * @see Mechanism#releaseOwnership(Context)
 	 */
-	public void releaseOwnership(Mechanism mechanism) {
+	public void releaseOwnership(final Mechanism mechanism) {
 		mechanism.releaseOwnership(this);
 		m_ownedMechanisms.remove(mechanism);
 	}

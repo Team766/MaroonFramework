@@ -1,29 +1,29 @@
 package com.team766.hal;
 
 public class DoubleSolenoid implements SolenoidController {
-	
+
 	private SolenoidController forward;
 	private SolenoidController back;
 	private boolean boolState;
-	
+
 	public enum State {
 		Forward, Neutral, Backward
 	}
-	
-	public DoubleSolenoid(SolenoidController forward, SolenoidController back) {
-		this.forward = forward;
-		this.back = back;
+
+	public DoubleSolenoid(final SolenoidController forwardParam, final SolenoidController backParam) {
+		this.forward = forwardParam;
+		this.back = backParam;
 
 		set(State.Neutral);
 	}
-	
+
 	@Override
 	public boolean get() {
 		return boolState;
 	}
-	
-	public void set(State state) {
-		switch(state) {
+
+	public void set(final State state) {
+		switch (state) {
 			case Forward:
 				boolState = true;
 				if (forward != null) {
@@ -51,11 +51,13 @@ public class DoubleSolenoid implements SolenoidController {
 					back.set(false);
 				}
 				break;
+			default:
+				break;
 		}
 	}
-	
+
 	@Override
-	public void set(boolean on) {
+	public void set(final boolean on) {
 		set(on ? State.Forward : State.Backward);
 	}
 

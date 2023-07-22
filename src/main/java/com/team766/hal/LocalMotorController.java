@@ -22,9 +22,10 @@ public class LocalMotorController implements MotorController {
 	private double setpoint = 0.0;
 	private MotorController leader = null;
 
-	public LocalMotorController(String configPrefix, BasicMotorController motor, ControlInputReader sensor){
-		this.motor = motor;
-		this.sensor = sensor;
+	public LocalMotorController(String configPrefix, final BasicMotorController motorParam,
+			final ControlInputReader sensorParam) {
+		this.motor = motorParam;
+		this.sensor = sensorParam;
 
 		if (!configPrefix.endsWith(".")) {
 			configPrefix += ".";
@@ -36,13 +37,15 @@ public class LocalMotorController implements MotorController {
 			public void run() {
 				switch (LocalMotorController.this.controlMode) {
 					case Current:
-						LoggerExceptionUtils.logException(new UnsupportedOperationException(toString() + " does not support Current control mode"));
+						LoggerExceptionUtils.logException(new UnsupportedOperationException(
+								toString() + " does not support Current control mode"));
 						stopMotor();
 						break;
 					case Disabled:
 						// support proper output disabling if this.motor is a MotorController
 						if (LocalMotorController.this.motor instanceof MotorController) {
-							((MotorController)LocalMotorController.this.motor).set(ControlMode.Disabled, 0);
+							((MotorController) LocalMotorController.this.motor)
+									.set(ControlMode.Disabled, 0);
 						} else {
 							setPower(0);
 						}
@@ -51,15 +54,18 @@ public class LocalMotorController implements MotorController {
 						setPower(leader.get());
 						break;
 					case MotionMagic:
-						LoggerExceptionUtils.logException(new UnsupportedOperationException(toString() + " does not support MotionMagic control mode"));
+						LoggerExceptionUtils.logException(new UnsupportedOperationException(
+								toString() + " does not support MotionMagic control mode"));
 						stopMotor();
 						break;
 					case MotionProfile:
-						LoggerExceptionUtils.logException(new UnsupportedOperationException(toString() + " does not support MotionProfile control mode"));
+						LoggerExceptionUtils.logException(new UnsupportedOperationException(
+								toString() + " does not support MotionProfile control mode"));
 						stopMotor();
 						break;
 					case MotionProfileArc:
-						LoggerExceptionUtils.logException(new UnsupportedOperationException(toString() + " does not support MotionProfileArc control mode"));
+						LoggerExceptionUtils.logException(new UnsupportedOperationException(
+								toString() + " does not support MotionProfileArc control mode"));
 						stopMotor();
 						break;
 					case PercentOutput:
@@ -75,6 +81,8 @@ public class LocalMotorController implements MotorController {
 						break;
 					case Voltage:
 						setPower(setpoint / RobotProvider.instance.getBatteryVoltage());
+						break;
+					default:
 						break;
 				}
 			}
@@ -97,7 +105,7 @@ public class LocalMotorController implements MotorController {
 		}
 		this.motor.set(power);
 	}
-	
+
 	@Override
 	public double get() {
 		double value = motor.get();
@@ -106,14 +114,14 @@ public class LocalMotorController implements MotorController {
 		}
 		return value;
 	}
-	
+
 	@Override
-	public void set(double power) {
+	public void set(final double power) {
 		set(ControlMode.PercentOutput, power);
 	}
 
 	@Override
-	public void setInverted(boolean isInverted) {
+	public void setInverted(final boolean isInverted) {
 		this.inverted = isInverted;
 	}
 
@@ -128,9 +136,10 @@ public class LocalMotorController implements MotorController {
 	}
 
 	@Override
-	public void setSensorPosition(double position) {
+	public void setSensorPosition(final double position) {
 		if (this.sensor == null) {
-			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR, toString() + " does not have an attached sensor configured");
+			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR,
+					toString() + " does not have an attached sensor configured");
 			return;
 		}
 		if (this.sensorInverted != this.inverted) {
@@ -138,11 +147,12 @@ public class LocalMotorController implements MotorController {
 		}
 		sensorOffset = position - sensor.getPosition();
 	}
-	
+
 	@Override
 	public double getSensorPosition() {
 		if (this.sensor == null) {
-			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR, toString() + " does not have an attached sensor configured");
+			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR,
+					toString() + " does not have an attached sensor configured");
 			return 0.0;
 		}
 		double position = sensor.getPosition() + sensorOffset;
@@ -155,7 +165,8 @@ public class LocalMotorController implements MotorController {
 	@Override
 	public double getSensorVelocity() {
 		if (this.sensor == null) {
-			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR, toString() + " does not have an attached sensor configured");
+			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR,
+					toString() + " does not have an attached sensor configured");
 			return 0.0;
 		}
 		double velocity = sensor.getRate();
@@ -166,9 +177,10 @@ public class LocalMotorController implements MotorController {
 	}
 
 	@Override
-	public void set(ControlMode mode, double value) {
+	public void set(final ControlMode mode, final double value) {
 		if (mode == ControlMode.Follower) {
-			throw new IllegalArgumentException("Use follow() method instead of passing Follower to set()");
+			throw new IllegalArgumentException(
+					"Use follow() method instead of passing Follower to set()");
 		}
 		if (this.controlMode != mode) {
 			pidController.reset();
@@ -177,69 +189,72 @@ public class LocalMotorController implements MotorController {
 		this.setpoint = value;
 		this.pidController.setSetpoint(setpoint);
 	}
-	
+
 	public ControlMode getControlMode() {
 		return this.controlMode;
 	}
 
 	@Override
-	public void follow(MotorController leader) {
-		if (leader == null) {
+	public void follow(final MotorController leaderParam) {
+		if (leaderParam == null) {
 			throw new IllegalArgumentException("leader argument to follow() is null");
 		}
 		// TODO: detect if this.motor is a MotorController, and delegate to its follow() method if so.
 		this.controlMode = ControlMode.Follower;
-		this.leader = leader;
+		this.leader = leaderParam;
 	}
-	
+
 	@Override
-	public void setNeutralMode(NeutralMode neutralMode) {
+	public void setNeutralMode(final NeutralMode neutralMode) {
 		if (this.motor instanceof MotorController) {
-			((MotorController)this.motor).setNeutralMode(neutralMode);
+			((MotorController) this.motor).setNeutralMode(neutralMode);
 		} else {
-			LoggerExceptionUtils.logException(new UnsupportedOperationException(this.toString() + " - setNeutralMode() is only supported with CAN motor controllers"));
+			LoggerExceptionUtils.logException(new UnsupportedOperationException(this.toString()
+					+ " - setNeutralMode() is only supported with CAN motor controllers"));
 		}
 	}
 
 	@Override
-	public void setP(double value) {
+	public void setP(final double value) {
 		pidController.setP(value);
 	}
 
 	@Override
-	public void setI(double value) {
+	public void setI(final double value) {
 		pidController.setI(value);
 	}
 
 	@Override
-	public void setD(double value) {
+	public void setD(final double value) {
 		pidController.setD(value);
 	}
 
 	@Override
-	public void setFF(double value) {
+	public void setFF(final double value) {
 		pidController.setFF(value);
 	}
 
 	@Override
-	public void setSelectedFeedbackSensor(FeedbackDevice feedbackDevice) {
-		LoggerExceptionUtils.logException(new UnsupportedOperationException("setSelectedFeedbsckSensor() is currently unsupported by LocalMotorController"));
+	public void setSelectedFeedbackSensor(final FeedbackDevice feedbackDevice) {
+		LoggerExceptionUtils.logException(new UnsupportedOperationException(
+				"setSelectedFeedbsckSensor() is currently unsupported by LocalMotorController"));
 	}
 
 	@Override
-	public void setSensorInverted(boolean inverted) {
-		this.sensorInverted = inverted;
+	public void setSensorInverted(final boolean invertedParam) {
+		this.sensorInverted = invertedParam;
 	}
 
 	@Override
-	public void setOutputRange(double minOutput, double maxOutput) {
+	public void setOutputRange(final double minOutput, final double maxOutput) {
 		pidController.setMaxoutputLow(minOutput);
 		pidController.setMaxoutputHigh(maxOutput);
 	}
 
 	@Override
-	public void setCurrentLimit(double ampsLimit) {
-		LoggerExceptionUtils.logException(new UnsupportedOperationException("setCurrentLimit() is currently unsupported by LocalMotorController"));
+	public void setCurrentLimit(final double ampsLimit) {
+		LoggerExceptionUtils.logException(new UnsupportedOperationException(
+				"setCurrentLimit() is currently unsupported by LocalMotorController"));
 	}
 
 	@Override
@@ -260,12 +275,13 @@ public class LocalMotorController implements MotorController {
 	}
 
 	@Override
-	public void setOpenLoopRamp(double secondsFromNeutralToFull) {
-		LoggerExceptionUtils.logException(new UnsupportedOperationException("setOpenLoopRamp() is currently unsupported by LocalMotorController"));
+	public void setOpenLoopRamp(final double secondsFromNeutralToFull) {
+		LoggerExceptionUtils.logException(new UnsupportedOperationException(
+				"setOpenLoopRamp() is currently unsupported by LocalMotorController"));
 	}
 
 	@Override
-	public void setClosedLoopRamp(double secondsFromNeutralToFull) {
+	public void setClosedLoopRamp(final double secondsFromNeutralToFull) {
 		LoggerExceptionUtils.logException(new UnsupportedOperationException("setClosedLoopRamp() is currently unsupported by LocalMotorController"));
 	}
 }

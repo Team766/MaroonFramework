@@ -1,7 +1,7 @@
 package com.team766.framework;
 
 class StackTraceUtils {
-	public static String getStackTrace(Thread thread) {
+	public static String getStackTrace(final Thread thread) {
 		StackTraceElement[] stackTrace;
 		try {
 			stackTrace = thread.getStackTrace();
@@ -12,7 +12,7 @@ class StackTraceUtils {
 		return getStackTrace(stackTrace);
 	}
 
-	public static String getStackTrace(StackTraceElement[] stackTrace) {
+	public static String getStackTrace(final StackTraceElement[] stackTrace) {
 		String repr = "";
 		for (var stackFrame : stackTrace) {
 			repr += " at " + stackFrame.getClassName() + "." + stackFrame.getMethodName();

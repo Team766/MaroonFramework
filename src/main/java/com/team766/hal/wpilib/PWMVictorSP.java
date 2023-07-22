@@ -5,7 +5,7 @@ import com.team766.hal.BasicMotorController;
 import edu.wpi.first.wpilibj.motorcontrol.VictorSP;
 
 public class PWMVictorSP extends VictorSP implements BasicMotorController {
-	public PWMVictorSP(int channel) {
+	public PWMVictorSP(final int channel) {
 		super(channel);
 	}
 

@@ -11,23 +11,24 @@ public class ElectricalResistance implements ElectricalDevice {
 		0.0333, 0.0420, 0.0530, 0.0668, 0.0842, 0.106, 0.134, 0.169, 0.213, 0.268,                     // 20-29
 		0.339, 0.427, 0.538, 0.679, 0.856, 1.08, 1.36, 1.72, 2.16, 2.73, 3.44,                         // 30-40
 	};
-	public static ElectricalResistance makeWires(int awg, double length, ElectricalDevice downstream) {
+	public static ElectricalResistance makeWires(final int awg, final double length,
+			final ElectricalDevice downstream) {
 		return new ElectricalResistance(WIRE_RESISTANCE_PER_M[awg] * length / 1000., downstream);
 	}
-	
+
 	private final double resistance;
-	
+
 	private ElectricalDevice downstream;
-	
+
 	private ElectricalDevice.Output state;
-	
-	public ElectricalResistance(double resistance, ElectricalDevice downstream) {
-		this.resistance = resistance;
-		this.downstream = downstream;
+
+	public ElectricalResistance(final double resistanceParam, final ElectricalDevice downstreamParam) {
+		this.resistance = resistanceParam;
+		this.downstream = downstreamParam;
 	}
-	
+
 	@Override
-	public ElectricalDevice.Output step(ElectricalDevice.Input input) {
+	public ElectricalDevice.Output step(final ElectricalDevice.Input input) {
 		ElectricalDevice.Input downstreamInput = new ElectricalDevice.Input(input.voltage - resistance * state.current);
 		state = downstream.step(downstreamInput);
 		return state;
