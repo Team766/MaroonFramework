@@ -56,14 +56,14 @@ public class AutonomousSelector implements WebServer.Handler {
 			locationReplaceScript =
 					"<script>window.location.replace(window.location.pathname);</script>";
 		}
-		final String selectedAutonModeName =
+		final String selectedAutonModeNameUI =
 				m_selectedAutonMode != null ? m_selectedAutonMode.name() : "<none>";
 		return String.join("\n", new String[]{
 			locationReplaceScript,
 			"<h1>Autonomous Mode Selector</h1>",
-			"<h3 id=\"current-mode\">Current Mode: " + selectedAutonModeName + "</h1>",
+			"<h3 id=\"current-mode\">Current Mode: " + selectedAutonModeNameUI + "</h1>",
 			"<form>",
-			"<p>" + HtmlElements.buildDropDown("AutoMode", selectedAutonModeName, m_autonModeNames) + "</p>",
+			"<p>" + HtmlElements.buildDropDown("AutoMode", selectedAutonModeNameUI, m_autonModeNames) + "</p>",
 			"<input type=\"submit\" value=\"Submit\"></form>",
 			"<script>",
 			"  function refreshAutoMode() {",

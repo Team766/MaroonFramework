@@ -21,7 +21,7 @@ public class CANTalonMotorController extends BaseCTREMotorController implements 
 	}
 
 	@Override
-	public void set(final ControlMode mode, final double value) {
+	public void set(final ControlMode mode, double value) {
 		com.ctre.phoenix.motorcontrol.ControlMode ctre_mode = null;
 		boolean useFourTermSet = true;
 		switch (mode) {

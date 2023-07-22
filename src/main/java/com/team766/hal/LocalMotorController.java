@@ -136,7 +136,7 @@ public class LocalMotorController implements MotorController {
 	}
 
 	@Override
-	public void setSensorPosition(final double position) {
+	public void setSensorPosition(double position) {
 		if (this.sensor == null) {
 			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR,
 					toString() + " does not have an attached sensor configured");
