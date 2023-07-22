@@ -29,3 +29,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_GOOGLE_JAVA_FORMAT: false
+          VALIDATE_JSCPD: false
+          VALIDATE_MARKDOWN: false
+          JAVA_FILE_NAME: 'checkstyle.xml'

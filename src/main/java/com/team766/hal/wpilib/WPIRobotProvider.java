@@ -49,9 +49,9 @@ public class WPIRobotProvider extends RobotProvider {
 			m_keepAlive.set(true);
 		}
 
-		public void cancel() {
+		/* public void cancel() {
 			m_keepAlive.set(false);
-		}
+		} */
 
 		@Override
 		public void run() {
