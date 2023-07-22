@@ -28,4 +28,4 @@ jobs:
           DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
-          VALIDATE_JAVA_CHECKSTYLE: true
+          VALIDATE_GOOGLE_JAVA_FORMAT: false
