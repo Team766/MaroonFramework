@@ -60,12 +60,12 @@ public class ReadLogs implements WebServer.Handler {
 												Arrays.stream(Category.values())
 														.map(Category::name))
 										.toArray(String[]::new)),
-								"<input type=\"submit\" value=\"Open Log\">", "</p></form>",});
+								"<input type=\"submit\" value=\"Open Log\">", "</p></form>", });
 		if (id != null) {
 			r += String.join("\n", new String[] {"<h1>Log: " + readerDescriptions.get(id) + "</h1>",
 					makeLogEntriesTable(logReaders.get(id), readerStreams.get(id)),
 					"<input type=\"button\" onclick=\"window.location = '" + ENDPOINT + "?id=" + id
-							+ "'; this.disabled=true; this.value='Loading...';\" value=\"Next page\" />",});
+							+ "'; this.disabled=true; this.value='Loading...';\" value=\"Next page\" />", });
 		}
 		return r;
 	}

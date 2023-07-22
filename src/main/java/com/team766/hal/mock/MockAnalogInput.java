@@ -6,7 +6,7 @@ public class MockAnalogInput implements AnalogInputReader {
 
 	private double sensor = 0.0;
 
-	public void set(final double value){
+	public void set(final double value) {
 		sensor = value;
 	}
 

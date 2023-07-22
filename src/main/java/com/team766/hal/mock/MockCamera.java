@@ -5,7 +5,7 @@ import org.opencv.imgcodecs.Imgcodecs;
 
 import com.team766.hal.CameraReader;
 
-public class MockCamera implements CameraReader{
+public class MockCamera implements CameraReader {
 
 	private String nextImage;
 
@@ -18,7 +18,7 @@ public class MockCamera implements CameraReader{
 		return Imgcodecs.imread(nextImage);
 	}
 
-	public void setNextImage(final String nextImageParam){
+	public void setNextImage(final String nextImageParam) {
 		this.nextImage = this.getClass().getClassLoader().getResource(nextImageParam).getPath();
 	}
 
