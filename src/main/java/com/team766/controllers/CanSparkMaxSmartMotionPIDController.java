@@ -31,13 +31,14 @@ public class CanSparkMaxSmartMotionPIDController{
 	private SparkMaxPIDController pid;
 	private SparkMaxAbsoluteEncoder abs;
 	//PID Related Variables
-	private static double dz1 = 0; 
+	private static double deadzone = 0; 
 	private static double setPointPosition = 0;
 	private static double comboOfTimesInsideDeadzone = 0;
 	private static double minPos = 0;
 	private static double maxPos = 0;
 
 	private bool isAbsoluteEncoderEnabled;
+	private bool isMechanismRotational;
 
 	//antigrav coefficient
 	private static double antiGravK;
@@ -51,14 +52,15 @@ public class CanSparkMaxSmartMotionPIDController{
 	private PIDSTATE theState = PIDSTATE.OFF;
 	
 	//constructor for the class with no absolute encoder
-	public CanSparkMaxSmartMotionPIDController(String configName) throws RuntimeException{
+	public CanSparkMaxSmartMotionPIDController(String configName, boolean rotational){
 			loggerCategory = Category.MECHANISMS;
 
 			try{
 				mc = RobotProvider.instance.getMotor(configName);
 				csm = (CANSparkMax)mc;
 				pid = csm.getPIDController();
-				isAbsoluteEncoderEnabled = true;
+				isAbsoluteEncoderEnabled = false;
+				isMechanismRotational = rotational;
 			}catch (IllegalArgumentException ill){
 				throw new RuntimeException("Error instantiating the PID controller: " + ill);
 			}
@@ -66,7 +68,7 @@ public class CanSparkMaxSmartMotionPIDController{
 		
 	}
 	//constructor for the class with an absolute encoder
-	public CanSparkMaxSmartMotionPIDController(String configName, double absEncoderOffset) throws RuntimeException{
+	public CanSparkMaxSmartMotionPIDController(String configName, double absEncoderOffset, boolean rotational){
 			loggerCategory = Category.MECHANISMS;
 
 			try{
@@ -76,7 +78,8 @@ public class CanSparkMaxSmartMotionPIDController{
 				abs = csm.getAbsoluteEncoder(Type.kDutyCycle);
 				abs.setZeroOffset(absEncoderOffset);
 				pid.setFeedbackDevice(abs);
-				isAbsoluteEncoderEnabled = false;
+				isAbsoluteEncoderEnabled = true;
+				isMechanismRotational = rotational;
 			}catch (IllegalArgumentException ill){
 				throw new RuntimeException("Error instantiating the CLE PID controller: " + ill);
 			}
@@ -111,13 +114,23 @@ public class CanSparkMaxSmartMotionPIDController{
 		pid.setFF(ff);
 	}
 	
-	//setting the antigravity constants2
+	/*
+	* Here we set the antigrav constant
+ 	* If the mechanism is rotational, this is the amount we multiply the Sine of the sensor position with
+  	* If the mechanism isn't rotational, this is just the amount of power to apply.
+   	* @param k the value to set according to the above condition
+	*/
 	public void setAntigravConstant(double k){
 		antiGravK = k;
 	}
 
 	private void antigrav(){
-		mc.set(antiGravK * Math.sin(mc.getSensorPosition()));
+		if(rotational){
+			mc.set(antiGravK * Math.sin(mc.getSensorPosition()));
+		}else{
+			mc.set(antiGravK);
+		}
+		
 	}
 
 	//adding a built in closed loop error (not tested yet)
@@ -126,7 +139,7 @@ public class CanSparkMaxSmartMotionPIDController{
 	}
 	//changing the deadzone
 	public void setDeadzone(double dz){
-		dz1 = dz;
+		deadzone = dz;
 	}
 	//changing the output range of the speed of the motors
 	public void setOutputRange(double min, double max){
@@ -186,21 +199,22 @@ public class CanSparkMaxSmartMotionPIDController{
 		if(enabled){
 			//Checking if Abs encoder is enabled, and if so we wouldn't want positions above 1 and below 0
 			if(isAbsoluteEncoderEnabled){
-				MathUtil.clamp(minPos, 0.0, 1.0);
-				MathUtil.clamp(maxPos, 0.0, 1.0);
+				minPos = MathUtil.clamp(minPos, 0.0, 1.0);
+				maxPos = MathUtil.clamp(maxPos, 0.0, 1.0);
 			}
 			
 			switch(theState){
-				case OFF:
+				case OFF:`
+					mc.set(0);
 					break;
 				case ANTIGRAV:
-					if (mc.getSensorPosition() <= (dz1 + mc.getSensorPosition()) && mc.getSensorPosition() >= (mc.getSensorPosition() - dz1)){
+					if (setPointPosition <= (deadzone + mc.getSensorPosition()) && setPointPosition >= (mc.getSensorPosition() - deadzone)){
 						antigrav();
 					} else {
 						theState = PIDSTATE.PID;
 					}
 				case PID:
-					if (mc.getSensorPosition() <= (dz1 + mc.getSensorPosition()) && mc.getSensorPosition() >= (mc.getSensorPosition() - dz1)){
+					if (setPointPosition <= (deadzone + mc.getSensorPosition()) && setPointPosition >= (mc.getSensorPosition() - deadzone)){
 						comboOfTimesInsideDeadzone ++;
 					} else {
 						comboOfTimesInsideDeadzone = 0;
