@@ -41,6 +41,7 @@ public class CanSparkMaxSmartMotionRotationalPIDController{
 
 	//Precision variables
 	private double degreesToEncoderUnitsRatio = 0;
+	private double encoderUnitsPerOneAbsolute = 0;
 
 	//antigrav coefficient
 	private static double antiGravK;
@@ -55,7 +56,7 @@ public class CanSparkMaxSmartMotionRotationalPIDController{
 	
 	//constructor for the class not using an absolute encoder for kDutyCycle
 	
-	public CanSparkMaxSmartMotionRotationalPIDController(String configName, double absEncoderOffsetToMakeZeroEncoderUnits, double ratio){
+	public CanSparkMaxSmartMotionRotationalPIDController(String configName, double absEncoderOffset, double absEncoderOffsetForZeroEncoderUnits, OffsetPoint first, OffsetPoint second, double ratio){
 			loggerCategory = Category.MECHANISMS;
 
 			try{
@@ -63,13 +64,29 @@ public class CanSparkMaxSmartMotionRotationalPIDController{
 				csm = (CANSparkMax)mc;
 				pid = csm.getPIDController();
 				abs = csm.getAbsoluteEncoder(Type.kDutyCycle);
-				abs.setZeroOffset(absEncoderOffsetToMakeZeroEncoderUnits);
+				abs.setZeroOffset(absEncoderOffset);
 				degreesToEncoderUnitsRatio = ratio;
+
+
+				double absoluteDifference = second.getAbsoluteValue() - first.getAbsoluteValue();
+				double motorEncoderDiference = second.getMotorEncoderValue() - first.getMotorEncoderValue();
+
+				encoderUnitsPerOneAbsolute = motorEncoderDiference/absoluteDifference;
+
+				double relEncoder = absToEu(abs.getPosition() - absEncoderOffsetForZeroEncoderUnits);
+
+				mc.setSensorPosition(relEncoder);
+				
+
 			}catch (IllegalArgumentException ill){
 				throw new RuntimeException("Error instantiating the PID controller: " + ill);
 			}
 
 		
+	}
+
+	private double absToEu(double abs){
+		return encoderUnitsPerOneAbsolute / (1/abs); 
 	}
 
 	private double euToDegrees(double eu){
