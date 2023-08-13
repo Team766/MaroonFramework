@@ -21,10 +21,8 @@ class BaseCTREMotorController {
 		switch (throwEx) {
 			case THROW:
 				throw ex;
-			case LOG:
+			default: case LOG:
 				LoggerExceptionUtils.logException(ex);
-				break;
-			default:
 				break;
 		}
 	}

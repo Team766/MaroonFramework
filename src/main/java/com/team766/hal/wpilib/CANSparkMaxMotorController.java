@@ -42,10 +42,8 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 		switch (throwEx) {
 			case THROW:
 				throw ex;
-			case LOG:
+			default: case LOG:
 				LoggerExceptionUtils.logException(ex);
-				break;
-			default:
 				break;
 		}
 	}
@@ -147,7 +145,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 	@Override
 	public void setSelectedFeedbackSensor(final FeedbackDevice feedbackDevice) {
 		switch (feedbackDevice) {
-			case Analog:
+			case Analog: {
 				SparkMaxAnalogSensor analog = getAnalog(SparkMaxAnalogSensor.Mode.kAbsolute);
 				revErrorToException(ExceptionTarget.LOG, analog.setInverted(sensorInverted));
 				sensorPositionSupplier = analog::getPosition;
@@ -157,13 +155,14 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 				revErrorToException(ExceptionTarget.LOG,
 						getPIDController().setFeedbackDevice(analog));
 				return;
+			}
 			case CTRE_MagEncoder_Absolute:
 				LoggerExceptionUtils.logException(
 						new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
 			case CTRE_MagEncoder_Relative:
 				LoggerExceptionUtils.logException(
 						new IllegalArgumentException("SparkMax does not support CTRE Mag Encoder"));
-			case IntegratedSensor:
+			case IntegratedSensor: {
 				RelativeEncoder encoder = getEncoder();
 				// NOTE(rcahoon, 2022-04-19): Don't call this. Trying to call setInverted on the
 				// integrated sensor returns an error.
@@ -178,6 +177,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 				revErrorToException(ExceptionTarget.LOG,
 						getPIDController().setFeedbackDevice(encoder));
 				return;
+			}
 			case None:
 				return;
 			case PulseWidthEncodedPosition:

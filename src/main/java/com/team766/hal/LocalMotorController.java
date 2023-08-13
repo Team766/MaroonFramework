@@ -83,6 +83,9 @@ public class LocalMotorController implements MotorController {
 						setPower(setpoint / RobotProvider.instance.getBatteryVoltage());
 						break;
 					default:
+						LoggerExceptionUtils.logException(
+							new UnsupportedOperationException(toString() + " does not support control mode " + LocalMotorController.this.controlMode)
+						);
 						break;
 				}
 			}

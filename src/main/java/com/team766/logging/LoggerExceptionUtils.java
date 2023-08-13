@@ -4,7 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 public class LoggerExceptionUtils {
-	public static String exceptionToString(final  Throwable e) {
+	public static String exceptionToString(final Throwable e) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		pw.print("Uncaught exception: ");

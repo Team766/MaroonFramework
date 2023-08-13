@@ -59,21 +59,21 @@ public class VrConnector implements Runnable {
 	private static final List<PortMapping> RELAY_CHANNELS = Arrays.asList();
 
 	private static final List<CANPortMapping> CAN_MOTOR_CHANNELS =
-			Arrays.asList(new CANPortMapping(6, 10, 10), // Left motor
-					new CANPortMapping(4, 11, 11), // Right motor
-					new CANPortMapping(10, 12, 13), // Intake
-					new CANPortMapping(12, 14, 0), // Aux/center motor
-					new CANPortMapping(14, 16, 0), // Aux2 motor
+		Arrays.asList(new CANPortMapping(6, 10, 10), // Left motor
+			new CANPortMapping(4, 11, 11), // Right motor
+			new CANPortMapping(10, 12, 13), // Intake
+			new CANPortMapping(12, 14, 0), // Aux/center motor
+			new CANPortMapping(14, 16, 0), // Aux2 motor
 
-					new CANPortMapping(84, 84, 84), // FLD motor
-					new CANPortMapping(85, 85, 85), // BLD motor
-					new CANPortMapping(86, 86, 86), // FRD motor
-					new CANPortMapping(87, 87, 87), // BRD motor
-					new CANPortMapping(88, 88, 88), // FLS motor
-					new CANPortMapping(89, 89, 89), // BLS motor
-					new CANPortMapping(90, 90, 90), // FRS motor
-					new CANPortMapping(91, 91, 91) // BRS motor
-			);
+			new CANPortMapping(84, 84, 84), // FLD motor
+			new CANPortMapping(85, 85, 85), // BLD motor
+			new CANPortMapping(86, 86, 86), // FRD motor
+			new CANPortMapping(87, 87, 87), // BRD motor
+			new CANPortMapping(88, 88, 88), // FLS motor
+			new CANPortMapping(89, 89, 89), // BLS motor
+			new CANPortMapping(90, 90, 90), // FRS motor
+			new CANPortMapping(91, 91, 91) // BRS motor
+		);
 
 	/// Feedback indexes
 
@@ -94,20 +94,20 @@ public class VrConnector implements Runnable {
 	private static final int BEACON_SENSOR_STRIDE = 6; // (x, y, z, yaw, pitch, roll)
 
 	private static final List<PortMapping> ENCODER_CHANNELS = Arrays.asList(new PortMapping(10, 0), // Left
-																									// encoder
-			new PortMapping(11, 2), // Right encoder
-			new PortMapping(13, 4) // Mechanism encoder
+		// encoder
+		new PortMapping(11, 2), // Right encoder
+		new PortMapping(13, 4) // Mechanism encoder
 	);
 	private static final int GYRO_CHANNEL = 15;
 	private static final int GYRO_RATE_CHANNEL = 16;
 	private static final int GYRO_PITCH_CHANNEL = 80;
 	private static final int GYRO_ROLL_CHANNEL = 81;
 	private static final List<PortMapping> DIGITAL_CHANNELS = Arrays.asList(new PortMapping(13, 0), // Intake
-																									// state
-			new PortMapping(14, 1), // Ball presence
-			new PortMapping(17, 4), // Line Sensor 1
-			new PortMapping(18, 5), // Line Sensor 2
-			new PortMapping(19, 6) // Line Sensor 3
+		// state
+		new PortMapping(14, 1), // Ball presence
+		new PortMapping(17, 4), // Line Sensor 1
+		new PortMapping(18, 5), // Line Sensor 2
+		new PortMapping(19, 6) // Line Sensor 3
 	);
 	private static final List<PortMapping> ANALOG_CHANNELS = Arrays.asList();
 

@@ -3,6 +3,7 @@ package com.team766.hal.wpilib;
 import com.team766.hal.RelayOutput;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
+import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
 
 public class Relay extends edu.wpi.first.wpilibj.Relay implements RelayOutput {
@@ -27,6 +28,7 @@ public class Relay extends edu.wpi.first.wpilibj.Relay implements RelayOutput {
 				wpi_value = edu.wpi.first.wpilibj.Relay.Value.kReverse;
 				break;
 			default:
+				LoggerExceptionUtils.logException(new UnsupportedOperationException("invalid relay output provided. provided value: " + mode));
 				break;
 		}
 		if (wpi_value == null) {

@@ -26,7 +26,6 @@ import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.logging.Severity;
-// import com.team766.simulator.elements.AirCompressor;
 import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -49,9 +48,9 @@ public class WPIRobotProvider extends RobotProvider {
 			m_keepAlive.set(true);
 		}
 
-		/* public void cancel() {
+		public void cancel() {
 			m_keepAlive.set(false);
-		} */
+		}
 
 		@Override
 		public void run() {
