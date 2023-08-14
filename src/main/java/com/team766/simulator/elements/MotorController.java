@@ -5,8 +5,8 @@ import com.team766.simulator.interfaces.ElectricalDevice;
 public abstract class MotorController implements ElectricalDevice {
 	private ElectricalDevice downstream;
 
-	public MotorController(final ElectricalDevice downstreamParam) {
-		this.downstream = downstreamParam;
+	public MotorController(final ElectricalDevice downstream_) {
+		this.downstream = downstream_;
 	}
 
 	// [-1, 1] representing the command sent from the application processor

@@ -34,8 +34,8 @@ class SimBasicMotorController implements BasicMotorController {
 		this(ProgramInterface.canMotorControllerChannels[address]);
 	}
 
-	SimBasicMotorController(final ProgramInterface.CANMotorControllerCommunication channelParam) {
-		this.channel = channelParam;
+	SimBasicMotorController(final ProgramInterface.CANMotorControllerCommunication channel_) {
+		this.channel = channel_;
 	}
 
 	@Override

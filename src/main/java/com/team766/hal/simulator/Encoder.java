@@ -43,8 +43,8 @@ public class Encoder implements EncoderReader {
 	}
 
 	@Override
-	public void setDistancePerPulse(final double distancePerPulseParam) {
-		this.distancePerPulse = distancePerPulseParam;
+	public void setDistancePerPulse(final double distancePerPulse_) {
+		this.distancePerPulse = distancePerPulse_;
 	}
 
 	public void set(final int tick) {

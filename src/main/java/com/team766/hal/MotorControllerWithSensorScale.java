@@ -7,9 +7,9 @@ public class MotorControllerWithSensorScale implements MotorController {
 	private MotorController delegate;
 	private double scale;
 
-	public MotorControllerWithSensorScale(final MotorController delegateParam, final double scaleParam) {
-		this.delegate = delegateParam;
-		this.scale = scaleParam;
+	public MotorControllerWithSensorScale(final MotorController delegate_, final double scale_) {
+		this.delegate = delegate_;
+		this.scale = scale_;
 	}
 
 	@Override

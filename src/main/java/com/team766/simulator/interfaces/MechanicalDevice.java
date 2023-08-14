@@ -4,9 +4,9 @@ import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 
 public interface MechanicalDevice {
 	class Input {
-		public Input(final Vector3D positionParam, final Vector3D velocityParam) {
-			this.position = positionParam;
-			this.velocity = velocityParam;
+		public Input(final Vector3D position_, final Vector3D velocity_) {
+			this.position = position_;
+			this.velocity = velocity_;
 		}
 
 		public Input(final Input other) {
@@ -19,8 +19,8 @@ public interface MechanicalDevice {
 	}
 
 	class Output {
-		public Output(final Vector3D forceParam) {
-			this.force = forceParam;
+		public Output(final Vector3D force_) {
+			this.force = force_;
 		}
 
 		public Output(final Output other) {

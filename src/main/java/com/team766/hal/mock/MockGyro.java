@@ -33,20 +33,20 @@ public class MockGyro implements GyroReader {
 		return roll;
 	}
 
-	public void setAngle(final double angleParam) {
-		this.angle = angleParam;
+	public void setAngle(final double angle_) {
+		this.angle = angle_;
 	}
 
-	public void setRate(final double rateParam) {
-		this.rate = rateParam;
+	public void setRate(final double rate_) {
+		this.rate = rate_;
 	}
 
-	public void setPitch(final double pitchParam) {
-		this.pitch = pitchParam;
+	public void setPitch(final double pitch_) {
+		this.pitch = pitch_;
 	}
 
-	public void setRoll(final double rollParam) {
-		this.roll = rollParam;
+	public void setRoll(final double roll_) {
+		this.roll = roll_;
 	}
 
 }

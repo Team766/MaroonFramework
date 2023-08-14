@@ -7,8 +7,8 @@ public class Solenoid implements SolenoidController {
 
 	private int channel;
 
-	public Solenoid(final int channelParam) {
-		this.channel = channelParam;
+	public Solenoid(final int channel_) {
+		this.channel = channel_;
 	}
 
 	public void set(final boolean on) {

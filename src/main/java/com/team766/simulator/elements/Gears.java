@@ -11,9 +11,9 @@ public class Gears implements MechanicalAngularDevice {
 
 	private MechanicalAngularDevice upstream;
 
-	public Gears(final double torqueRatioParam, final MechanicalAngularDevice upstreamParam) {
-		this.torqueRatio = torqueRatioParam;
-		this.upstream = upstreamParam;
+	public Gears(final double torqueRatio_, final MechanicalAngularDevice upstream_) {
+		this.torqueRatio = torqueRatio_;
+		this.upstream = upstream_;
 	}
 
 	@Override

@@ -18,8 +18,8 @@ public class MockCamera implements CameraReader {
 		return Imgcodecs.imread(nextImage);
 	}
 
-	public void setNextImage(final String nextImageParam) {
-		this.nextImage = this.getClass().getClassLoader().getResource(nextImageParam).getPath();
+	public void setNextImage(final String nextImage_) {
+		this.nextImage = this.getClass().getClassLoader().getResource(nextImage_).getPath();
 	}
 
 }

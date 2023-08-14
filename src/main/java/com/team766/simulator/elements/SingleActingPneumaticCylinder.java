@@ -18,11 +18,11 @@ public class SingleActingPneumaticCylinder implements PneumaticDevice, Mechanica
 
 	private PneumaticDevice.Input pneumaticState = new PneumaticDevice.Input(0);
 
-	public SingleActingPneumaticCylinder(final double boreDiameterParam, final double strokeParam,
-			final double returnSpringForceParam) {
-		this.boreDiameter = boreDiameterParam;
-		this.stroke = strokeParam;
-		this.returnSpringForce = returnSpringForceParam;
+	public SingleActingPneumaticCylinder(final double boreDiameter_, final double stroke_,
+			final double returnSpringForce_) {
+		this.boreDiameter = boreDiameter_;
+		this.stroke = stroke_;
+		this.returnSpringForce = returnSpringForce_;
 	}
 
 	public void setExtended(final boolean state) {

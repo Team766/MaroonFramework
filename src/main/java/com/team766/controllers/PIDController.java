@@ -94,8 +94,8 @@ public class PIDController {
 		((SetValueProvider<Double>) Kff).set(FF);
 	}
 
-	private void setTimeProvider(final TimeProviderI timeProviderParam) {
-		this.timeProvider = timeProviderParam;
+	private void setTimeProvider(final TimeProviderI timeProvider_) {
+		this.timeProvider = timeProvider_;
 		lastTime = timeProvider.get();
 	}
 
@@ -123,7 +123,7 @@ public class PIDController {
 	 * @param timeProvider
 	 */
 	public PIDController(final double P, final double I, final double D, final double threshold,
-			final TimeProviderI timeProviderParam) {
+			final TimeProviderI timeProvider_) {
 		Kp = new SetValueProvider<Double>(P);
 		Ki = new SetValueProvider<Double>(I);
 		Kd = new SetValueProvider<Double>(D);
@@ -131,11 +131,11 @@ public class PIDController {
 		maxoutput_low = new SetValueProvider<Double>();
 		maxoutput_high = new SetValueProvider<Double>();
 		endthreshold = new SetValueProvider<Double>(threshold);
-		setTimeProvider(timeProviderParam);
+		setTimeProvider(timeProvider_);
 	}
 
 	public PIDController(final double P, final double I, final double D, final double FF,
-			final double threshold, final TimeProviderI timeProviderParam) {
+			final double threshold, final TimeProviderI timeProvider_) {
 		Kp = new SetValueProvider<Double>(P);
 		Ki = new SetValueProvider<Double>(I);
 		Kd = new SetValueProvider<Double>(D);
@@ -143,7 +143,7 @@ public class PIDController {
 		maxoutput_low = new SetValueProvider<Double>();
 		maxoutput_high = new SetValueProvider<Double>();
 		endthreshold = new SetValueProvider<Double>(threshold);
-		setTimeProvider(timeProviderParam);
+		setTimeProvider(timeProvider_);
 	}
 
 	/**

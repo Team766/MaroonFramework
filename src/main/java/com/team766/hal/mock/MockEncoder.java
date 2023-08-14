@@ -41,17 +41,17 @@ public class MockEncoder implements EncoderReader {
 		return this.rate;
 	}
 
-	public void setDistance(final double distanceParam) {
-		this.distance = distanceParam;
+	public void setDistance(final double distance_) {
+		this.distance = distance_;
 	}
 
-	public void setRate(final double rateParam) {
-		this.rate = rateParam;
+	public void setRate(final double rate_) {
+		this.rate = rate_;
 	}
 
 	@Override
-	public void setDistancePerPulse(final double distancePerPulseParam) {
-		this.distancePerPulse = distancePerPulseParam;
+	public void setDistancePerPulse(final double distancePerPulse_) {
+		this.distancePerPulse = distancePerPulse_;
 	}
 
 }

@@ -28,10 +28,10 @@ public class DCMotor implements ElectricalDevice, MechanicalAngularDevice {
 	private ElectricalDevice.Output electricalState = new ElectricalDevice.Output(0);
 	private MechanicalAngularDevice.Input mechanicalState = new MechanicalAngularDevice.Input(0);
 
-	public DCMotor(final double kVParam, final double kTParam, final double motorResistanceParam) {
-		this.kV = kVParam;
-		this.kT = kTParam;
-		this.motorResistance = motorResistanceParam;
+	public DCMotor(final double kV_, final double kT_, final double motorResistance_) {
+		this.kV = kV_;
+		this.kT = kT_;
+		this.motorResistance = motorResistance_;
 	}
 
 	@Override

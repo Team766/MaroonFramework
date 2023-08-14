@@ -22,9 +22,9 @@ public class ElectricalResistance implements ElectricalDevice {
 
 	private ElectricalDevice.Output state;
 
-	public ElectricalResistance(final double resistanceParam, final ElectricalDevice downstreamParam) {
-		this.resistance = resistanceParam;
-		this.downstream = downstreamParam;
+	public ElectricalResistance(final double resistance_, final ElectricalDevice downstream_) {
+		this.resistance = resistance_;
+		this.downstream = downstream_;
 	}
 
 	@Override

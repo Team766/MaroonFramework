@@ -7,9 +7,9 @@ public class CanMotorController extends MotorController {
 
 	private int address;
 
-	public CanMotorController(final int addressParam, final ElectricalDevice downstream) {
+	public CanMotorController(final int address_, final ElectricalDevice downstream) {
 		super(downstream);
-		this.address = addressParam;
+		this.address = address_;
 	}
 
 	@Override

@@ -46,8 +46,8 @@ public class Metrics extends JPanel {
 		private double selectedTime = Double.NaN;
 		private XYPlot plot;
 
-		Inspector(final XYPlot plotParam) {
-			this.plot = plotParam;
+		Inspector(final XYPlot plot_) {
+			this.plot = plot_;
 		}
 
 		void update() {

@@ -14,13 +14,13 @@ public class TransformTree {
 		this.name = rootName;
 	}
 
-	private TransformTree(final String nameParam, final TransformTree parentParam) {
-		this.name = nameParam;
-		this.parent = parentParam;
+	private TransformTree(final String name_, final TransformTree parent_) {
+		this.name = name_;
+		this.parent = parent_;
 	}
 
-	public TransformTree addSubordinateTransform(final String nameParam) {
-		TransformTree subtree = new TransformTree(nameParam, this);
+	public TransformTree addSubordinateTransform(final String name_) {
+		TransformTree subtree = new TransformTree(name_, this);
 		tree.add(subtree);
 		return subtree;
 	}
@@ -33,10 +33,10 @@ public class TransformTree {
 		return transform;
 	}
 
-	public IsometricTransform getTransformRelativeTo(final String nameParam) {
+	public IsometricTransform getTransformRelativeTo(final String name_) {
 		TransformTree other = getRoot().findTransform(name);
 		if (other == null) {
-			throw new IllegalArgumentException("Can't find a transform named " + nameParam);
+			throw new IllegalArgumentException("Can't find a transform named " + name_);
 		}
 		return getTransformRelativeTo(other);
 	}
@@ -63,12 +63,12 @@ public class TransformTree {
 		throw new IllegalArgumentException("Transforms aren't part of the same tree");
 	}
 
-	public TransformTree findTransform(final String nameParam) {
-		if (this.name == nameParam) {
+	public TransformTree findTransform(final String name_) {
+		if (this.name == name_) {
 			return this;
 		}
 		for (TransformTree sub : tree) {
-			TransformTree subResult = sub.findTransform(nameParam);
+			TransformTree subResult = sub.findTransform(name_);
 			if (subResult != null) {
 				return subResult;
 			}

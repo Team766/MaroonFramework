@@ -7,10 +7,10 @@ public class PwmMotorController extends MotorController {
 
 	private int channel;
 
-	public PwmMotorController(final int channelParam, final ElectricalDevice downstream) {
+	public PwmMotorController(final int channel_, final ElectricalDevice downstream) {
 		super(downstream);
 
-		this.channel = channelParam;
+		this.channel = channel_;
 	}
 
 	@Override

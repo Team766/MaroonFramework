@@ -2,8 +2,8 @@ package com.team766.simulator.interfaces;
 
 public interface PneumaticDevice {
 	class Input {
-		public Input(final double pressureParam) {
-			this.pressure = pressureParam;
+		public Input(final double pressure_) {
+			this.pressure = pressure_;
 		}
 
 		public Input(final Input other) {
@@ -15,9 +15,9 @@ public interface PneumaticDevice {
 	}
 
 	class Output {
-		public Output(final double flowVolumeParam, final double deviceVolumeParam) {
-			this.flowVolume = flowVolumeParam;
-			this.deviceVolume = deviceVolumeParam;
+		public Output(final double flowVolume_, final double deviceVolume_) {
+			this.flowVolume = flowVolume_;
+			this.deviceVolume = deviceVolume_;
 		}
 
 		public Output(final Output other) {

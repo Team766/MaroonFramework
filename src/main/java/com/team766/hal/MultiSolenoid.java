@@ -5,8 +5,8 @@ public class MultiSolenoid implements SolenoidController {
 	private SolenoidController[] solenoids;
 	private boolean state;
 
-	public MultiSolenoid(final SolenoidController... solenoidsParam) {
-		this.solenoids = solenoidsParam;
+	public MultiSolenoid(final SolenoidController... solenoids_) {
+		this.solenoids = solenoids_;
 
 		set(false);
 	}

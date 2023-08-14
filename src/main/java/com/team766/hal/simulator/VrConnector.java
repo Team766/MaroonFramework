@@ -32,11 +32,11 @@ public class VrConnector implements Runnable {
 		public final int motorCommandMessageDataIndex;
 		public final int sensorFeedbackMessageDataIndex;
 
-		CANPortMapping(final int canIdParam, final int motorCommandMessageDataIndexParam,
-				final int sensorFeedbackMessageDataIndexParam) {
-			this.canId = canIdParam;
-			this.motorCommandMessageDataIndex = motorCommandMessageDataIndexParam;
-			this.sensorFeedbackMessageDataIndex = sensorFeedbackMessageDataIndexParam;
+		CANPortMapping(final int canId_, final int motorCommandMessageDataIndex_,
+				final int sensorFeedbackMessageDataIndex_) {
+			this.canId = canId_;
+			this.motorCommandMessageDataIndex = motorCommandMessageDataIndex_;
+			this.sensorFeedbackMessageDataIndex = sensorFeedbackMessageDataIndex_;
 		}
 	}
 

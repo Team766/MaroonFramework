@@ -16,9 +16,9 @@ public class WPILibCommandProcedure extends Procedure {
      * @param requirements This Procedure will take ownership of the Mechanisms
      *                     given here during the time it is executing.
      */
-    public WPILibCommandProcedure(final Command commandParam, final Mechanism... requirementsParam) {
-        this.command = commandParam;
-        this.requirements = requirementsParam;
+    public WPILibCommandProcedure(final Command command_, final Mechanism... requirements_) {
+        this.command = command_;
+        this.requirements = requirements_;
     }
 
     @Override

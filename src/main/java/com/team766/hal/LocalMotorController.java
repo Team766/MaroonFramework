@@ -22,10 +22,10 @@ public class LocalMotorController implements MotorController {
 	private double setpoint = 0.0;
 	private MotorController leader = null;
 
-	public LocalMotorController(String configPrefix, final BasicMotorController motorParam,
-			final ControlInputReader sensorParam) {
-		this.motor = motorParam;
-		this.sensor = sensorParam;
+	public LocalMotorController(String configPrefix, final BasicMotorController motor_,
+			final ControlInputReader sensor_) {
+		this.motor = motor_;
+		this.sensor = sensor_;
 
 		if (!configPrefix.endsWith(".")) {
 			configPrefix += ".";
@@ -198,13 +198,13 @@ public class LocalMotorController implements MotorController {
 	}
 
 	@Override
-	public void follow(final MotorController leaderParam) {
-		if (leaderParam == null) {
+	public void follow(final MotorController leader_) {
+		if (leader_ == null) {
 			throw new IllegalArgumentException("leader argument to follow() is null");
 		}
 		// TODO: detect if this.motor is a MotorController, and delegate to its follow() method if so.
 		this.controlMode = ControlMode.Follower;
-		this.leader = leaderParam;
+		this.leader = leader_;
 	}
 
 	@Override
@@ -244,8 +244,8 @@ public class LocalMotorController implements MotorController {
 	}
 
 	@Override
-	public void setSensorInverted(final boolean invertedParam) {
-		this.sensorInverted = invertedParam;
+	public void setSensorInverted(final boolean inverted_) {
+		this.sensorInverted = inverted_;
 	}
 
 	@Override

@@ -6,8 +6,8 @@ public class DriverInterface implements WebServer.Handler {
 
 	AutonomousSelector autonomousSelector;
 
-	public DriverInterface(final AutonomousSelector autonomousSelectorParam) {
-		this.autonomousSelector = autonomousSelectorParam;
+	public DriverInterface(final AutonomousSelector autonomousSelector_) {
+		this.autonomousSelector = autonomousSelector_;
 	}
 
 	@Override

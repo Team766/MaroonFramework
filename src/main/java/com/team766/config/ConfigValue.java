@@ -78,9 +78,9 @@ class StringConfigValue extends AbstractConfigValue<String> {
 class EnumConfigValue<E extends Enum<E>> extends AbstractConfigValue<E> {
 	Class<E> enumClass;
 
-	protected EnumConfigValue(final Class<E> enumClassParam, final String key) {
+	protected EnumConfigValue(final Class<E> enumClass_, final String key) {
 		super(key);
-		this.enumClass = enumClassParam;
+		this.enumClass = enumClass_;
 	}
 
 	@Override

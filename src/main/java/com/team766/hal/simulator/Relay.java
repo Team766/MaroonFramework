@@ -7,8 +7,8 @@ public class Relay implements RelayOutput {
 
 	private int channel;
 
-	public Relay(final int channelParam) {
-		this.channel = channelParam;
+	public Relay(final int channel_) {
+		this.channel = channel_;
 	}
 
 	@Override

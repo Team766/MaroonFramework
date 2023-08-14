@@ -6,8 +6,8 @@ public class AirReservoir implements PneumaticDevice {
 
 	private double volume;
 
-	public AirReservoir(final double volumeParam) {
-		this.volume = volumeParam;
+	public AirReservoir(final double volume_) {
+		this.volume = volume_;
 	}
 
 	@Override

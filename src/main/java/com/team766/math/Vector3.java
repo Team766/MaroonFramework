@@ -10,10 +10,10 @@ public class Vector3 implements Algebraic<Vector3> {
 	public final double y;
 	public final double z;
 
-	public Vector3(final double xParam, final double yParam, final double zParam) {
-		this.x = xParam;
-		this.y = yParam;
-		this.z = zParam;
+	public Vector3(final double x_, final double y_, final double z_) {
+		this.x = x_;
+		this.y = y_;
+		this.z = z_;
 	}
 
 	public Vector3(final Vector3 other) {

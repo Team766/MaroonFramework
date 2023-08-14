@@ -10,9 +10,9 @@ public class DoubleSolenoid implements SolenoidController {
 		Forward, Neutral, Backward
 	}
 
-	public DoubleSolenoid(final SolenoidController forwardParam, final SolenoidController backParam) {
-		this.forward = forwardParam;
-		this.back = backParam;
+	public DoubleSolenoid(final SolenoidController forward_, final SolenoidController back_) {
+		this.forward = forward_;
+		this.back = back_;
 
 		set(State.Neutral);
 	}

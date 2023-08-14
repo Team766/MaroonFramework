@@ -11,9 +11,9 @@ public class IsometricTransform {
 	public static final IsometricTransform IDENTITY =
 		new IsometricTransform(Rotation.IDENTITY, Vector3D.ZERO);
 
-	public IsometricTransform(final Rotation rotationParam, final Vector3D translationParam) {
-		this.rotation = rotationParam;
-		this.translation = translationParam;
+	public IsometricTransform(final Rotation rotation_, final Vector3D translation_) {
+		this.rotation = rotation_;
+		this.translation = translation_;
 	}
 
 	Vector3D applyInverseTo(final Vector3D u) {

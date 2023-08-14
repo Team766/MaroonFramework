@@ -20,9 +20,9 @@ public class Wheel implements MechanicalDevice {
 
 	private MechanicalAngularDevice upstream;
 
-	public Wheel(final double diameterParam, final MechanicalAngularDevice upstreamParam) {
-		this.diameter = diameterParam;
-		this.upstream = upstreamParam;
+	public Wheel(final double diameter_, final MechanicalAngularDevice upstream_) {
+		this.diameter = diameter_;
+		this.upstream = upstream_;
 	}
 
 	@Override

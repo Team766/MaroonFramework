@@ -7,8 +7,8 @@ public class DigitalInput implements DigitalInputReader {
 
 	private final int channel;
 
-	public DigitalInput(final int channelParam) {
-		this.channel = channelParam;
+	public DigitalInput(final int channel_) {
+		this.channel = channel_;
 	}
 
 	public boolean get() {

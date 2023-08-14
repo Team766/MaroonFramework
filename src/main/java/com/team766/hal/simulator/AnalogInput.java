@@ -7,8 +7,8 @@ public class AnalogInput implements AnalogInputReader {
 
 	private final int channel;
 
-	public AnalogInput(final int channelParam) {
-		this.channel = channelParam;
+	public AnalogInput(final int channel_) {
+		this.channel = channel_;
 	}
 
 	@Override
