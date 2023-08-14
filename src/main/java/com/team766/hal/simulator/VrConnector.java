@@ -97,8 +97,7 @@ public class VrConnector implements Runnable {
 
 	//CHECKSTYLE:OFF
 	private static final List<PortMapping> ENCODER_CHANNELS = Arrays.asList(
-		new PortMapping(10, 0), // Left
-		// encoder
+		new PortMapping(10, 0), // Left encoder
 		new PortMapping(11, 2), // Right encoder
 		new PortMapping(13, 4) // Mechanism encoder
 	);
@@ -111,8 +110,7 @@ public class VrConnector implements Runnable {
 	
 	//CHECKSTYLE:OFF
 	private static final List<PortMapping> DIGITAL_CHANNELS = Arrays.asList(
-		new PortMapping(13, 0), // Intake
-		// state
+		new PortMapping(13, 0), // Intake state
 		new PortMapping(14, 1), // Ball presence
 		new PortMapping(17, 4), // Line Sensor 1
 		new PortMapping(18, 5), // Line Sensor 2
