@@ -1,11 +1,9 @@
 package com.team766.hal.simulator;
 
 import java.io.IOException;
-import com.ctre.phoenix.Logger;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Scheduler;
 import com.team766.hal.GenericRobotMain;
-import com.team766.hal.LocalMotorController;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
 import com.team766.simulator.Program;
