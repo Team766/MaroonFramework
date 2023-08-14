@@ -185,7 +185,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 						new IllegalArgumentException("SparkMax does not support PWM sensors"));
 			case QuadEncoder:
 				// TODO: should we pass a real counts-per-rev scale here?
-				encoder = getAlternateEncoder(1);
+				RelativeEncoder encoder = getAlternateEncoder(1);
 				revErrorToException(ExceptionTarget.LOG, encoder.setInverted(sensorInverted));
 				sensorPositionSupplier = encoder::getPosition;
 				sensorVelocitySupplier = encoder::getVelocity;
