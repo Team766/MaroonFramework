@@ -58,7 +58,7 @@ public class CanSparkMaxSmartMotionNonRotationalPIDController{
 	//constructor for the class not using an absolute encoder for kDutyCycle
 	
 	public CanSparkMaxSmartMotionNonRotationalPIDController(String configName, double absEncoderOffset, double absEncoderOffsetForZeroEncoderUnits, OffsetPoint first, OffsetPoint second, double ratio){
-			loggerCategory = Category.MECHANISMS;
+			
 
 			try{
 				mc = RobotProvider.instance.getMotor(configName);
@@ -178,9 +178,9 @@ public class CanSparkMaxSmartMotionNonRotationalPIDController{
 
 	//run loop that actually runs the PID 
 	//You need to call this function repedatly in OI as often as possible
-	public void run(boolean enabled){
-		if(enabled){
-			//Checking if Abs encoder is enabled, and if so we wouldn't want positions above 1 and below 0
+	public void run(){
+
+			
 			
 			switch(theState){
 				case OFF:
@@ -205,9 +205,7 @@ public class CanSparkMaxSmartMotionNonRotationalPIDController{
 					}
 					break;
 			}
-		} else{
-			log("enabled is false on run loop PID controller");
-		}
+	
 		
 	}
 
