@@ -86,7 +86,7 @@ public class CanSparkMaxSmartMotionRotationalPIDController{
 	}
 
 	private double absToEu(double abs){
-		return encoderUnitsPerOneAbsolute / (1/abs); 
+		return encoderUnitsPerOneAbsolute * abs; 
 	}
 
 	private double euToDegrees(double eu){
