@@ -4,16 +4,16 @@ public class OffsetPoint {
 	
 	private double absoluteValue, motorValue;
 
-	public OffsetPoint(double absoluteEncoderValue, double motorEncoderValue){
+	public OffsetPoint(final double absoluteEncoderValue, final double motorEncoderValue) {
 		absoluteValue = absoluteEncoderValue;
 		motorValue = motorEncoderValue;
 	}
 
-	public double getAbsoluteValue(){
+	public double getAbsoluteValue() {
 		return absoluteValue;
 	}
 
-	public double getMotorEncoderValue(){
+	public double getMotorEncoderValue() {
 		return motorValue;
 	}
 }
