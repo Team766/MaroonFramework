@@ -5,10 +5,8 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.SetValueProvider;
 import com.team766.library.SettableValueProvider;
 import com.team766.library.ValueProvider;
-import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.logging.Severity;
 import edu.wpi.first.math.MathUtil;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -22,43 +20,36 @@ import com.revrobotics.CANSparkMax;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
+import com.team766.controllers.pidstate.*;
+
 
 
 public class CanSparkMaxSmartMotionRotationalPIDController {
 
-	// The attributes of the class include references to the motor controller, SparkMax controller, PID controller, and absolute encoder
+	//Motorcontroller for the motor
 	private MotorController mc;
 
+	//Variables that we need to be able to do this type of PID
 	private CANSparkMax csm;
-
 	private SparkMaxPIDController pid;
-
 	private SparkMaxAbsoluteEncoder abs;
 
 	//PID Related Variables
 	private static double deadzone = 0;
-
 	private static double setPointPosition = 0;
-
 	private static double comboOfTimesInsideDeadzone = 0;
-
 	private static double minPos = 0;
-
 	private static double maxPos = 0;
 
-	//Precision variables
+	//Reset encoder variables
 	private double degreesToEncoderUnitsRatio = 0;
-
 	private double encoderUnitsPerOneAbsolute = 0;
 
 	//antigrav coefficient
 	private static double antiGravK;
 	//enum for which state the PID is in
-	public enum PIDSTATE {
-		PID,
-		OFF,
-		ANTIGRAV
-	}
+
+
 	//the state of the PID
 	private PIDSTATE theState = PIDSTATE.OFF;
 
@@ -100,11 +91,6 @@ public class CanSparkMaxSmartMotionRotationalPIDController {
 		return degrees / degreesToEncoderUnitsRatio;
 	}
 
-	//manually changing the state
-	public void updateState(final PIDSTATE state) {
-		theState = state;
-	}
-
 	//changing all PID values at once
 	public void setPIDF(final double p, final double i, final double d, final double ff) {
 		pid.setP(p);
@@ -135,9 +121,8 @@ public class CanSparkMaxSmartMotionRotationalPIDController {
 
 	/*
 	 * Here we set the antigrav constant
-	 * If the mechanism is rotational, this is the amount we multiply the Sine of the sensor position with
-	 * If the mechanism isn't rotational, this is just the amount of power to apply.
-	 * @param k the value to set according to the above condition
+	 * The mechanism is rotational, so this is the amount we multiply the Sine of the sensor position with
+	 * @param k the value to set for the antigrav constant
 	 */
 
 	public void setAntigravConstant(final double k) {
@@ -193,7 +178,7 @@ public class CanSparkMaxSmartMotionRotationalPIDController {
 	}
 
 	//run loop that actually runs the PID 
-	//You need to call this function repedatly in OI as often as possible
+	//You need to call this function repedatly in the mechanism's run function as often as possible to get the best results
 	public void run() {
 		switch (theState) {
 			case OFF:

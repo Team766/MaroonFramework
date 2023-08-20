@@ -5,10 +5,8 @@ import com.team766.hal.RobotProvider;
 import com.team766.library.SetValueProvider;
 import com.team766.library.SettableValueProvider;
 import com.team766.library.ValueProvider;
-import com.team766.logging.Category;
 import com.team766.logging.Logger;
 import com.team766.logging.LoggerExceptionUtils;
-import com.team766.logging.Severity;
 import edu.wpi.first.math.MathUtil;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxPIDController;
@@ -22,6 +20,7 @@ import com.revrobotics.CANSparkMax;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
+import com.team766.controllers.pidstate.*;
 
 
 public class CanSparkMaxSmartMotionNonRotationalPIDController {
@@ -54,11 +53,7 @@ public class CanSparkMaxSmartMotionNonRotationalPIDController {
 	//antigrav coefficient
 	private static double antigravPower;
 	//enum for which state the PID is in
-	public enum PIDSTATE {
-		PID,
-		OFF,
-		ANTIGRAV
-	}
+
 	//the state of the PID
 	private PIDSTATE theState = PIDSTATE.OFF;
 
