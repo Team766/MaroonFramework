@@ -21,6 +21,7 @@ import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
 import com.team766.controllers.pidstate.*;
+import com.team766.framework.Exceptions.*;
 
 
 public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
@@ -202,13 +203,56 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 
 	/*
 	 * This is the method where you update the setpoint position from the subclass
-	 * 
+	 * @param x the setpoint
+	 * @author Max Spier - 9/9/2023
 	 */
 	public void updateSetpointFromSubclass(double x){
 		x = MathUtil.Clamp(x, minPos, maxPos);
 		setPointPosition = x;
 	}
+
+	/*
+	 * Failsafe for the PIDController to stop it.
+	 */
+	public void stop() {
+		theState = PIDSTATE.OFF;
+	}
+
+	/*
+	 * This is the run loop that actually runs the PID Controller
+	 * You need to call this as frequently as possible when running the mechanism
+	 * @author Max Spier - 9/9/2023
+	 */
+	public void run() {
+		switch (theState) {
+			case OFF:
+				mc.set(0);
+				break;
+			case ANTIGRAV:
+				if (setPointPosition <= (deadzone + mc.getSensorPosition()) && setPointPosition >= (mc.getSensorPosition() - deadzone)) {
+					antigrav();
+				} else {
+					theState = PIDSTATE.PID;
+				}
+			case PID:
+				if (setPointPosition <= (deadzone + mc.getSensorPosition()) && setPointPosition >= (mc.getSensorPosition() - deadzone)) {
+					comboOfTimesInsideDeadzone++;
+				} else {
+					comboOfTimesInsideDeadzone = 0;
+					pid.setReference(setPointPosition, ControlType.kSmartMotion);
+				}
+
+				if (comboOfTimesInsideDeadzone >= 6) {
+					theState = PIDSTATE.ANTIGRAV;
+				}
+				break;
+			default:
+				LoggerExceptionUtils.logException(new IllegalArgumentException("Unknown state. Provided value: " + theState));
+				break;
+		}
+	}
 	
+
 
 
 
