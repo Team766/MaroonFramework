@@ -247,7 +247,7 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 				}
 				break;
 			default:
-				LoggerExceptionUtils.logException(new IllegalArgumentException("Unknown state. Provided value: " + theState));
+				throw new AbstractPIDRuntimeException("Error instantiating the PID controller: " + ill);
 				break;
 		}
 	}
