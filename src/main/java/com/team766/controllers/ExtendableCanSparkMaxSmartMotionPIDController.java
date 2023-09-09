@@ -52,6 +52,8 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 		 * @author Max Spier - 9/9/2023
 		 */
 		private double encoderUnitsPerOneAbsolute = 0;
+
+		private double curAntigrav = 0;
 	
 	
 		/*
@@ -213,9 +215,28 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 
 	/*
 	 * Failsafe for the PIDController to stop it.
+	 * @author Max Spier - 9/9/2023
 	 */
 	public void stop() {
 		theState = PIDSTATE.OFF;
+	}
+
+	/*
+	 * This method does the antigrav
+	 * @author Max Spier - 9/9/2023
+	 */
+	private void antigrav(){
+		mc.set(curAntigrav);
+	}
+
+	/*
+	 * This method sets the antigrav power amount.
+	 * It gets the value for this from the subclass
+	 * @param passedValueFromSubclass the power to set the motorcontroller for antigrav
+	 * @author Max Spier - 9/9/2023
+	 */
+	public void updateAntigrav(double passedValueFromSubclass){
+		curAntigrav = passedValueFromSubclass
 	}
 
 	/*
@@ -247,7 +268,7 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 				}
 				break;
 			default:
-				throw new AbstractPIDRuntimeException("Error instantiating the PID controller: " + ill);
+				throw new AbstractPIDRuntimeException("Invalid state error");
 				break;
 		}
 	}
