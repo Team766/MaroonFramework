@@ -20,7 +20,7 @@ import com.revrobotics.CANSparkMax;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
-import com.team766.controllers.pidstate.*;
+import com.team766.controllers.PIDSTATE.*;
 import com.team766.framework.Exceptions.*;
 
 
