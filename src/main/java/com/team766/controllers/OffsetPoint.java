@@ -1,5 +1,9 @@
 package com.team766.controllers;
-
+	/*
+	* This is a class to make an offset point for the PID controller to be able to reset encoders.
+	* You input the absoluteEncoderValue that equals the motorEncoderValue.
+	* @author Max Spier - 9/12/23
+	*/
 public class OffsetPoint {
 	
 	private double absoluteValue, motorValue;
