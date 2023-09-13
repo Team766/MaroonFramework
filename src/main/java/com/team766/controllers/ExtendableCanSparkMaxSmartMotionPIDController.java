@@ -208,7 +208,7 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 	 * @param x the setpoint
 	 * @author Max Spier - 9/9/2023
 	 */
-	public void updateSetpointFromSubclass(double x){
+	protected void updateSetpointFromSubclass(double x){
 		x = MathUtil.Clamp(x, minPos, maxPos);
 		setPointPosition = x;
 	}
@@ -235,7 +235,7 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 	 * @param passedValueFromSubclass the power to set the motorcontroller for antigrav
 	 * @author Max Spier - 9/9/2023
 	 */
-	public void updateAntigrav(double passedValueFromSubclass){
+	protected void updateAntigrav(double passedValueFromSubclass){
 		curAntigrav = passedValueFromSubclass
 	}
 
