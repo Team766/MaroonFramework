@@ -14,6 +14,8 @@ public class CanSparkMaxSmartMotionRotationalPIDController extends ExtendableCan
 		antiGravK = k;
 	}
 
+	
+	//Setpoint is in hall encoder units.
 	public void setNewSetpoint(double setPoint){
 		updateSetpointFromSubclass(setPoint);
 	}
