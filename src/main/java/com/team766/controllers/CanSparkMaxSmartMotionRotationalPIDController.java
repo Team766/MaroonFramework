@@ -4,16 +4,12 @@ public class CanSparkMaxSmartMotionRotationalPIDController extends ExtendableCan
 	
 	private final double degreesToEncoderUnitsRatio;
 	private final double antiGravK;
-
-	public CanSparkMaxSmartMotionRotationalPIDController(final String configName, final double absEncoderOffset, final double absEncoderOffsetForZeroEncoderUnits, final OffsetPoint first, final OffsetPoint second, double degToEncoderUnitsRatio) {
+ 
+	public CanSparkMaxSmartMotionRotationalPIDController(final String configName, final double absEncoderOffset, final double absEncoderOffsetForZeroEncoderUnits, final OffsetPoint first, final OffsetPoint second, double degToEncoderUnitsRatio, double antigravityCoefficent) {
+		antiGravK = antigravityCoefficent;
 		degreesToEncoderUnitsRatio = degToEncoderUnitsRatio;
 		super(configName, absEncoderOffset, absEncoderOffsetForZeroEncoderUnits, first, second);
 	}
-
-	public void setAntigravConstant(double k) {
-		antiGravK = k;
-	}
-
 	
 	//Setpoint is in hall encoder units.
 	public void setNewSetpoint(double setPoint){
