@@ -245,7 +245,7 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 	 * @author Max Spier - 9/9/2023
 	 */
 	protected void updateAntigrav(double passedValueFromSubclass){
-		curAntigrav = passedValueFromSubclass
+		curAntigrav = passedValueFromSubclass;
 	}
 
 	/*
@@ -278,7 +278,6 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 				break;
 			default:
 				throw new AbstractPIDRuntimeException("Invalid state error");
-				break;
 		}
 	}
 	
