@@ -104,6 +104,15 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 	private double absToEu(final double abs) {
 		return encoderUnitsPerOneAbsolute * abs;
 	}
+
+	/*
+	 * This is a method to get the hall sensor position from the motorcontroller, so we can use it in the antigravity calculations in the subclass.
+	 * @return the value of the hall sensor position
+	 * @author Max Spier - 9/13/2023
+	 */
+	protected double getHallSensorPosition(){
+		return mc.getSensorPosition();
+	}
 	
 	/*
 	 * Method to change all PIDF values at once

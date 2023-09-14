@@ -1,4 +1,6 @@
-import java.*;
+package com.team766.controllers;
+
+import java.util.*;
 
 public class CanSparkMaxSmartMotionRotationalPIDController extends ExtendableCanSparkMaxSmartMotionPIDController {
 	
@@ -17,7 +19,7 @@ public class CanSparkMaxSmartMotionRotationalPIDController extends ExtendableCan
 	}
 
 	public void runPIDs(){
-		updateAntigrav(antiGravK * Math.sin(euToDegrees(mc.getSensorPosition())));
+		updateAntigrav(antiGravK * Math.sin(euToDegrees(getHallSensorPosition())));
 		run();
 	}
 
