@@ -40,11 +40,11 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 		 * @author Max Spier - 9/9/2023
 		 */
 		private SparkMaxPIDController pid;
-		private static double deadzone = 0;
-		private static double setPointPosition = 0;
-		private static double comboOfTimesInsideDeadzone = 0;
-		private static double minPos = 0;
-		private static double maxPos = 0;
+		private double deadzone = 0;
+		private double setPointPosition = 0;
+		private double comboOfTimesInsideDeadzone = 0;
+		private double minPos = 0;
+		private double maxPos = 0;
 	
 		/*
 		 * These are some variables that we can use so that we can reset the motor controller
