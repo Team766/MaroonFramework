@@ -102,6 +102,10 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 	 * @author Max Spier - 9/9/2023
 	 */
 	private double absToEu(final double abs) {
+
+		if(encoderUnitsPerOneAbsolute == 0){
+			throw new AbstractPIDArithmeticDevideByZeroException("Error: encoderUnitsPerOneAbsolute is zero.");
+		}
 		return encoderUnitsPerOneAbsolute * abs;
 	}
 
