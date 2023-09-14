@@ -208,8 +208,8 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 	 * @param x the setpoint
 	 * @author Max Spier - 9/9/2023
 	 */
-	protected void updateSetpointFromSubclass(double x){
-		x = MathUtil.Clamp(x, minPos, maxPos);
+	public void setNewSetpoint(double x){
+		x = MathUtil.clamp(x, minPos, maxPos);
 		setPointPosition = x;
 	}
 
