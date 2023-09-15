@@ -284,12 +284,4 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 				throw new AbstractPIDRuntimeException("Invalid state error");
 		}
 	}
-	
-
-
-
-
-
-
-
 }
