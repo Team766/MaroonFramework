@@ -20,4 +20,12 @@ public class OffsetPoint {
 	public double getMotorEncoderValue() {
 		return motorValue;
 	}
+
+	/*
+	*@Override
+	*@author Max Spier - 9/15/2023
+	*/
+	public String toString(){
+		return "Absolute Value: " + absoluteValue + " Motor Value: " + motorValue;
+	}
 }
