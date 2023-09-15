@@ -20,7 +20,7 @@ import com.revrobotics.CANSparkMax;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.library.RateLimiter;
-import com.team766.controllers.PIDSTATE.*;
+import com.team766.controllers.PIDState.*;
 import com.team766.framework.Exceptions.*;
 
 
@@ -58,11 +58,11 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 	
 		/*
 		* The state of the PID controller so that we know whether to call the respective method for each state.
-		* For more documentation, see the PIDSTATE class.
+		* For more documentation, see the PIDState class.
 		* @author Max Spier - 9/9/2023
 		*/
 		
-		private PIDSTATE theState = PIDSTATE.OFF;
+		private PIDState theState = PIDState.OFF;
 
 	/*
 	 * Default constructor for the class. This is used to create a new CanSparkMaxSmartMotionPIDController object
@@ -231,7 +231,7 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 	 * @author Max Spier - 9/9/2023
 	 */
 	public void stop() {
-		theState = PIDSTATE.OFF;
+		theState = PIDState.OFF;
 	}
 
 	/*
@@ -266,7 +266,7 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 				if (setPointPosition <= (deadzone + mc.getSensorPosition()) && setPointPosition >= (mc.getSensorPosition() - deadzone)) {
 					antigrav();
 				} else {
-					theState = PIDSTATE.PID;
+					theState = PIDState.PID;
 				}
 			case PID:
 				if (setPointPosition <= (deadzone + mc.getSensorPosition()) && setPointPosition >= (mc.getSensorPosition() - deadzone)) {
@@ -277,7 +277,7 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 				}
 
 				if (comboOfTimesInsideDeadzone >= 6) {
-					theState = PIDSTATE.ANTIGRAV;
+					theState = PIDState.ANTIGRAV;
 				}
 				break;
 			default:

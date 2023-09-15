@@ -1,6 +1,6 @@
 package com.team766.controllers;
 
-	public enum PIDSTATE {
+	public enum PIDState {
 		PID,
 		OFF,
 		ANTIGRAV
