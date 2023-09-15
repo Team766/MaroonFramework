@@ -284,4 +284,8 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 				throw new AbstractPIDRuntimeException("Invalid state error");
 		}
 	}
+
+	public String toString(){
+		return "Setpoint: " + setPointPosition + " Current Position: " + mc.getSensorPosition() + " Current State: " + theState;
+	}
 }
