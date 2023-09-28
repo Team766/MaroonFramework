@@ -1,6 +1,7 @@
 package com.team766.controllers;
 
 import java.util.*;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class CanSparkMaxSmartMotionRotationalPIDController extends ExtendableCanSparkMaxSmartMotionPIDController {
 	

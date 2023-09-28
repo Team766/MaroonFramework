@@ -1,5 +1,7 @@
 package com.team766.controllers;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+
 public class CanSparkMaxSmartMotionLinearPIDController extends ExtendableCanSparkMaxSmartMotionPIDController {
 	
 	private final double constantAntigravPower;
