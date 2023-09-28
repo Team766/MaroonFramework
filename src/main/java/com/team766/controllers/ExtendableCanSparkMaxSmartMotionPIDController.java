@@ -256,6 +256,11 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 		curAntigrav = passedValueFromSubclass;
 	}
 
+	public void disableAntigrav(){
+		curAntigrav = 0;
+		deadzone = 0;
+	}
+
 	/*
 	 * This is the run loop that actually runs the PID Controller
 	 * You need to call this as frequently as possible when running the mechanism
