@@ -54,6 +54,8 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 		private double encoderUnitsPerOneAbsolute = 0;
 
 		private double curAntigrav = 0;
+
+		private NeutralMode defaultNeutralMode;
 	
 	
 		/*
@@ -75,8 +77,9 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 	 */
 
 	
-	public ExtendableCanSparkMaxSmartMotionPIDController(final String configName, final double absEncoderOffset, final double absEncoderOffsetForZeroEncoderUnits, final OffsetPoint first, final OffsetPoint second) {
+	public ExtendableCanSparkMaxSmartMotionPIDController(final String configName, final double absEncoderOffset, final double absEncoderOffsetForZeroEncoderUnits, final OffsetPoint first, final OffsetPoint second, final NeutralMode defaultNeutralMode) {
 		try {
+			this.defaultNeutralMode = defaultNeutralMode;
 			mc = RobotProvider.instance.getMotor(configName);
 			csm = (CANSparkMax) mc;
 			pid = csm.getPIDController();
@@ -92,6 +95,7 @@ public abstract class ExtendableCanSparkMaxSmartMotionPIDController {
 
 			mc.setSensorPosition(relEncoder);
 
+			mc.setNeutralMode(defaultNeutralMode);
 		} catch (IllegalArgumentException ill) {
 			throw new AbstractPIDRuntimeException("Error instantiating the PID controller: " + ill);
 		}
