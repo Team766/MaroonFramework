@@ -77,8 +77,4 @@ public class CameraPlus extends PhotonCamera{
 
 
 	
-}package com.team766.ViSION;
-
-public class cameraPlus {
-	
 }
