@@ -7,6 +7,10 @@ import com.team766.hal.MotorController.ControlMode;
 import com.team766.robot.constants.SwerveDriveConstants;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+/**
+ * Encapsulates the motors and encoders used for each physical swerve module and 
+ * provides driving and steering controls for each module.
+ */
 public class SwerveModule {
 	private final String modulePlacement;
 	private final MotorController drive;
@@ -21,6 +25,14 @@ public class SwerveModule {
 	 */
 	private static final double ENCODER_CONVERSION_FACTOR = (150.0 / 7.0) /*steering gear ratio*/ * (2048.0 / 360.0) /*encoder units to degrees*/;
 
+	/**
+	 * Creates a new SwerveModule.
+	 * 
+	 * @param modulePlacement String description of the placement for this module, eg "FL".
+	 * @param drive Drive MotorController for this module.
+	 * @param steer Steer MotorController for this module.
+	 * @param encoder CANCoder for this module.
+	 */
 	public SwerveModule(String modulePlacement, MotorController drive, MotorController steer, CANCoder encoder) {
 		this.modulePlacement = modulePlacement;
 		this.drive = drive;
@@ -50,7 +62,7 @@ public class SwerveModule {
 		final double angleDegrees = vectorTheta + 360*(Math.round((steer.getSensorPosition()/ENCODER_CONVERSION_FACTOR - offset - vectorTheta)/360)) + offset;
 
 		// Sets the degree of the steer wheel
-		// Needs to multiply by encoderconversionfactor to translate into a unit the motor understands
+		// Needs to multiply by ENCODER_CONVERSION_FACTOR to translate into a unit the motor understands
 		steer.set(ControlMode.Position, ENCODER_CONVERSION_FACTOR*angleDegrees);
 
 		SmartDashboard.putNumber("[" + modulePlacement + "]" + "Angle", angleDegrees);
@@ -65,10 +77,13 @@ public class SwerveModule {
 		steer(vector);
 
 		// sets the power to the magnitude of the vector
-		// TODO: does this need to be clamped to a specific range?
+		// TODO: does this need to be clamped to a specific range, eg btn -1 and 1?
 		drive.set(vector.getNorm());
 	}
 
+	/**
+	 * Stops the drive motor for this module.
+	 */
 	public void stopDrive() {
 		drive.stopMotor();
 	}
