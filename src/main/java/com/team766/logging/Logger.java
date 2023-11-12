@@ -110,7 +110,9 @@ public final class Logger {
 		if (m_logWriter != null) {
 			m_logWriter.logStoredFormat(entry);
 		}
-		if (ALSO_LOG_TO_DATALOG) DataLogManager.log(message);
+		if (ALSO_LOG_TO_DATALOG) {
+			DataLogManager.log(message);
+		}
 	}
 
 	public void logRaw(final Severity severity, final String message) {
@@ -120,7 +122,9 @@ public final class Logger {
 		if (m_logWriter != null) {
 			m_logWriter.log(entry);
 		}
-		if (ALSO_LOG_TO_DATALOG) DataLogManager.log(message);
+		if (ALSO_LOG_TO_DATALOG) {
+			DataLogManager.log(message);
+		}
 	}
 
 	void logOnlyInMemory(final Severity severity, final String message) {
