@@ -9,8 +9,12 @@ import java.util.EnumMap;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.library.CircularBuffer;
+import edu.wpi.first.wpilibj.DataLogManager;
 
 public final class Logger {
+
+	private static final boolean ALSO_LOG_TO_DATALOG = true;
+
 	private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
 		public void uncaughtException(final Thread t, final Throwable e) {
 			e.printStackTrace();
@@ -96,7 +100,8 @@ public final class Logger {
 	public void logData(final Severity severity, final String format, final Object... args) {
 		var entry = LogEntry.newBuilder().setTime(getTime()).setSeverity(severity)
 				.setCategory(m_category);
-		entry.setMessageStr(String.format(format, args));
+		String message = String.format(format, args);
+		entry.setMessageStr(message);
 		m_recentEntries.add(entry.build());
 		entry.setMessageStr(format);
 		for (Object arg : args) {
@@ -105,6 +110,7 @@ public final class Logger {
 		if (m_logWriter != null) {
 			m_logWriter.logStoredFormat(entry);
 		}
+		if (ALSO_LOG_TO_DATALOG) DataLogManager.log(message);
 	}
 
 	public void logRaw(final Severity severity, final String message) {
@@ -114,6 +120,7 @@ public final class Logger {
 		if (m_logWriter != null) {
 			m_logWriter.log(entry);
 		}
+		if (ALSO_LOG_TO_DATALOG) DataLogManager.log(message);
 	}
 
 	void logOnlyInMemory(final Severity severity, final String message) {
