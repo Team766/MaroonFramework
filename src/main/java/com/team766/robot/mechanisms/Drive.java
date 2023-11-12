@@ -78,6 +78,8 @@ public class Drive extends Mechanism {
 	 * @param turn the turn value from the rotation joystick
 	 */
 	public void controlRobotOriented(double x, double y, double turn) {
+		checkContextOwnership();
+
 		// Finds the vectors for turning and for translation of each module, and adds them
 		// Applies this for each module
 		swerveFL.driveAndSteer(new Vector2D(x, y).add(
@@ -98,6 +100,8 @@ public class Drive extends Mechanism {
 	 * @param turn the turn value from the rotation joystick
 	 */
 	public void controlFieldOriented(double yawRad, double x, double y, double turn) {
+		checkContextOwnership();
+
 		// Applies a rotational translation to controlRobotOriented
 		// Counteracts the forward direction changing when the robot turns
 		// TODO: change to inverse rotation matrix (rather than negative angle)
@@ -119,6 +123,8 @@ public class Drive extends Mechanism {
 	 * Turns wheels in a cross formation to prevent robot from moving
 	 */
 	public void setCross() {
+		checkContextOwnership();
+		
 		swerveFL.steer(new Vector2D(SwerveDriveConstants.FL_Y, -SwerveDriveConstants.FL_X));
 		swerveFR.steer(new Vector2D(SwerveDriveConstants.FR_Y, -SwerveDriveConstants.FR_X));
 		swerveBL.steer(new Vector2D(SwerveDriveConstants.BL_Y, -SwerveDriveConstants.BL_X));
