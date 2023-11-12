@@ -60,7 +60,7 @@ public class Drive extends Mechanism {
 		currentPosition = new PointDir(0, 0, 0);
 		MotorController[] motorList = new MotorController[] { driveFR, driveFL, driveBL,
 				driveBR };
-		CANCoder[] encoderList = new CANCoder[] { encoderFR, encoderFL, encoderBR, encoderBL};
+		CANCoder[] encoderList = new CANCoder[] { encoderFR, encoderFL, encoderBL, encoderBR};
 		Point[] wheelPositions =
 				new Point[] {new Point(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
 						new Point(OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2, -OdometryInputConstants.DISTANCE_BETWEEN_WHEELS / 2),
@@ -124,7 +124,7 @@ public class Drive extends Mechanism {
 	 */
 	public void setCross() {
 		checkContextOwnership();
-		
+
 		swerveFL.steer(new Vector2D(SwerveDriveConstants.FL_Y, -SwerveDriveConstants.FL_X));
 		swerveFR.steer(new Vector2D(SwerveDriveConstants.FR_Y, -SwerveDriveConstants.FR_X));
 		swerveBL.steer(new Vector2D(SwerveDriveConstants.BL_Y, -SwerveDriveConstants.BL_X));
