@@ -33,7 +33,7 @@ public final class EncoderUtils {
 	 */
 	public static double elevatorHeightToRotations(double height) {
 		// height * net gear ratio * (rotations / height)
-		return height * (36./12.) * (1. / (1.641 * Math.PI));
+		return height * (36. / 12.) * (1. / (1.641 * Math.PI));
 	}
 
 	/**
@@ -41,7 +41,7 @@ public final class EncoderUtils {
 	 */
 	public static double elevatorRotationsToHeight(double rotations) {
 		// rotations * net gear ratio * (height / rotations)
-		return rotations * (12./36.) * ((1.641 * Math.PI) / 1.);
+		return rotations * (12. / 36.) * ((1.641 * Math.PI) / 1.);
 	}
 
 	/**
@@ -68,7 +68,7 @@ public final class EncoderUtils {
 	 * @return
 	 */
 	public static double lawOfCosines(double side1, double side2, double angle) {
-		double side3Squared = (Math.pow(side1, 2.0) + Math.pow(side2, 2.0) - 2*side1*side2*Math.cos(Math.toRadians(angle)));
+		double side3Squared = (Math.pow(side1, 2.0) + Math.pow(side2, 2.0) - (2 * side1 * side2 * Math.cos(Math.toRadians(angle))));
 		return Math.sqrt(side3Squared);
 	}
 
