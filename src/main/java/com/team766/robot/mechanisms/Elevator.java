@@ -2,7 +2,6 @@ package com.team766.robot.mechanisms;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -74,7 +73,7 @@ public class Elevator extends Mechanism {
 		MotorController halLeftMotor = RobotProvider.instance.getMotor(ELEVATOR_LEFT_MOTOR);
 		MotorController halRightMotor = RobotProvider.instance.getMotor(ELEVATOR_RIGHT_MOTOR);
 
-		if (!((halLeftMotor instanceof CANSparkMax)&&(halRightMotor instanceof CANSparkMax))) {
+		if (!((halLeftMotor instanceof CANSparkMax) && (halRightMotor instanceof CANSparkMax))) {
 			log(Severity.ERROR, "Motors are not CANSparkMaxes!");
 			throw new IllegalStateException("Motor are not CANSparkMaxes!");
 		}
