@@ -191,7 +191,6 @@ spotless {
         }
         toggleOffOn()
         googleJavaFormat().formatJavadoc(false).aosp()
-        indentWithSpaces(4)
         removeUnusedImports()
         trimTrailingWhitespace()
         endWithNewline()
