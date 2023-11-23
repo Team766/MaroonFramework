@@ -17,7 +17,6 @@ public final class EncoderUtils {
 	 */
 	public static double wristDegreesToRotations(double angle) {
 		// angle * net gear ratio * (rotations / degrees)
-		// FIXME: replace 32 with actual # of teeth
 		return angle * (72. / 10.) * (72. / 20.) * (48. / 24.) * (1. / 360.);
 	}
 	
@@ -26,7 +25,6 @@ public final class EncoderUtils {
 	 */
 	public static double wristRotationsToDegrees(double rotations) {
 		// rotations * net gear ratio * (degrees / rotations)
-		// FIXME: replace 32 with actual # of teeth
 		return rotations * (10. / 72.) * (20. / 72.) * (24. / 48.) * (360. / 1.);
 	}
 
@@ -43,8 +41,23 @@ public final class EncoderUtils {
 	 */
 	public static double elevatorRotationsToHeight(double rotations) {
 		// rotations * net gear ratio * (height / rotations)
-		// FIXME: everything
 		return rotations * (12./36.) * ((1.641 * Math.PI)/1.);
+	}
+
+	/**
+	 * Converts a target rotation (in degrees) to encoder units for the shoulder motor.
+	 */
+	public static double shoulderDegreesToRotations(double angle) {
+		// angle * net gear ratio * (rotations / degrees)
+		return angle * (4./1.) * (3. / 1.) * (1. / 360.);
+	}
+	
+	/**
+	 * Converts the shoulder motor's rotations to degrees.
+	 */
+	public static double shoulderRotationsToDegrees(double rotations) {
+		// rotations * net gear ratio * (degrees / rotations)
+		return rotations * (1. / 4.) * (1. / 3.) * (360. / 1.);
 	}
 
 	/**

@@ -1,6 +1,7 @@
 package com.team766.robot.mechanisms;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.SparkMaxAbsoluteEncoder;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 import com.revrobotics.SparkMaxPIDController;
@@ -8,76 +9,182 @@ import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
 import com.team766.hal.RobotProvider;
+import com.team766.library.RateLimiter;
+import com.team766.library.ValueProvider;
+import com.team766.logging.Severity;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import static com.team766.robot.constants.ConfigConstants.*;
 
-public class Shoulder extends Mechanism{
+/**
+ * Basic shoulder mechanism.  Rotates the {@link Elevator} to different angles, to allow it (and the
+ * attached {@link Wrist} and {@link Intake}) to reach different positions, from the floor to different
+ * heights of nodes.
+ */
+public class Shoulder extends Mechanism {
 
+	/**
+	 * Pre-set positions for the shoulder.
+	 */
+	public enum Position {
 
-	private double kF;
-	private double kP;
-	private double kI; // will most likley be 0
-	private double kD;
+		// TODO: adjust these!
 
-	private double setpoint;
-	private double allowedError;
+		/** Shoulder is in top position. */
+		TOP(45),
 
-	private double maxSpeed;
-	private double minSpeed;
-	private double maxAccel;
-	private double maxVel;
+		/** Shoulder is in position to intake and outtake pieces from/to the floor.  Starting position. */
+		FLOOR(20),
 
-	public MotorController shoulderHallMotor = RobotProvider.instance.getMotor("shoulder"); // public for changing brake/coast mode without using a method
-	private CANSparkMax shoulderCanSparkMax = (CANSparkMax) shoulderHallMotor;
-	private SparkMaxPIDController shoulderPIDController = shoulderCanSparkMax.getPIDController();
+		/** Shoulder is fully down. **/
+		BOTTOM(15);
 
-	public MotorController shoulderHallMotor2 = RobotProvider.instance.getMotor("shoulder2"); // public for changing brake/coast mode without using a method
-	private CANSparkMax shoulderCanSparkMax2 = (CANSparkMax) shoulderHallMotor2;
+		private final double angle;
+		
+		Position(double angle) {
+			this.angle = angle;
+		}
 
+		private double getAngle() {
+			return angle;
+		}
+	}
 
-	private static final double MAX_POSITION = 0; // figure it out
-	private static final double MIN_POSITION = 0; // figure it out
+	private static final double NUDGE_INCREMENT = 5.0;
+	private static final double NUDGE_DAMPENER = 0.15;
 
-	private static final double conePosition = 0; // figure it out
-	private static final double cubePosition = 0; // figure it out
-	private static final double restingPosition = 0; // figure it out
+	private static final double NEAR_THRESHOLD = 5.0;
 
+	private final CANSparkMax leftMotor;
+	private final CANSparkMax rightMotor;
+	private final SparkMaxPIDController pidController;
+	private final ValueProvider<Double> pGain;
+	private final ValueProvider<Double> iGain;
+	private final ValueProvider<Double> dGain;
+	private final ValueProvider<Double> ffGain;
+	private final ValueProvider<Double> maxVelocity;
+	private final ValueProvider<Double> minOutputVelocity;
+	private final ValueProvider<Double> maxAccel;
 
+	private final RateLimiter rateLimiter = new RateLimiter(1.0 /* seconds */);
+
+	/**
+	 * Constructs a new Shoulder.
+	 */
 	public Shoulder() {
-		kF = ConfigFileReader.getInstance().getDouble("shoulder.kF").get();
-		kP = ConfigFileReader.getInstance().getDouble("shoulder.kP").get();
-		kI = ConfigFileReader.getInstance().getDouble("shoulder.kI").get();
-		kD = ConfigFileReader.getInstance().getDouble("shoulder.kD").get();
+		MotorController halLeftMotor = RobotProvider.instance.getMotor(SHOULDER_LEFT_MOTOR);
+		MotorController halRightMotor = RobotProvider.instance.getMotor(SHOULDER_RIGHT_MOTOR);
 
-		allowedError = ConfigFileReader.getInstance().getDouble("shoulder.allowedError").get();
+		if (!((halLeftMotor instanceof CANSparkMax)&&(halRightMotor instanceof CANSparkMax))) {
+			log(Severity.ERROR, "Motors are not CANSparkMaxes!");
+			throw new IllegalStateException("Motor are not CANSparkMaxes!");
+		}
 
-		maxSpeed = ConfigFileReader.getInstance().getDouble("shoulder.maxSpeed").get();
-		minSpeed = ConfigFileReader.getInstance().getDouble("shoulder.minSpeed").get();
-		maxAccel = ConfigFileReader.getInstance().getDouble("shoulder.maxAccel").get();
-		maxVel = ConfigFileReader.getInstance().getDouble("shoulder.maxVel").get();
+		leftMotor = (CANSparkMax) halLeftMotor;
+		rightMotor = (CANSparkMax) halRightMotor;
 
-		shoulderPIDController.setP(kP);
-		shoulderPIDController.setI(kI);
-		shoulderPIDController.setD(kD);
-		shoulderPIDController.setFF(kF);
-		shoulderPIDController.setOutputRange(minSpeed, maxSpeed);
-		shoulderPIDController.setSmartMotionMaxVelocity(maxVel, 0);
-		shoulderPIDController.setSmartMotionMaxAccel(maxAccel, 0);
-		shoulderPIDController.setSmartMotionMinOutputVelocity(0, 0);
+		rightMotor.follow(leftMotor, true /* invert */);
 
+		leftMotor.getEncoder().setPosition(EncoderUtils.elevatorHeightToRotations(Position.BOTTOM.getAngle()));
 
-		shoulderPIDController.setSmartMotionAllowedClosedLoopError(allowedError, 0);
-		shoulderCanSparkMax1.getEncoder().setPosition(0); //reset to 0 at beginning.
-		shoulderCanSparkMax2.getEncoder().setPosition(0); //reset to 0 at beginning.
-		shoulderCanSparkMax2.follow(shoulderCanSparkMax1, true);
+		pidController = leftMotor.getPIDController();
+		pidController.setFeedbackDevice(leftMotor.getEncoder());
+
+		pGain = ConfigFileReader.getInstance().getDouble(SHOULDER_PGAIN);
+		iGain = ConfigFileReader.getInstance().getDouble(SHOULDER_IGAIN);
+		dGain = ConfigFileReader.getInstance().getDouble(SHOULDER_DGAIN);
+		ffGain = ConfigFileReader.getInstance().getDouble(SHOULDER_FFGAIN);
+		maxVelocity = ConfigFileReader.getInstance().getDouble(SHOULDER_MAX_VELOCITY);
+		minOutputVelocity = ConfigFileReader.getInstance().getDouble(SHOULDER_MIN_OUTPUT_VELOCITY);
+		maxAccel = ConfigFileReader.getInstance().getDouble(SHOULDER_MAX_ACCEL);
 	}
 
-
-	public void setPosition(final double position){
-		setpoint = position;
+	public double getRotations() {
+		return leftMotor.getEncoder().getPosition();
 	}
 
-	//should be called AOAP
-	public void run(){
-		shoulderPIDController.setReference(setpoint, com.revrobotics.ControlType.kPosition);
+	/**
+	 * Returns the current angle of the wrist.
+	 */
+	public double getAngle() {
+		return EncoderUtils.shoulderRotationsToDegrees(leftMotor.getEncoder().getPosition());
 	}
-	
+
+	public boolean isNearTo(Position position) {
+		return isNearTo(position.getAngle());
+	}
+
+	public boolean isNearTo(double angle) {
+		return Math.abs(angle - getAngle()) < NEAR_THRESHOLD;
+	}
+
+	public void nudgeNoPID(double value) {
+		checkContextOwnership();
+		double clampedValue = MathUtil.clamp(value, -1, 1);
+		clampedValue *= NUDGE_DAMPENER; // make nudges less forceful. TODO: make this non-linear
+		leftMotor.set(clampedValue);	
+	}
+
+	public void stopShoulder() {
+		checkContextOwnership();
+		leftMotor.set(0);
+	}
+
+	public void nudgeUp() {
+		System.err.println("Nudging up.");
+		double angle = getAngle();
+		double targetAngle = Math.max(angle - NUDGE_INCREMENT, Position.TOP.getAngle());
+		System.err.println("Target: " + targetAngle);
+
+		rotate(targetAngle);
+	}
+
+	public void nudgeDown() {
+		System.err.println("Nudging down.");
+		double angle = getAngle();
+		double targetAngle = Math.min(angle + NUDGE_INCREMENT, Position.BOTTOM.getAngle());
+		rotate(targetAngle);
+	}
+
+	/** 
+	 * Rotates the wrist to a pre-set {@link Position}.
+	 */
+	public void rotate(Position position) {
+		rotate(position.getAngle());
+	}
+
+	/**
+	 * Starts rotating the wrist to the specified angle.
+	 * NOTE: this method returns immediately.  Check the current wrist position of the wrist
+	 * with {@link #getAngle()}.
+	 */
+	public void rotate(double angle) {
+		checkContextOwnership();
+
+		System.err.println("Setting target angle to " + angle);
+		// set the PID controller values with whatever the latest is in the config
+		pidController.setP(pGain.get());
+		pidController.setI(iGain.get());
+		pidController.setD(dGain.get());
+		// pidController.setFF(ffGain.get());
+		double ff = ffGain.get() * Math.cos(Math.toRadians(angle));
+		SmartDashboard.putNumber("[SHOULDER] ff", ff);
+		SmartDashboard.putNumber("[SHOULDER] reference", angle);
+
+		pidController.setOutputRange(-1, 1);
+
+		// convert the desired target degrees to rotations
+		double rotations = EncoderUtils.shoulderDegreesToRotations(angle);
+
+		// set the reference point for the wrist
+		pidController.setReference(rotations, ControlType.kPosition, 0, ff);
+	}
+
+	@Override
+	public void run() {
+		if (rateLimiter.next()) {
+			SmartDashboard.putNumber("[SHOULDER] Angle", getAngle());
+			SmartDashboard.putNumber("[SHOULDER] Rotations", getRotations());
+		}
+	}
 }
