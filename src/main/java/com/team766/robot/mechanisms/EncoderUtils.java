@@ -17,8 +17,7 @@ public final class EncoderUtils {
 	 */
 	public static double wristDegreesToRotations(double angle) {
 		// angle * net gear ratio * (rotations / degrees)
-		// FIXME: replace 32 with actual # of teeth
-		return angle*(72. / 10.) * (72. / 20.) * (48. / 24.) * (1. / 360.);
+		return angle * (72. / 10.) * (72. / 20.) * (48. / 24.) * (1. / 360.);
 	}
 	
 	/**
@@ -26,7 +25,6 @@ public final class EncoderUtils {
 	 */
 	public static double wristRotationsToDegrees(double rotations) {
 		// rotations * net gear ratio * (degrees / rotations)
-		// FIXME: replace 32 with actual # of teeth
 		return rotations * (10. / 72.) * (20. / 72.) * (24. / 48.) * (360. / 1.);
 	}
 
@@ -35,7 +33,7 @@ public final class EncoderUtils {
 	 */
 	public static double elevatorHeightToRotations(double height) {
 		// height * net gear ratio * (rotations / height)
-		return height * (36./12.) * (1./(1.641 * Math.PI));
+		return height * (36. / 12.) * (1. / (1.641 * Math.PI));
 	}
 
 	/**
@@ -43,8 +41,23 @@ public final class EncoderUtils {
 	 */
 	public static double elevatorRotationsToHeight(double rotations) {
 		// rotations * net gear ratio * (height / rotations)
-		// FIXME: everything
-		return rotations * (12./36.) * ((1.641 * Math.PI)/1.);
+		return rotations * (12. / 36.) * ((1.641 * Math.PI) / 1.);
+	}
+
+	/**
+	 * Converts a target rotation (in degrees) to encoder units for the shoulder motor.
+	 */
+	public static double shoulderDegreesToRotations(double angle) {
+		// angle * net gear ratio * (rotations / degrees)
+		return angle * (4. / 1.) * (3. / 1.) * (1. / 360.);
+	}
+	
+	/**
+	 * Converts the shoulder motor's rotations to degrees.
+	 */
+	public static double shoulderRotationsToDegrees(double rotations) {
+		// rotations * net gear ratio * (degrees / rotations)
+		return rotations * (1. / 4.) * (1. / 3.) * (360. / 1.);
 	}
 
 	/**
@@ -55,18 +68,18 @@ public final class EncoderUtils {
 	 * @return
 	 */
 	public static double lawOfCosines(double side1, double side2, double angle) {
-		double side3Squared = (Math.pow(side1,2.0)+Math.pow(side2,2.0)-2*side1*side2*Math.cos(Math.toRadians(angle)));
+		double side3Squared = (Math.pow(side1, 2.0) + Math.pow(side2, 2.0) - (2 * side1 * side2 * Math.cos(Math.toRadians(angle))));
 		return Math.sqrt(side3Squared);
 	}
 
 	public static double lawOfSines(double side1, double angle1, double side2) {
-		return Math.asin(side2*Math.sin(angle1)/side1);
+		return Math.asin(side2 * Math.sin(angle1) / side1);
 	}
 
 	public static double clampValueToRange(double value, double min, double max) {
-		if (value > max){ 
+		if (value > max) { 
 			value = max;
-		} else if (value < min){
+		} else if (value < min) {
 			value = min;
 		}
 		return value;
