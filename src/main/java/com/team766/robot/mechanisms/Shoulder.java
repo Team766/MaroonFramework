@@ -133,8 +133,7 @@ public class Shoulder extends Mechanism {
 	public void nudgeUp() {
 		System.err.println("Nudging up.");
 		double angle = getAngle();
-		double targetAngle = Math.max(angle - NUDGE_INCREMENT, Position.TOP.getAngle());
-		System.err.println("Target: " + targetAngle);
+		double targetAngle = Math.min(angle + NUDGE_INCREMENT, Position.TOP.getAngle());
 
 		rotate(targetAngle);
 	}
@@ -142,7 +141,7 @@ public class Shoulder extends Mechanism {
 	public void nudgeDown() {
 		System.err.println("Nudging down.");
 		double angle = getAngle();
-		double targetAngle = Math.min(angle + NUDGE_INCREMENT, Position.BOTTOM.getAngle());
+		double targetAngle = Math.max(angle - NUDGE_INCREMENT, Position.BOTTOM.getAngle());
 		rotate(targetAngle);
 	}
 

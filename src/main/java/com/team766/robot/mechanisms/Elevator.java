@@ -135,7 +135,6 @@ public class Elevator extends Mechanism {
 		double height = getHeight();
 		// NOTE: this could artificially limit nudge range
 		double targetHeight = Math.min(height + NUDGE_INCREMENT, Position.EXTENDED.getHeight());
-		System.err.println("Target: " + targetHeight);
 
 		moveTo(targetHeight);
 	}
