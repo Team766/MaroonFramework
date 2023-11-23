@@ -2,7 +2,6 @@ package com.team766.robot.mechanisms;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.SparkMaxPIDController.AccelStrategy;
 import com.team766.config.ConfigFileReader;
 import com.team766.framework.Mechanism;
 import com.team766.hal.MotorController;
@@ -14,12 +13,16 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import static com.team766.robot.constants.ConfigConstants.*;
 
+/**
+ * Basic elevator mechanism.  Used in conjunction with the {@link Intake} and {@link Wrist}.
+ * Can be moved up and down as part of teleop or autonomous control to move the {@link Wrist}
+ * and {@link Intake} closer to a game piece or game element (eg node in the 
+ * field, human player station).
+ */
 public class Elevator extends Mechanism {
 	public enum Position {
 
-		// TODO: do we need separate heights for cones vs cubes?
-
-		/** Elevator is fully retracted. */
+		/** Elevator is fully retracted.  Starting position. */
 		RETRACTED(0),
 		/** Elevator is the appropriate height to place game pieces at the low node. */
 		LOW(5), 
@@ -61,7 +64,6 @@ public class Elevator extends Mechanism {
 	private final ValueProvider<Double> minOutputVelocity;
 	private final ValueProvider<Double> maxAccel;
 
-
 	private final RateLimiter rateLimiter = new RateLimiter(1.0 /* seconds */);
 	
 	/**
@@ -71,7 +73,7 @@ public class Elevator extends Mechanism {
 		MotorController halLeftMotor = RobotProvider.instance.getMotor(ELEVATOR_LEFT_MOTOR);
 		MotorController halRightMotor = RobotProvider.instance.getMotor(ELEVATOR_RIGHT_MOTOR);
 
-		if (!((halLeftMotor instanceof CANSparkMax)&&(halRightMotor instanceof CANSparkMax))) {
+		if (!((halLeftMotor instanceof CANSparkMax) && (halRightMotor instanceof CANSparkMax))) {
 			log(Severity.ERROR, "Motors are not CANSparkMaxes!");
 			throw new IllegalStateException("Motor are not CANSparkMaxes!");
 		}
@@ -79,7 +81,7 @@ public class Elevator extends Mechanism {
 		leftMotor = (CANSparkMax) halLeftMotor;
 		rightMotor = (CANSparkMax) halRightMotor;
 
-		rightMotor.follow(leftMotor, true);
+		rightMotor.follow(leftMotor, true /* invert */);
 
 		leftMotor.getEncoder().setPosition(EncoderUtils.elevatorHeightToRotations(Position.RETRACTED.getHeight()));
 
@@ -132,7 +134,6 @@ public class Elevator extends Mechanism {
 		double height = getHeight();
 		// NOTE: this could artificially limit nudge range
 		double targetHeight = Math.min(height + NUDGE_INCREMENT, Position.EXTENDED.getHeight());
-		System.err.println("Target: " + targetHeight);
 
 		moveTo(targetHeight);
 	}
