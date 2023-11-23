@@ -3,6 +3,7 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id "edu.wpi.first.GradleRIO" version "2023.4.3"
+    id 'com.diffplug.spotless' version '6.12.0'
     id 'com.google.protobuf' version '0.8.19'
 }
 
@@ -14,13 +15,13 @@ def protobufVersion = '3.21.6'
 def ROBOT_MAIN_CLASS = "com.team766.hal.wpilib.RobotMain"
 
 sourceSets {
-  main {
-    java {
-      // NOTE(rcahoon, 2022-10-16): Gradle doesn't need this, but VSCode seems
-      // to not automatically add generated classes to the classpath.
-      srcDirs 'build/generated/source/proto/main/java'
+    main {
+        java {
+            // NOTE(rcahoon, 2022-10-16): Gradle doesn't need this, but VSCode seems
+            // to not automatically add generated classes to the classpath.
+            srcDirs 'build/generated/source/proto/main/java'
+        }
     }
-  }
 }
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
@@ -128,7 +129,7 @@ dependencies {
 }
 
 javadoc {
-  source = sourceSets.main.allJava
+    source = sourceSets.main.allJava
 }
 
 test {
@@ -177,28 +178,72 @@ allprojects {
     }
 }
 
-protobuf {
-  // Configure the protoc executable
-  protoc {
-    // Download from repositories
-    artifact = "com.google.protobuf:protoc:${protobufVersion}"
-  }
-
-
-  plugins {
-    javalite {
-      // The codegen for lite comes as a separate artifact
-      artifact = 'com.google.protobuf:protoc-gen-javalite:${protobufVersion}'
-    }
-  }
-
-  generateProtoTasks {
-    all().configureEach { task ->
-      task.builtins {
-        java {
-          option "lite"
+spotless {
+    ratchetFrom 'origin/main' // only check files that have changed relative to main
+    java {
+        target fileTree('.') {
+            include '**/*.java'
+            exclude '**/build/**', '**/build-*/**'
         }
-      }
+        toggleOffOn()
+        googleJavaFormat()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
     }
-  }
+    groovyGradle {
+        target fileTree('.') {
+            include '**/*.gradle'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        greclipse()
+        indentWithSpaces(4)
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+    format 'xml', {
+        target fileTree('.') {
+            include '**/*.xml'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        eclipseWtp('xml')
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+    format 'misc', {
+        target fileTree('.') {
+            include '**/*.md', '**/.gitignore'
+            exclude '**/build/**', '**/build-*/**'
+        }
+        trimTrailingWhitespace()
+        indentWithSpaces(2)
+        endWithNewline()
+    }
+}
+
+protobuf {
+    // Configure the protoc executable
+    protoc {
+        // Download from repositories
+        artifact = "com.google.protobuf:protoc:${protobufVersion}"
+    }
+
+
+    plugins {
+        javalite {
+            // The codegen for lite comes as a separate artifact
+            artifact = 'com.google.protobuf:protoc-gen-javalite:${protobufVersion}'
+        }
+    }
+
+    generateProtoTasks {
+        all().configureEach { task ->
+            task.builtins {
+                java {
+                    option "lite"
+                }
+            }
+        }
+    }
 }
