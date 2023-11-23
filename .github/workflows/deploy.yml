@@ -2,9 +2,9 @@ name: Deploy
 
 # Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the master or main branches
+  # Triggers the workflow on push or pull request events but only for the master branch
   push:
-    branches: [ master, main ]
+    branches: [ master ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -17,9 +17,7 @@ jobs:
       contents: read
       packages: write 
     steps:
-      - uses: actions/checkout@v4
-        with:
-            fetch-depth: 0
+      - uses: actions/checkout@v3
 
       - uses: actions/setup-java@v3
         with:
