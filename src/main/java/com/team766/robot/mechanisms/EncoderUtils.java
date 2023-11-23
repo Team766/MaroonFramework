@@ -18,7 +18,7 @@ public final class EncoderUtils {
 	public static double wristDegreesToRotations(double angle) {
 		// angle * net gear ratio * (rotations / degrees)
 		// FIXME: replace 32 with actual # of teeth
-		return angle * (72. / 10.) * (72. / 20.) * (48. / 24.) * (1. / 360.);
+		return angle*(72. / 10.) * (72. / 20.) * (48. / 24.) * (1. / 360.);
 	}
 	
 	/**
