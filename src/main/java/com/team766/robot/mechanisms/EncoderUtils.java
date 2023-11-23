@@ -73,13 +73,13 @@ public final class EncoderUtils {
 	}
 
 	public static double lawOfSines(double side1, double angle1, double side2) {
-		return Math.asin(side2*Math.sin(angle1)/side1);
+		return Math.asin(side2 * Math.sin(angle1) / side1);
 	}
 
 	public static double clampValueToRange(double value, double min, double max) {
-		if (value > max){ 
+		if (value > max) { 
 			value = max;
-		} else if (value < min){
+		} else if (value < min) {
 			value = min;
 		}
 		return value;
