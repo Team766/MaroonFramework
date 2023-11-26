@@ -28,8 +28,6 @@ public class Wrist extends Mechanism {
 	 */
 	public enum Position {
 
-		// TODO: adjust these values.
-
 		/** Wrist is in top position.  Starting position. */
 		TOP(-135),
 		/** Wrist is in the position for moving around the field. */ 
