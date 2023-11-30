@@ -24,4 +24,10 @@ public class RateLimiter {
 			return false;
 		}
 	}
+
+	/** Restarts the timer. */
+	public void reset() {
+		nextTime = 0;
+	}
+
 }
