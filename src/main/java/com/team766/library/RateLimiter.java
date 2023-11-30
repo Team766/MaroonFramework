@@ -25,7 +25,7 @@ public class RateLimiter {
 		}
 	}
 
-	public void reset(){
+	public void reset() {
 		nextTime = 0;
 	}
 
