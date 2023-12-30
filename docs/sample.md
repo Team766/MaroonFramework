@@ -9,7 +9,7 @@
 * Point 3
 
 > Multiple
-> 
+>
 > Line
 > Blockquote
 
@@ -19,8 +19,8 @@
 Block of Code:
 
     public class Mechanism {
-		// ...
-	}
+    // ...
+  }
 
 ### Image
 ![Image](https://imgs.xkcd.com/comics/compiling.png)

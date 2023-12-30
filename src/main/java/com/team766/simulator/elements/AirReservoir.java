@@ -4,14 +4,14 @@ import com.team766.simulator.interfaces.PneumaticDevice;
 
 public class AirReservoir implements PneumaticDevice {
 
-	private double volume;
+    private double volume;
 
-	public AirReservoir(final double volume_) {
-		this.volume = volume_;
-	}
+    public AirReservoir(final double volume_) {
+        this.volume = volume_;
+    }
 
-	@Override
-	public PneumaticDevice.Output step(PneumaticDevice.Input input, double dt) {
-		return new PneumaticDevice.Output(0, volume);
-	}
+    @Override
+    public PneumaticDevice.Output step(PneumaticDevice.Input input, double dt) {
+        return new PneumaticDevice.Output(0, volume);
+    }
 }

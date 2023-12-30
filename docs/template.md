@@ -28,7 +28,7 @@ Explain the initialization of the mechanism and its parameters.
 
 ### Running mechanism
 
-How to use the mechanism? What procedures do what? 
+How to use the mechanism? What procedures do what?
 
 ### Integrating mechanism with other code
 
