@@ -1,7 +1,10 @@
+Jay Agrawal
 Ryan Cahoon
-Alexandre Sauquet
 Nicholas Chang
 Adrian Deutscher-Bishop
-Rajit Ghosh
 Debajit Ghosh
+Rajit Ghosh
+Lydia Honerkamp
+Alexandre Sauquet
 Max Spier
+Henry Spooner
