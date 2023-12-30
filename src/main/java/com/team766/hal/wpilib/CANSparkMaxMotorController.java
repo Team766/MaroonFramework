@@ -116,8 +116,7 @@ public class CANSparkMaxMotorController extends CANSparkMax implements MotorCont
 				revErrorToException(ExceptionTarget.LOG, setIdleMode(IdleMode.kCoast));
 				break;
 			default:
-				LoggerExceptionUtils.logException(
-						new IllegalArgumentException("Unsupported neutral mode " + neutralMode));
+				LoggerExceptionUtils.logException(new IllegalArgumentException("Unsupported neutral mode " + neutralMode));
 				break;
 		}
 	}

@@ -25,5 +25,7 @@ public interface ElectricalDevice {
 		public final double current;
 	}
 
-	Output step(Input input);
+	public String name();
+	
+	public Output step(Input input, double dt);
 }

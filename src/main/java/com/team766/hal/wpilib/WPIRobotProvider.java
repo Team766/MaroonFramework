@@ -2,6 +2,7 @@ package com.team766.hal.wpilib;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import com.team766.config.ConfigFileReader;
 import com.team766.hal.AnalogInputReader;
 import com.team766.hal.BeaconReader;
 import com.team766.hal.CameraInterface;
@@ -21,6 +22,7 @@ import com.team766.hal.MotorController;
 import com.team766.hal.mock.MockBeaconSensor;
 import com.team766.hal.mock.MockGyro;
 import com.team766.hal.mock.MockPositionSensor;
+import com.team766.library.ValueProvider;
 import com.team766.hal.mock.MockMotorController;
 import com.team766.logging.Category;
 import com.team766.logging.Logger;
@@ -30,6 +32,7 @@ import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.I2C;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.PneumaticsControlModule;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.SPI;
@@ -91,6 +94,11 @@ public class WPIRobotProvider extends RobotProvider {
 	public WPIRobotProvider() {
 		m_dataRefreshThread = new Thread(m_DataRefreshRunnable, "DataRefreshThread");
 		m_dataRefreshThread.start();
+		try {
+			ph.enableCompressorAnalog(90, 115);
+		} catch (Exception ex) {
+			LoggerExceptionUtils.logException(ex);
+		}
 	}
 
 	private MotorController[][] motors =
@@ -99,6 +107,7 @@ public class WPIRobotProvider extends RobotProvider {
 	// The presence of this object allows the compressor to run before we've declared any solenoids.
 	@SuppressWarnings("unused")
 	private PneumaticsControlModule pcm = new PneumaticsControlModule();
+	private PneumaticHub ph = new PneumaticHub();
 
 	@Override
 	public MotorController getMotor(final int index, final String configPrefix,
@@ -125,7 +134,8 @@ public class WPIRobotProvider extends RobotProvider {
 				motor = new CANVictorMotorController(index);
 				break;
 			case TalonFX:
-				motor = new CANTalonFxMotorController(index);
+				final ValueProvider<String> CANBus = ConfigFileReader.getInstance().getString(configPrefix + ".CANBus");
+				motor = new CANTalonFxMotorController(index, CANBus.get());
 				break;
 			case VictorSP:
 				motor = new LocalMotorController(configPrefix, new PWMVictorSP(index), localSensor);
@@ -149,7 +159,7 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public EncoderReader getEncoder(final int index1, final int index2) {
+	public EncoderReader getEncoder(int index1, int index2) {
 		if (encoders[index1] == null) {
 			encoders[index1] = new Encoder(index1, index2);
 		}
@@ -157,8 +167,8 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public SolenoidController getSolenoid(final int index) {
-		if (solenoids[index] == null) {
+	public SolenoidController getSolenoid(int index) {
+		if(solenoids[index] == null) {
 			solenoids[index] = new Solenoid(index);
 		}
 		return solenoids[index];
@@ -192,7 +202,7 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public JoystickReader getJoystick(final int index) {
+	public JoystickReader getJoystick(int index) {
 		if (joysticks[index] == null) {
 			joysticks[index] = new Joystick(index);
 		}
@@ -213,7 +223,7 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public AnalogInputReader getAnalogInput(final int index) {
+	public AnalogInputReader getAnalogInput(int index) {
 		if (angInputs[index] == null) {
 			angInputs[index] = new AnalogInput(index);
 		}
@@ -221,7 +231,7 @@ public class WPIRobotProvider extends RobotProvider {
 	}
 
 	@Override
-	public RelayOutput getRelay(final int index) {
+	public RelayOutput getRelay(int index) {
 		if (relays[index] == null) {
 			relays[index] = new Relay(index);
 		}
@@ -232,10 +242,8 @@ public class WPIRobotProvider extends RobotProvider {
 	public PositionReader getPositionSensor() {
 		if (positionSensor == null) {
 			positionSensor = new MockPositionSensor();
-			Logger.get(Category.CONFIGURATION).logRaw(
-				Severity.ERROR,
-				"Position sensor does not exist on real robots. Using mock position sensor instead - it will always return a position of 0"
-			);
+			Logger.get(Category.CONFIGURATION).logRaw(Severity.ERROR,
+					"Position sensor does not exist on real robots. Using mock position sensor instead - it will always return a position of 0");
 		}
 		return positionSensor;
 	}

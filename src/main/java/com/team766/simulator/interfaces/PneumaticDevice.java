@@ -37,6 +37,6 @@ public interface PneumaticDevice {
 		// should increase volume, but have 0 flow volume because no
 		// pressurized air is actually leaving the system.
 	}
-
-	Output step(Input input);
+	
+	public Output step(Input input, double dt);
 }

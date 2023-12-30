@@ -35,7 +35,13 @@ public final class GenericRobotMain {
 	private static final double RESET_IN_DISABLED_PERIOD = 10.0;
 	private double m_disabledModeStartTime;
 
+	private boolean faultInRobotInit = false;
+	private boolean faultInAutoInit = false;
+	private boolean faultInTeleopInit = false;
+
 	public GenericRobotMain() {
+		Scheduler.getInstance().reset();
+
 		m_autonSelector = new AutonomousSelector(AutonomousModes.AUTONOMOUS_MODES);
 		m_webServer = new WebServer();
 		m_webServer.addHandler(new Dashboard());
@@ -48,9 +54,15 @@ public final class GenericRobotMain {
 	}
 
 	public void robotInit() {
-		Robot.robotInit();
-
-		m_oi = new OI();
+		try {
+			Robot.robotInit();
+		
+			m_oi = new OI();
+		} catch (Throwable ex) {
+			faultInRobotInit = true;
+			throw ex;
+		}
+		faultInRobotInit = false;
 	}
 
 	public void disabledInit() {
@@ -58,6 +70,8 @@ public final class GenericRobotMain {
 	}
 
 	public void disabledPeriodic() {
+		if (faultInRobotInit) return;
+
 		// The robot can enter disabled mode for two reasons:
 		// - The field control system set the robots to disabled.
 		// - The robot loses communication with the driver station.
@@ -80,6 +94,7 @@ public final class GenericRobotMain {
 		if (timeInState > RESET_IN_DISABLED_PERIOD) {
 			resetAutonomousMode("time in disabled mode");
 		}
+		Scheduler.getInstance().run();
 	}
 
 	public void resetAutonomousMode(final String reason) {
@@ -93,19 +108,27 @@ public final class GenericRobotMain {
 	}
 
 	public void autonomousInit() {
+		faultInAutoInit = true;
+
 		if (m_oiContext != null) {
 			m_oiContext.stop();
 			m_oiContext = null;
 		}
 
+		Robot.gyro.resetGyro180();
+//		Robot.drive.setGyro(Robot.gyro.getGyroYaw());
+
 		if (m_autonomous != null) {
 			Logger.get(Category.AUTONOMOUS).logRaw(Severity.INFO, "Continuing previous autonomus procedure " + m_autonomous.getContextName());
 		} else if (m_autonSelector.getSelectedAutonMode() == null) {
 			Logger.get(Category.AUTONOMOUS).logRaw(Severity.WARNING, "No autonomous mode selected");
-		}
+		} 
+		faultInAutoInit = false;
 	}
 
 	public void autonomousPeriodic() {
+		if (faultInRobotInit || faultInAutoInit) return;
+
 		final AutonomousMode autonomousMode = m_autonSelector.getSelectedAutonMode();
 		if (autonomousMode != null && m_autonMode != autonomousMode) {
 			final Procedure autonProcedure = autonomousMode.instantiate();
@@ -113,24 +136,32 @@ public final class GenericRobotMain {
 			m_autonMode = autonomousMode;
 			Logger.get(Category.AUTONOMOUS).logRaw(Severity.INFO, "Starting new autonomus procedure " + autonProcedure.getName());
 		}
+		Scheduler.getInstance().run();
 	}
 
 	public void teleopInit() {
+		faultInTeleopInit = true;
+
 		if (m_autonomous != null) {
 			m_autonomous.stop();
 			m_autonomous = null;
 			m_autonMode = null;
 		}
-
-		if (m_oiContext == null) {
+		
+		if (m_oiContext == null && m_oi != null) {
 			m_oiContext = Scheduler.getInstance().startAsync(m_oi);
 		}
+
+		faultInTeleopInit = false;
 	}
 
 	public void teleopPeriodic() {
-		if (m_oiContext.isDone()) {
+		if (faultInRobotInit || faultInTeleopInit) return;
+
+		if (m_oiContext != null && m_oiContext.isDone()) {
 			m_oiContext = Scheduler.getInstance().startAsync(m_oi);
 			Logger.get(Category.OPERATOR_INTERFACE).logRaw(Severity.WARNING, "Restarting OI context");
 		}
+		Scheduler.getInstance().run();
 	}
 }

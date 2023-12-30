@@ -17,7 +17,7 @@ public class ConfigUI implements WebServer.Handler {
 
 		r += "<div id=\"results\">\n";
 		if (params.containsKey("configJson")) {
-			String configJsonString = (String) params.get("configJson");
+			String configJsonString = (String)params.get("configJson");
 			ArrayList<String> validationErrors = new ArrayList<String>();
 			try {
 				ConfigFileReader.getInstance().reloadFromJson(configJsonString);
@@ -71,7 +71,7 @@ public class ConfigUI implements WebServer.Handler {
 		r += "<form method=\"post\" action=\"" + endpoint() + "\" onsubmit=\"return submitForm(this);\">\n";
 		r += "<textarea name=\"configJson\" style=\"box-sizing: border-box; width: 100%; height: 400px;\">";
 		if (params.containsKey("configJson")) {
-			r += (String) params.get("configJson");
+			r += (String)params.get("configJson");
 		} else {
 			r += ConfigFileReader.getInstance().getJsonString();
 		}

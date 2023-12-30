@@ -27,7 +27,7 @@ public class DoubleActingPneumaticCylinder implements PneumaticDevice, Mechanica
 	}
 
 	@Override
-	public PneumaticDevice.Output step(final PneumaticDevice.Input input) {
+	public PneumaticDevice.Output step(PneumaticDevice.Input input, double dt) {
 		pneumaticState = input;
 		PneumaticDevice.Output output;
 		double deviceVolume = boreArea() * stroke;
@@ -44,7 +44,7 @@ public class DoubleActingPneumaticCylinder implements PneumaticDevice, Mechanica
 	}
 
 	@Override
-	public MechanicalDevice.Output step(final MechanicalDevice.Input input) {
+	public MechanicalDevice.Output step(MechanicalDevice.Input input, double dt) {
 		Vector3D direction = isExtended ? FORWARD : FORWARD.negate();
 		return new MechanicalDevice.Output(direction.scalarMultiply(boreArea() * pneumaticState.pressure));
 	}

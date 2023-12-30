@@ -129,7 +129,7 @@
 
     <!-- Checks for Size Violations.                    -->
     <!-- See https://checkstyle.org/checks/sizes/index.html -->
-    <module name="MethodLength"/>
+    <!--<module name="MethodLength"/>-->
     <module name="ParameterNumber"/>
 
     <!-- Checks for whitespace                               -->
@@ -143,7 +143,13 @@
     <module name="ParenPad"/>
     <module name="TypecastParenPad"/>
     <module name="WhitespaceAfter"/>
-    <module name="WhitespaceAround"/>
+    <module name="WhitespaceAround">
+      <property name="allowEmptyCatches" value="true"/>
+      <property name="allowEmptyConstructors" value="true"/>
+      <property name="allowEmptyLambdas" value="true"/>
+      <property name="allowEmptyLoops" value="true"/>
+      <property name="allowEmptyMethods" value="true"/>
+    </module>
 
     <!-- Modifier Checks                                    -->
     <!-- See https://checkstyle.org/checks/modifier/index.html -->

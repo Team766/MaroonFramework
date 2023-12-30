@@ -319,6 +319,7 @@ public class VrConnector implements Runnable {
 	}
 
 	public void run() {
+		double prevSimTime = 0;
 		while (true) {
 			boolean newData = false;
 			try {
@@ -354,9 +355,12 @@ public class VrConnector implements Runnable {
 				} else {
 					continue;
 				}
+				prevSimTime = ProgramInterface.simulationTime;
 			}
 			if (ProgramInterface.program != null) {
-				ProgramInterface.program.step();
+				final double time = ProgramInterface.simulationTime;
+				ProgramInterface.program.step(time - prevSimTime);
+				prevSimTime = time;
 			}
 		}
 	}

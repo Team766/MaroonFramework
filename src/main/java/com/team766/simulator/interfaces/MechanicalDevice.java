@@ -29,6 +29,6 @@ public interface MechanicalDevice {
 
 		public final Vector3D force;
 	}
-
-	Output step(Input input);
+	
+	public Output step(Input input, double dt);
 }
