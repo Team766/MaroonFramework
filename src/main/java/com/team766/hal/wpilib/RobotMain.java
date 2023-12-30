@@ -13,6 +13,9 @@ import com.team766.framework.Scheduler;
 import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.LoggerExceptionUtils;
+
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -86,8 +89,11 @@ public class RobotMain extends LoggedRobot {
 			RobotProvider.instance = new WPIRobotProvider();
 			robot = new GenericRobotMain();
 
+			DriverStation.startDataLog(DataLogManager.getLog());
+
 			if (isReal()) {
-				Logger.getInstance().addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
+				DataLogManager.log("Initializing logging.");
+				Logger.getInstance().addDataReceiver(new WPILOGWriter("/U/logs")); // Log to sdcard
 				Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
 				new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
