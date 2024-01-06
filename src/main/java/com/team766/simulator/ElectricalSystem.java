@@ -1,35 +1,55 @@
 package com.team766.simulator;
 
-import java.util.ArrayList;
-
 import com.team766.simulator.interfaces.ElectricalDevice;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class ElectricalSystem {
-	private double nominalVoltage = Parameters.BATTERY_VOLTAGE;
-	private double primaryResistance = Parameters.PRIMARY_ELECTRICAL_RESISTANCE;
+    private double nominalVoltage = Parameters.BATTERY_VOLTAGE;
+    private double primaryResistance = Parameters.PRIMARY_ELECTRICAL_RESISTANCE;
 
-	private ArrayList<ElectricalDevice> branchCircuits = new ArrayList<ElectricalDevice>();
+    public class BranchInfo {
+        public final ElectricalDevice device;
+        public ElectricalDevice.Output flow;
 
-	private ElectricalDevice.Input systemState;
+        public BranchInfo(ElectricalDevice device) {
+            this.device = device;
+            this.flow = new ElectricalDevice.Output(0);
+        }
+    }
 
-	public ElectricalSystem() {
-		systemState = new ElectricalDevice.Input(nominalVoltage);
-	}
+    private ArrayList<BranchInfo> branchCircuits = new ArrayList<BranchInfo>();
 
-	public void addDevice(final ElectricalDevice device) {
-		branchCircuits.add(device);
-	}
+    private ElectricalDevice.Input systemState;
 
-	public void step() {
-		double current = 0.0;
-		for (ElectricalDevice device : branchCircuits) {
-			ElectricalDevice.Output deviceState = device.step(systemState);
-			current += deviceState.current;
-		}
-		systemState = new ElectricalDevice.Input(Math.max(0, nominalVoltage - primaryResistance * current));
-	}
+    public ElectricalSystem() {
+        systemState = new ElectricalDevice.Input(nominalVoltage);
+    }
 
-	public double getSystemVoltage() {
-		return systemState.voltage;
-	}
+    public void addDevice(ElectricalDevice device) {
+        branchCircuits.add(new BranchInfo(device));
+    }
+
+    public void step(double dt) {
+        double current = 0.0;
+        for (BranchInfo branch : branchCircuits) {
+            branch.flow = branch.device.step(systemState, dt);
+            current += branch.flow.current;
+        }
+        systemState =
+                new ElectricalDevice.Input(
+                        Math.max(0, nominalVoltage - primaryResistance * current));
+    }
+
+    public double getSystemVoltage() {
+        return systemState.voltage;
+    }
+
+    public LinkedHashMap<String, Double> getBranchCurrents() {
+        var currents = new LinkedHashMap<String, Double>();
+        for (BranchInfo branch : branchCircuits) {
+            currents.put(branch.device.name(), branch.flow.current);
+        }
+        return currents;
+    }
 }

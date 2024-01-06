@@ -1,7 +1,7 @@
 package com.team766.simulator;
 
 public interface Program {
-	void step();
+    public void step(double dt);
 
-	void reset();
+    void reset();
 }

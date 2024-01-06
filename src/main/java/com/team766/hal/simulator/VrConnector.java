@@ -2,6 +2,8 @@ package com.team766.hal.simulator;
 
 import static com.team766.math.Math.normalizeAngleDegrees;
 
+import com.team766.logging.LoggerExceptionUtils;
+import com.team766.simulator.ProgramInterface;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -13,351 +15,388 @@ import java.nio.channels.Selector;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import com.team766.logging.LoggerExceptionUtils;
-import com.team766.simulator.ProgramInterface;
 
 public class VrConnector implements Runnable {
-	private static class PortMapping {
-		public final int messageDataIndex;
-		public final int robotPortIndex;
+    private static class PortMapping {
+        public final int messageDataIndex;
+        public final int robotPortIndex;
 
-		PortMapping(final int messageIndex, final int robotIndex) {
-			this.messageDataIndex = messageIndex;
-			this.robotPortIndex = robotIndex;
-		}
-	}
+        PortMapping(final int messageIndex, final int robotIndex) {
+            this.messageDataIndex = messageIndex;
+            this.robotPortIndex = robotIndex;
+        }
+    }
 
-	private static class CANPortMapping {
-		public final int canId;
-		public final int motorCommandMessageDataIndex;
-		public final int sensorFeedbackMessageDataIndex;
+    private static class CANPortMapping {
+        public final int canId;
+        public final int motorCommandMessageDataIndex;
+        public final int sensorFeedbackMessageDataIndex;
 
-		CANPortMapping(final int canId_, final int motorCommandMessageDataIndex_,
-				final int sensorFeedbackMessageDataIndex_) {
-			this.canId = canId_;
-			this.motorCommandMessageDataIndex = motorCommandMessageDataIndex_;
-			this.sensorFeedbackMessageDataIndex = sensorFeedbackMessageDataIndex_;
-		}
-	}
+        CANPortMapping(
+                final int canId_,
+                final int motorCommandMessageDataIndex_,
+                final int sensorFeedbackMessageDataIndex_) {
+            this.canId = canId_;
+            this.motorCommandMessageDataIndex = motorCommandMessageDataIndex_;
+            this.sensorFeedbackMessageDataIndex = sensorFeedbackMessageDataIndex_;
+        }
+    }
 
-	/// Command indexes
+    /// Command indexes
 
-	private static final int MAX_COMMANDS = 100;
+    private static final int MAX_COMMANDS = 100;
 
-	private static final int RESET_SIM_CHANNEL = 0;
+    private static final int RESET_SIM_CHANNEL = 0;
 
-	private static final List<PortMapping> PWM_CHANNELS = Arrays.asList(
-	// new PortMapping(10, 6), // Left motor
-	// new PortMapping(11, 4), // Right motor
-	// new PortMapping(14, 1), // Auxiliary / Center motor
-	// new PortMapping(12, 0) // Intake
-	);
-	
-	//CHECKSTYLE:OFF
-	private static final List<PortMapping> SOLENOID_CHANNELS = Arrays.asList(
-		new PortMapping(15, 0), // Intake arm
-		new PortMapping(13, 1) // Catapult launch
-	);
-	//CHECKSTYLE:ON
+    private static final List<PortMapping> PWM_CHANNELS =
+            Arrays.asList(
+                    // new PortMapping(10, 6), // Left motor
+                    // new PortMapping(11, 4), // Right motor
+                    // new PortMapping(14, 1), // Auxiliary / Center motor
+                    // new PortMapping(12, 0) // Intake
+                    );
 
-	private static final List<PortMapping> RELAY_CHANNELS = Arrays.asList();
+    // CHECKSTYLE:OFF
+    private static final List<PortMapping> SOLENOID_CHANNELS =
+            Arrays.asList(
+                    new PortMapping(15, 0), // Intake arm
+                    new PortMapping(13, 1) // Catapult launch
+                    );
+    // CHECKSTYLE:ON
 
-	//CHECKSTYLE:OFF
-	private static final List<CANPortMapping> CAN_MOTOR_CHANNELS = Arrays.asList(
-		new CANPortMapping(6, 10, 10), // Left motor
-		new CANPortMapping(4, 11, 11), // Right motor
-		new CANPortMapping(10, 12, 13), // Intake
-		new CANPortMapping(12, 14, 0), // Aux/center motor
-		new CANPortMapping(14, 16, 0), // Aux2 motor
+    private static final List<PortMapping> RELAY_CHANNELS = Arrays.asList();
 
-		new CANPortMapping(84, 84, 84), // FLD motor
-		new CANPortMapping(85, 85, 85), // BLD motor
-		new CANPortMapping(86, 86, 86), // FRD motor
-		new CANPortMapping(87, 87, 87), // BRD motor
-		new CANPortMapping(88, 88, 88), // FLS motor
-		new CANPortMapping(89, 89, 89), // BLS motor
-		new CANPortMapping(90, 90, 90), // FRS motor
-		new CANPortMapping(91, 91, 91) // BRS motor
-	);
-	//CHECKSTYLE:ON
+    // CHECKSTYLE:OFF
+    private static final List<CANPortMapping> CAN_MOTOR_CHANNELS =
+            Arrays.asList(
+                    new CANPortMapping(6, 10, 10), // Left motor
+                    new CANPortMapping(4, 11, 11), // Right motor
+                    new CANPortMapping(10, 12, 13), // Intake
+                    new CANPortMapping(12, 14, 0), // Aux/center motor
+                    new CANPortMapping(14, 16, 0), // Aux2 motor
+                    new CANPortMapping(84, 84, 84), // FLD motor
+                    new CANPortMapping(85, 85, 85), // BLD motor
+                    new CANPortMapping(86, 86, 86), // FRD motor
+                    new CANPortMapping(87, 87, 87), // BRD motor
+                    new CANPortMapping(88, 88, 88), // FLS motor
+                    new CANPortMapping(89, 89, 89), // BLS motor
+                    new CANPortMapping(90, 90, 90), // FRS motor
+                    new CANPortMapping(91, 91, 91) // BRS motor
+                    );
+    // CHECKSTYLE:ON
 
-	/// Feedback indexes
+    /// Feedback indexes
 
-	private static final int TIMESTAMP_LSW_CHANNEL = 5;
-	private static final int TIMESTAMP_MSW_CHANNEL = 4;
+    private static final int TIMESTAMP_LSW_CHANNEL = 5;
+    private static final int TIMESTAMP_MSW_CHANNEL = 4;
 
-	private static final int RESET_COUNTER_CHANNEL = 6;
+    private static final int RESET_COUNTER_CHANNEL = 6;
 
-	private static final int ROBOT_MODE_CHANNEL = 3;
-	private static final Map<Integer, ProgramInterface.RobotMode> ROBOT_MODES =
-			Map.of(0, ProgramInterface.RobotMode.DISABLED, 1, ProgramInterface.RobotMode.AUTON, 2,
-					ProgramInterface.RobotMode.TELEOP);
+    private static final int ROBOT_MODE_CHANNEL = 3;
+    private static final Map<Integer, ProgramInterface.RobotMode> ROBOT_MODES =
+            Map.of(
+                    0,
+                    ProgramInterface.RobotMode.DISABLED,
+                    1,
+                    ProgramInterface.RobotMode.AUTON,
+                    2,
+                    ProgramInterface.RobotMode.TELEOP);
 
-	private static final int ROBOT_X_CHANNEL = 8;
-	private static final int ROBOT_Y_CHANNEL = 9;
+    private static final int ROBOT_X_CHANNEL = 8;
+    private static final int ROBOT_Y_CHANNEL = 9;
 
-	private static final int BEACON_SENSOR_START = 120;
-	private static final int BEACON_SENSOR_STRIDE = 6; // (x, y, z, yaw, pitch, roll)
+    private static final int BEACON_SENSOR_START = 120;
+    private static final int BEACON_SENSOR_STRIDE = 6; // (x, y, z, yaw, pitch, roll)
 
-	//CHECKSTYLE:OFF
-	private static final List<PortMapping> ENCODER_CHANNELS = Arrays.asList(
-		new PortMapping(10, 0), // Left encoder
-		new PortMapping(11, 2), // Right encoder
-		new PortMapping(13, 4) // Mechanism encoder
-	);
-	//CHECKSTYLE:ON
+    // CHECKSTYLE:OFF
+    private static final List<PortMapping> ENCODER_CHANNELS =
+            Arrays.asList(
+                    new PortMapping(10, 0), // Left encoder
+                    new PortMapping(11, 2), // Right encoder
+                    new PortMapping(13, 4) // Mechanism encoder
+                    );
+    // CHECKSTYLE:ON
 
-	private static final int GYRO_CHANNEL = 15;
-	private static final int GYRO_RATE_CHANNEL = 16;
-	private static final int GYRO_PITCH_CHANNEL = 80;
-	private static final int GYRO_ROLL_CHANNEL = 81;
-	
-	//CHECKSTYLE:OFF
-	private static final List<PortMapping> DIGITAL_CHANNELS = Arrays.asList(
-		new PortMapping(13, 0), // Intake state
-		new PortMapping(14, 1), // Ball presence
-		new PortMapping(17, 4), // Line Sensor 1
-		new PortMapping(18, 5), // Line Sensor 2
-		new PortMapping(19, 6) // Line Sensor 3
-	);
-	//CHECKSTYLE:ON
-	
-	private static final List<PortMapping> ANALOG_CHANNELS = Arrays.asList();
+    private static final int GYRO_CHANNEL = 15;
+    private static final int GYRO_RATE_CHANNEL = 16;
+    private static final int GYRO_PITCH_CHANNEL = 80;
+    private static final int GYRO_ROLL_CHANNEL = 81;
 
-	private static final int NUM_JOYSTICK = 4;
-	private static final int BASE_AXIS_START = 20;
-	private static final int BASE_AXES_PER_JOYSTICK = 4;
-	private static final int ADDITIONAL_AXIS_START = 100;
-	private static final int ADDITIONAL_AXES_PER_JOYSTICK = 4;
-	private static final int JOYSTICK_BUTTON_START = 72;
-	private static final int BUTTONS_PER_JOYSTICK = 20;
+    // CHECKSTYLE:OFF
+    private static final List<PortMapping> DIGITAL_CHANNELS =
+            Arrays.asList(
+                    new PortMapping(13, 0), // Intake state
+                    new PortMapping(14, 1), // Ball presence
+                    new PortMapping(17, 4), // Line Sensor 1
+                    new PortMapping(18, 5), // Line Sensor 2
+                    new PortMapping(19, 6) // Line Sensor 3
+                    );
+    // CHECKSTYLE:ON
 
-	/// Socket Communication
+    private static final List<PortMapping> ANALOG_CHANNELS = Arrays.asList();
 
-	private static final int commandsPort = 7661;
-	private static final int feedbackPort = 7662;
-	private static final int BUF_SZ = 1024;
+    private static final int NUM_JOYSTICK = 4;
+    private static final int BASE_AXIS_START = 20;
+    private static final int BASE_AXES_PER_JOYSTICK = 4;
+    private static final int ADDITIONAL_AXIS_START = 100;
+    private static final int ADDITIONAL_AXES_PER_JOYSTICK = 4;
+    private static final int JOYSTICK_BUTTON_START = 72;
+    private static final int BUTTONS_PER_JOYSTICK = 20;
 
-	private long startTime;
-	private boolean started = false;
+    /// Socket Communication
 
-	private Selector selector;
-	private InetSocketAddress sendAddr;
-	private ByteBuffer feedback = ByteBuffer.allocate(BUF_SZ);
-	private ByteBuffer commands = ByteBuffer.allocate(BUF_SZ);
-	private int resetCounter = 0;
+    private static final int commandsPort = 7661;
+    private static final int feedbackPort = 7662;
+    private static final int BUF_SZ = 1024;
 
-	private int lastResetCounter = 0;
-	private double lastGyroValue = Double.NaN;
-	private long[] lastEncoderValue = new long[ProgramInterface.encoderChannels.length];
-	private long[] lastCANSensorValue =
-			new long[ProgramInterface.canMotorControllerChannels.length];
+    private long startTime;
+    private boolean started = false;
 
-	private int getFeedback(final int index) {
-		return feedback.getInt(index * 4);
-	}
+    private Selector selector;
+    private InetSocketAddress sendAddr;
+    private ByteBuffer feedback = ByteBuffer.allocate(BUF_SZ);
+    private ByteBuffer commands = ByteBuffer.allocate(BUF_SZ);
+    private int resetCounter = 0;
 
-	private static long assembleLong(final int msw, final int lsw) {
-		return ((long) msw << 32) | (lsw & 0xffffffffL);
-	}
+    private int lastResetCounter = 0;
+    private double lastGyroValue = Double.NaN;
+    private long[] lastEncoderValue = new long[ProgramInterface.encoderChannels.length];
+    private long[] lastCANSensorValue =
+            new long[ProgramInterface.canMotorControllerChannels.length];
 
-	private void putCommand(final int index, final int value) {
-		commands.putInt(index * 4, value);
-	}
+    private int getFeedback(final int index) {
+        return feedback.getInt(index * 4);
+    }
 
-	private void putCommandFloat(final int index, final double value) {
-		putCommand(index, (int) (value * 512.0));
-	}
+    private static long assembleLong(final int msw, final int lsw) {
+        return ((long) msw << 32) | (lsw & 0xffffffffL);
+    }
 
-	private void putCommandTristate(final int index, final int value) {
-		if (value == 0) {
-			putCommand(index, 0);
-		} else if (value > 0) {
-			putCommand(index, 511);
-		} else {
-			putCommand(index, -512);
-		}
-	}
+    private void putCommand(final int index, final int value) {
+        commands.putInt(index * 4, value);
+    }
 
-	private void putCommandBool(final int index, final boolean value) {
-		putCommand(index, value ? 511 : -512);
-	}
+    private void putCommandFloat(final int index, final double value) {
+        putCommand(index, (int) (value * 512.0));
+    }
 
-	public VrConnector() throws IOException {
-		selector = Selector.open();
-		DatagramChannel channel = DatagramChannel.open();
-		InetSocketAddress receiveAddr = new InetSocketAddress(feedbackPort);
-		channel.bind(receiveAddr);
-		sendAddr = new InetSocketAddress(InetAddress.getLoopbackAddress(), commandsPort);
-		channel.configureBlocking(false);
-		channel.register(selector, SelectionKey.OP_READ);
-		commands.limit(MAX_COMMANDS * 4);
-		commands.order(ByteOrder.LITTLE_ENDIAN);
-		feedback.order(ByteOrder.LITTLE_ENDIAN);
-		startTime = System.currentTimeMillis();
-	}
+    private void putCommandTristate(final int index, final int value) {
+        if (value == 0) {
+            putCommand(index, 0);
+        } else if (value > 0) {
+            putCommand(index, 511);
+        } else {
+            putCommand(index, -512);
+        }
+    }
 
-	private boolean process() throws IOException {
-		for (PortMapping m : PWM_CHANNELS) {
-			putCommandFloat(m.messageDataIndex, ProgramInterface.pwmChannels[m.robotPortIndex]);
-		}
-		for (PortMapping m : SOLENOID_CHANNELS) {
-			putCommandBool(m.messageDataIndex, ProgramInterface.solenoidChannels[m.robotPortIndex]);
-		}
-		for (PortMapping m : RELAY_CHANNELS) {
-			putCommandTristate(m.messageDataIndex, ProgramInterface.relayChannels[m.robotPortIndex]);
-		}
-		for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
-			putCommandFloat(
-				m.motorCommandMessageDataIndex,
-				ProgramInterface.canMotorControllerChannels[m.canId].command.output);
-		}
+    private void putCommandBool(final int index, final boolean value) {
+        putCommand(index, value ? 511 : -512);
+    }
 
-		selector.selectedKeys().clear();
-		selector.select();
-		boolean newData = false;
-		for (SelectionKey key : selector.selectedKeys()) {
-			if (!key.isValid()) {
-				continue;
-			}
+    public VrConnector() throws IOException {
+        selector = Selector.open();
+        DatagramChannel channel = DatagramChannel.open();
+        InetSocketAddress receiveAddr = new InetSocketAddress(feedbackPort);
+        channel.bind(receiveAddr);
+        sendAddr = new InetSocketAddress(InetAddress.getLoopbackAddress(), commandsPort);
+        channel.configureBlocking(false);
+        channel.register(selector, SelectionKey.OP_READ);
+        commands.limit(MAX_COMMANDS * 4);
+        commands.order(ByteOrder.LITTLE_ENDIAN);
+        feedback.order(ByteOrder.LITTLE_ENDIAN);
+        startTime = System.currentTimeMillis();
+    }
 
-			DatagramChannel chan = (DatagramChannel) key.channel();
-			if (key.isReadable()) {
-				feedback.clear();
-				chan.receive(feedback);
-				newData = true;
-				key.interestOps(SelectionKey.OP_WRITE);
-			}
-			if (key.isWritable()) {
-				if (started) {
-					chan.send(commands.duplicate(), sendAddr);
-					putCommand(RESET_SIM_CHANNEL, 0);
-				}
-				key.interestOps(SelectionKey.OP_READ);
-			}
-		}
+    private boolean process() throws IOException {
+        for (PortMapping m : PWM_CHANNELS) {
+            putCommandFloat(m.messageDataIndex, ProgramInterface.pwmChannels[m.robotPortIndex]);
+        }
+        for (PortMapping m : SOLENOID_CHANNELS) {
+            putCommandBool(m.messageDataIndex, ProgramInterface.solenoidChannels[m.robotPortIndex]);
+        }
+        for (PortMapping m : RELAY_CHANNELS) {
+            putCommandTristate(
+                    m.messageDataIndex, ProgramInterface.relayChannels[m.robotPortIndex]);
+        }
+        for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
+            putCommandFloat(
+                    m.motorCommandMessageDataIndex,
+                    ProgramInterface.canMotorControllerChannels[m.canId].command.output);
+        }
 
-		if (newData) {
-			double prevSimTime = ProgramInterface.simulationTime;
-			// Time is sent in milliseconds
-			ProgramInterface.simulationTime = assembleLong(
-				getFeedback(TIMESTAMP_MSW_CHANNEL), getFeedback(TIMESTAMP_LSW_CHANNEL)) * 0.001;
+        selector.selectedKeys().clear();
+        selector.select();
+        boolean newData = false;
+        for (SelectionKey key : selector.selectedKeys()) {
+            if (!key.isValid()) {
+                continue;
+            }
 
-			resetCounter = getFeedback(RESET_COUNTER_CHANNEL);
+            DatagramChannel chan = (DatagramChannel) key.channel();
+            if (key.isReadable()) {
+                feedback.clear();
+                chan.receive(feedback);
+                newData = true;
+                key.interestOps(SelectionKey.OP_WRITE);
+            }
+            if (key.isWritable()) {
+                if (started) {
+                    chan.send(commands.duplicate(), sendAddr);
+                    putCommand(RESET_SIM_CHANNEL, 0);
+                }
+                key.interestOps(SelectionKey.OP_READ);
+            }
+        }
 
-			ProgramInterface.robotMode = ROBOT_MODES.get(getFeedback(ROBOT_MODE_CHANNEL));
+        if (newData) {
+            double prevSimTime = ProgramInterface.simulationTime;
+            // Time is sent in milliseconds
+            ProgramInterface.simulationTime =
+                    assembleLong(
+                                    getFeedback(TIMESTAMP_MSW_CHANNEL),
+                                    getFeedback(TIMESTAMP_LSW_CHANNEL))
+                            * 0.001;
 
-			final double gyroValue = getFeedback(GYRO_CHANNEL) / 10.0;
-			if (Double.isNaN(lastGyroValue)) {
-				lastGyroValue = gyroValue;
-			}
-			ProgramInterface.gyro.angle += gyroValue - lastGyroValue;
-			lastGyroValue = gyroValue;
+            resetCounter = getFeedback(RESET_COUNTER_CHANNEL);
 
-			ProgramInterface.robotPosition.x = getFeedback(ROBOT_X_CHANNEL) / 1000.0;
-			ProgramInterface.robotPosition.y = getFeedback(ROBOT_Y_CHANNEL) / 1000.0;
-			ProgramInterface.robotPosition.heading = gyroValue;
+            ProgramInterface.robotMode = ROBOT_MODES.get(getFeedback(ROBOT_MODE_CHANNEL));
 
-			ProgramInterface.gyro.rate = getFeedback(GYRO_RATE_CHANNEL) / 100.0;
-			ProgramInterface.gyro.pitch = normalizeAngleDegrees(getFeedback(GYRO_PITCH_CHANNEL) / 10.0);
-			ProgramInterface.gyro.roll = normalizeAngleDegrees(getFeedback(GYRO_ROLL_CHANNEL) / 10.0);
+            final double gyroValue = getFeedback(GYRO_CHANNEL) / 10.0;
+            if (Double.isNaN(lastGyroValue)) {
+                lastGyroValue = gyroValue;
+            }
+            ProgramInterface.gyro.angle += gyroValue - lastGyroValue;
+            lastGyroValue = gyroValue;
 
-			for (int i = 0; i < ProgramInterface.NUM_BEACONS; ++i) {
-				ProgramInterface.beacons[i].x = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 0) / 1000.0;
-				ProgramInterface.beacons[i].y = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 1) / 1000.0;
-				ProgramInterface.beacons[i].z = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 2) / 1000.0;
-				ProgramInterface.beacons[i].yaw = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 3) / 1000.0;
-				ProgramInterface.beacons[i].pitch = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 4) / 1000.0;
-				ProgramInterface.beacons[i].roll = getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 5) / 1000.0;
-			}
+            ProgramInterface.robotPosition.x = getFeedback(ROBOT_X_CHANNEL) / 1000.0;
+            ProgramInterface.robotPosition.y = getFeedback(ROBOT_Y_CHANNEL) / 1000.0;
+            ProgramInterface.robotPosition.heading = gyroValue;
 
-			for (PortMapping m : ENCODER_CHANNELS) {
-				final long value = getFeedback(m.messageDataIndex);
-				final long delta = value - lastEncoderValue[m.robotPortIndex];
-				lastEncoderValue[m.robotPortIndex] = value;
+            ProgramInterface.gyro.rate = getFeedback(GYRO_RATE_CHANNEL) / 100.0;
+            ProgramInterface.gyro.pitch =
+                    normalizeAngleDegrees(getFeedback(GYRO_PITCH_CHANNEL) / 10.0);
+            ProgramInterface.gyro.roll =
+                    normalizeAngleDegrees(getFeedback(GYRO_ROLL_CHANNEL) / 10.0);
 
-				ProgramInterface.encoderChannels[m.robotPortIndex].distance += delta;
-				if (ProgramInterface.simulationTime > prevSimTime) {
-					ProgramInterface.encoderChannels[m.robotPortIndex].rate = delta / (ProgramInterface.simulationTime - prevSimTime);
-				}
-			}
-			for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
-				var status = ProgramInterface.canMotorControllerChannels[m.canId].status;
+            for (int i = 0; i < ProgramInterface.NUM_BEACONS; ++i) {
+                ProgramInterface.beacons[i].x =
+                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 0) / 1000.0;
+                ProgramInterface.beacons[i].y =
+                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 1) / 1000.0;
+                ProgramInterface.beacons[i].z =
+                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 2) / 1000.0;
+                ProgramInterface.beacons[i].yaw =
+                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 3) / 1000.0;
+                ProgramInterface.beacons[i].pitch =
+                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 4) / 1000.0;
+                ProgramInterface.beacons[i].roll =
+                        getFeedback(BEACON_SENSOR_START + i * BEACON_SENSOR_STRIDE + 5) / 1000.0;
+            }
 
-				long value = getFeedback(m.sensorFeedbackMessageDataIndex);
-				long delta = value - lastCANSensorValue[m.canId];
-				lastCANSensorValue[m.canId] = value;
+            for (PortMapping m : ENCODER_CHANNELS) {
+                final long value = getFeedback(m.messageDataIndex);
+                final long delta = value - lastEncoderValue[m.robotPortIndex];
+                lastEncoderValue[m.robotPortIndex] = value;
 
-				status.sensorPosition += delta;
-				if (ProgramInterface.simulationTime > prevSimTime) {
-					status.sensorVelocity = delta / (ProgramInterface.simulationTime - prevSimTime);
-				}
-			}
-			for (PortMapping m : DIGITAL_CHANNELS) {
-				ProgramInterface.digitalChannels[m.robotPortIndex] = getFeedback(m.messageDataIndex) > 0;
-			}
-			for (PortMapping m : ANALOG_CHANNELS) {
-				ProgramInterface.analogChannels[m.robotPortIndex] = getFeedback(m.messageDataIndex) * 5.0 / 1024.0;
-			}
-			for (int j = 0; j < NUM_JOYSTICK; ++j) {
-				for (int a = 0; a < BASE_AXES_PER_JOYSTICK; ++a) {
-					ProgramInterface.joystickChannels[j].setAxisValue(a, getFeedback(j * BASE_AXES_PER_JOYSTICK + a + BASE_AXIS_START) / 100.0);
-				}
-				for (int a = 0; a < ADDITIONAL_AXES_PER_JOYSTICK; ++a) {
-					ProgramInterface.joystickChannels[j].setAxisValue(a + BASE_AXES_PER_JOYSTICK, getFeedback(j * ADDITIONAL_AXES_PER_JOYSTICK + a + ADDITIONAL_AXIS_START) / 100.0);
-				}
-				int denseButtonState = getFeedback(j + JOYSTICK_BUTTON_START);
-				for (int b = 0; b < BUTTONS_PER_JOYSTICK; ++b) {
-					ProgramInterface.joystickChannels[j].setButton(b + 1, ((denseButtonState >> b) & 1) != 0);
-				}
-			}
+                ProgramInterface.encoderChannels[m.robotPortIndex].distance += delta;
+                if (ProgramInterface.simulationTime > prevSimTime) {
+                    ProgramInterface.encoderChannels[m.robotPortIndex].rate =
+                            delta / (ProgramInterface.simulationTime - prevSimTime);
+                }
+            }
+            for (CANPortMapping m : CAN_MOTOR_CHANNELS) {
+                var status = ProgramInterface.canMotorControllerChannels[m.canId].status;
 
-			++ProgramInterface.driverStationUpdateNumber;
-		}
+                long value = getFeedback(m.sensorFeedbackMessageDataIndex);
+                long delta = value - lastCANSensorValue[m.canId];
+                lastCANSensorValue[m.canId] = value;
 
-		return newData;
-	}
+                status.sensorPosition += delta;
+                if (ProgramInterface.simulationTime > prevSimTime) {
+                    status.sensorVelocity = delta / (ProgramInterface.simulationTime - prevSimTime);
+                }
+            }
+            for (PortMapping m : DIGITAL_CHANNELS) {
+                ProgramInterface.digitalChannels[m.robotPortIndex] =
+                        getFeedback(m.messageDataIndex) > 0;
+            }
+            for (PortMapping m : ANALOG_CHANNELS) {
+                ProgramInterface.analogChannels[m.robotPortIndex] =
+                        getFeedback(m.messageDataIndex) * 5.0 / 1024.0;
+            }
+            for (int j = 0; j < NUM_JOYSTICK; ++j) {
+                for (int a = 0; a < BASE_AXES_PER_JOYSTICK; ++a) {
+                    ProgramInterface.joystickChannels[j].setAxisValue(
+                            a,
+                            getFeedback(j * BASE_AXES_PER_JOYSTICK + a + BASE_AXIS_START) / 100.0);
+                }
+                for (int a = 0; a < ADDITIONAL_AXES_PER_JOYSTICK; ++a) {
+                    ProgramInterface.joystickChannels[j].setAxisValue(
+                            a + BASE_AXES_PER_JOYSTICK,
+                            getFeedback(
+                                            j * ADDITIONAL_AXES_PER_JOYSTICK
+                                                    + a
+                                                    + ADDITIONAL_AXIS_START)
+                                    / 100.0);
+                }
+                int denseButtonState = getFeedback(j + JOYSTICK_BUTTON_START);
+                for (int b = 0; b < BUTTONS_PER_JOYSTICK; ++b) {
+                    ProgramInterface.joystickChannels[j].setButton(
+                            b + 1, ((denseButtonState >> b) & 1) != 0);
+                }
+            }
 
-	public void run() {
-		while (true) {
-			boolean newData = false;
-			try {
-				newData = process();
-			} catch (Exception e) {
-				e.printStackTrace();
-				LoggerExceptionUtils.logException(e);
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e1) {
-				}
-			}
-			if (ProgramInterface.simulationTime == 0) {
-				// Wait for a connection to the simulator before starting to run the robot code.
-				startTime = System.currentTimeMillis();
-				continue;
-			}
-			if (resetCounter != lastResetCounter) {
-				lastResetCounter = resetCounter;
-				ProgramInterface.program.reset();
-			}
-			if (!newData) {
-				continue;
-			}
-			if (!started) {
-				// When the simulator has already been running, we seem to need to allow the socket
-				// service loop to run for a bit to allow buffers in the sockets that communicate
-				// with the simulator to flush, otherwise the messages queue up which results in a
-				// significant control latency.
-				if (System.currentTimeMillis() - startTime > 1000) {
-					System.out.println("Starting simulation");
-					started = true;
-				} else {
-					continue;
-				}
-			}
-			if (ProgramInterface.program != null) {
-				ProgramInterface.program.step();
-			}
-		}
-	}
+            ++ProgramInterface.driverStationUpdateNumber;
+        }
+
+        return newData;
+    }
+
+    public void run() {
+        double prevSimTime = 0;
+        while (true) {
+            boolean newData = false;
+            try {
+                newData = process();
+            } catch (Exception e) {
+                e.printStackTrace();
+                LoggerExceptionUtils.logException(e);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e1) {
+                }
+            }
+            if (ProgramInterface.simulationTime == 0) {
+                // Wait for a connection to the simulator before starting to run the robot code.
+                startTime = System.currentTimeMillis();
+                continue;
+            }
+            if (resetCounter != lastResetCounter) {
+                lastResetCounter = resetCounter;
+                ProgramInterface.program.reset();
+            }
+            if (!newData) {
+                continue;
+            }
+            if (!started) {
+                // When the simulator has already been running, we seem to need to allow the socket
+                // service loop to run for a bit to allow buffers in the sockets that communicate
+                // with the simulator to flush, otherwise the messages queue up which results in a
+                // significant control latency.
+                if (System.currentTimeMillis() - startTime > 1000) {
+                    System.out.println("Starting simulation");
+                    started = true;
+                } else {
+                    continue;
+                }
+                prevSimTime = ProgramInterface.simulationTime;
+            }
+            if (ProgramInterface.program != null) {
+                final double time = ProgramInterface.simulationTime;
+                ProgramInterface.program.step(time - prevSimTime);
+                prevSimTime = time;
+            }
+        }
+    }
 }
