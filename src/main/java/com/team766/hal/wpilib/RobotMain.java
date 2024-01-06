@@ -1,7 +1,6 @@
 package com.team766.hal.wpilib;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.framework.Scheduler;
 import com.team766.hal.CanivPoller;
 import com.team766.hal.GenericRobotMain;
 import com.team766.hal.RobotProvider;
@@ -138,7 +137,6 @@ public class RobotMain extends TimedRobot {
         try {
             robot.disabledPeriodic();
         } catch (Exception e) {
-            Scheduler.getInstance().run();
             e.printStackTrace();
             LoggerExceptionUtils.logException(e);
         }
@@ -148,7 +146,6 @@ public class RobotMain extends TimedRobot {
     public void autonomousPeriodic() {
         try {
             robot.autonomousPeriodic();
-            Scheduler.getInstance().run();
         } catch (Exception e) {
             e.printStackTrace();
             LoggerExceptionUtils.logException(e);
@@ -159,7 +156,6 @@ public class RobotMain extends TimedRobot {
     public void teleopPeriodic() {
         try {
             robot.teleopPeriodic();
-            Scheduler.getInstance().run();
         } catch (Exception e) {
             e.printStackTrace();
             LoggerExceptionUtils.logException(e);
