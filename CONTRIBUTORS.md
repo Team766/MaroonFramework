@@ -12,8 +12,8 @@ Jason Lee
 Brett Levenson
 Samir Rashid
 Alexandre Sauquet
-Max Spier
 Henry Seeger
+Max Spier
 Aiden Tai
 Alexander Youngblood
 Zhanning Zhu
