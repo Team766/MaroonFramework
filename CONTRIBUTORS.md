@@ -13,7 +13,7 @@ Brett Levenson
 Samir Rashid
 Alexandre Sauquet
 Max Spier
-Henry Spooner
+Henry Seeger
 Aiden Tai
 Alexander Youngblood
 Zhanning Zhu
