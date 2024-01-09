@@ -1,11 +1,18 @@
 package com.team766.robot;
 
 import com.team766.framework.Procedure;
+
+import java.io.IOException;
+
 import com.team766.framework.Context;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
+import com.team766.hal.simulator.Camera;
 import com.team766.logging.Category;
+import com.team766.robot.constants.InputConstants;
 import com.team766.robot.procedures.*;
+import com.team766.simulator.interfaces.ElectricalDevice.Input;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -13,19 +20,23 @@ import edu.wpi.first.wpilibj.DriverStation;
  * interface to the code that allow control of the robot.
  */
 public class OI extends Procedure {
-	private JoystickReader joystick0;
-	private JoystickReader joystick1;
-	private JoystickReader joystick2;
+	private final static int LEFT_STICK_X_AXIS = 0;
+	private final static int LEFT_STICK_Y_AXIS = 1;
+	private final static int RIGHT_STICK_X_AXIS = 2;
+	private final static int RIGHT_STICK_Y_AXIS = 3;
+
+	private JoystickReader gamepad;
 
 	public OI() {
 		loggerCategory = Category.OPERATOR_INTERFACE;
 
-		joystick0 = RobotProvider.instance.getJoystick(0);
-		joystick1 = RobotProvider.instance.getJoystick(1);
-		joystick2 = RobotProvider.instance.getJoystick(2);
+		gamepad = RobotProvider.instance.getJoystick(0);
 	}
+	
+	public void run(Context context) {
+		CameraServer.startAutomaticCapture();
+		context.takeOwnership(Robot.drive);
 
-	public void run(final Context context) {
 		while (true) {
 			// wait for driver station data (and refresh it using the WPILib APIs)
 			context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
@@ -33,6 +44,13 @@ public class OI extends Procedure {
 
 			// Add driver controls here - make sure to take/release ownership
 			// of mechanisms when appropriate.
+			double leftX = gamepad.getAxis(LEFT_STICK_X_AXIS);
+			double leftY = gamepad.getAxis(LEFT_STICK_Y_AXIS);
+			double rightX = gamepad.getAxis(RIGHT_STICK_X_AXIS);
+			double rightY = gamepad.getAxis(RIGHT_STICK_Y_AXIS);
+
+			log(/*"leftX: " + leftX + */ ", leftY: " + leftY + ", rightX: " + rightX /*+ ", rightY: " + rightY */);
+			Robot.drive.setArcadeDrivePower(-leftY, rightX);
 		}
 	}
 }
