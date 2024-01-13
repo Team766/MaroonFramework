@@ -9,11 +9,13 @@ import java.util.EnumMap;
 
 import com.team766.config.ConfigFileReader;
 import com.team766.library.CircularBuffer;
+import com.team766.hal.RobotProvider;
+import com.team766.hal.wpilib.WPIRobotProvider;
 import edu.wpi.first.wpilibj.DataLogManager;
 
 public final class Logger {
 
-	private static final boolean ALSO_LOG_TO_DATALOG = true;
+	private static final boolean ALSO_LOG_TO_DATALOG = (RobotProvider.instance instanceof WPIRobotProvider);
 
 	private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
 		public void uncaughtException(final Thread t, final Throwable e) {
