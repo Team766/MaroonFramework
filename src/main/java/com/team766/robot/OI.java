@@ -5,6 +5,7 @@ import com.team766.framework.Procedure;
 import com.team766.hal.JoystickReader;
 import com.team766.hal.RobotProvider;
 import com.team766.logging.Category;
+import com.team766.robot.mechanisms.ShooterPrototype;
 import com.team766.robot.procedures.*;
 
 /**
@@ -30,9 +31,11 @@ public class OI extends Procedure {
             context.waitFor(() -> RobotProvider.instance.hasNewDriverStationData());
             RobotProvider.instance.refreshDriverStationData();
 
+			context.takeOwnership(Robot.shooterPrototype);
             Robot.shooterPrototype.setMotorPower(
-                    (joystick0.getAxis(3) + 1) / 2.0,
-                    (joystick1.getAxis(3) + 1) / 2.0,
+				// WORST MATH POSSIBLE LOL
+                    (joystick0.getAxis(3) + 1) / -2.0 + 1,
+                    (joystick1.getAxis(3) + 1) / -2.0 + 1,
                     Math.abs(joystick1.getAxis(1)));
             // Add driver controls here - make sure to take/release ownership
             // of mechanisms when appropriate.
