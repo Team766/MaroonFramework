@@ -146,6 +146,8 @@ allprojects {
         maven { url = uri('https://maven.revrobotics.com/') }
 
         // AdvantageKit
+        // we're using the credentials documented at 
+        // https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/INSTALLATION.md
         maven {
             url = uri("https://maven.pkg.github.com/Mechanical-Advantage/AdvantageKit")
             credentials {

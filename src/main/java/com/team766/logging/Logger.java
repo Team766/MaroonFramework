@@ -105,6 +105,7 @@ public final class Logger {
 		String message = String.format(format, args);
 		entry.setMessageStr(message);
 		m_recentEntries.add(entry.build());
+		entry.setMessageStr(format);
 		
 		for (Object arg : args) {
 			SerializationUtils.valueToProto(arg, entry.addArgBuilder());
