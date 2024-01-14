@@ -1,7 +1,10 @@
 package com.team766.logging;
 
 import com.team766.config.ConfigFileReader;
+import com.team766.hal.RobotProvider;
+import com.team766.hal.wpilib.WPIRobotProvider;
 import com.team766.library.CircularBuffer;
+import edu.wpi.first.wpilibj.DataLogManager;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
@@ -9,19 +12,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
 
-import com.team766.config.ConfigFileReader;
-import com.team766.library.CircularBuffer;
-import com.team766.hal.RobotProvider;
-import com.team766.hal.wpilib.WPIRobotProvider;
-import edu.wpi.first.wpilibj.DataLogManager;
-
 public final class Logger {
 
-	private static final boolean ALSO_LOG_TO_DATALOG = (RobotProvider.instance instanceof WPIRobotProvider);
+    private static final boolean ALSO_LOG_TO_DATALOG =
+            (RobotProvider.instance instanceof WPIRobotProvider);
 
-	private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
-		public void uncaughtException(final Thread t, final Throwable e) {
-			e.printStackTrace();
+    private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
+        public void uncaughtException(final Thread t, final Throwable e) {
+            e.printStackTrace();
 
             LoggerExceptionUtils.logException(e);
 
@@ -110,10 +108,10 @@ public final class Logger {
                         .setSeverity(severity)
                         .setCategory(m_category);
         String message = String.format(format, args);
-		entry.setMessageStr(message);
+        entry.setMessageStr(message);
         m_recentEntries.add(entry.build());
         entry.setMessageStr(format);
-		
+
         for (Object arg : args) {
             var logValue = LogValue.newBuilder();
             SerializationUtils.valueToProto(arg, logValue);
@@ -122,9 +120,9 @@ public final class Logger {
         if (m_logWriter != null) {
             m_logWriter.logStoredFormat(entry);
         }
-		if (ALSO_LOG_TO_DATALOG) {
-			DataLogManager.log(message);
-		}
+        if (ALSO_LOG_TO_DATALOG) {
+            DataLogManager.log(message);
+        }
     }
 
     public void logRaw(final Severity severity, final String message) {

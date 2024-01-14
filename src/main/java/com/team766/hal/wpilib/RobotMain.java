@@ -1,29 +1,24 @@
 package com.team766.hal.wpilib;
 
+import com.team766.config.ConfigFileReader;
+import com.team766.hal.CanivPoller;
+import com.team766.hal.GenericRobotMain;
+import com.team766.hal.RobotProvider;
+import com.team766.logging.LoggerExceptionUtils;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.RobotBase;
 import java.io.File;
-//import java.nio.file.Files;
+// import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import com.team766.config.ConfigFileReader;
-import com.team766.hal.CanivPoller;
-import com.team766.hal.GenericRobotMain;
-import com.team766.hal.RobotProvider;
-import com.team766.logging.LoggerExceptionUtils;
-
-import edu.wpi.first.wpilibj.DataLogManager;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import java.io.File;
-// import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.function.Supplier;
 
 public class RobotMain extends LoggedRobot {
     // this file, if present, will be a symlink to one of several config files in the deploy
@@ -107,19 +102,20 @@ public class RobotMain extends LoggedRobot {
             RobotProvider.instance = new WPIRobotProvider();
             robot = new GenericRobotMain();
 
-			DriverStation.startDataLog(DataLogManager.getLog());
+            DriverStation.startDataLog(DataLogManager.getLog());
 
-			if (isReal()) {
-				DataLogManager.log("Initializing logging.");
-				Logger.getInstance().addDataReceiver(new WPILOGWriter("/U/logs")); // Log to sdcard
-				Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-				new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+            if (isReal()) {
+                DataLogManager.log("Initializing logging.");
+                Logger.getInstance().addDataReceiver(new WPILOGWriter("/U/logs")); // Log to sdcard
+                Logger.getInstance()
+                        .addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+                new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 
-			} else {
-				// TODO: add support for simulation logging/replay
-			}
+            } else {
+                // TODO: add support for simulation logging/replay
+            }
 
-			Logger.getInstance().start();
+            Logger.getInstance().start();
 
             robot.robotInit();
         } catch (Exception e) {

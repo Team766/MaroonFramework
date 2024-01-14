@@ -181,7 +181,7 @@ allprojects {
         maven { url = uri('https://maven.revrobotics.com/') }
 
         // AdvantageKit
-        // we're using the credentials documented at 
+        // we're using the credentials documented at
         // https://github.com/Mechanical-Advantage/AdvantageKit/blob/main/docs/INSTALLATION.md
         maven {
             url = uri("https://maven.pkg.github.com/Mechanical-Advantage/AdvantageKit")
@@ -195,50 +195,6 @@ allprojects {
     //AdvantageKit code
     configurations.all {
         exclude group: "edu.wpi.first.wpilibj"
-    }
-}
-
-spotless {
-    ratchetFrom 'origin/master' // only check files that have changed relative to main
-    java {
-        target fileTree('.') {
-            include '**/*.java'
-            exclude '**/build/**', '**/build-*/**'
-        }
-        toggleOffOn()
-        googleJavaFormat().formatJavadoc(false).aosp()
-        removeUnusedImports()
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    groovyGradle {
-        target fileTree('.') {
-            include '**/*.gradle'
-            exclude '**/build/**', '**/build-*/**'
-        }
-        greclipse()
-        indentWithSpaces(4)
-        trimTrailingWhitespace()
-        endWithNewline()
-    }
-    format 'xml', {
-        target fileTree('.') {
-            include '**/*.xml'
-            exclude '**/build/**', '**/build-*/**'
-        }
-        eclipseWtp('xml')
-        trimTrailingWhitespace()
-        indentWithSpaces(2)
-        endWithNewline()
-    }
-    format 'misc', {
-        target fileTree('.') {
-            include '**/*.md', '**/.gitignore'
-            exclude '**/build/**', '**/build-*/**'
-        }
-        trimTrailingWhitespace()
-        indentWithSpaces(2)
-        endWithNewline()
     }
 }
 
