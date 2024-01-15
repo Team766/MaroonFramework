@@ -138,6 +138,9 @@ public final class Logger {
         if (m_logWriter != null) {
             m_logWriter.log(entry);
         }
+        if (alsoLogToDataLog) {
+            DataLogManager.log(message);
+        }
     }
 
     void logOnlyInMemory(final Severity severity, final String message) {
