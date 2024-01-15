@@ -1,8 +1,6 @@
 package com.team766.logging;
 
 import com.team766.config.ConfigFileReader;
-import com.team766.hal.RobotProvider;
-import com.team766.hal.wpilib.WPIRobotProvider;
 import com.team766.library.CircularBuffer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import java.io.File;
@@ -14,8 +12,7 @@ import java.util.EnumMap;
 
 public final class Logger {
 
-    private static final boolean ALSO_LOG_TO_DATALOG =
-            (RobotProvider.instance instanceof WPIRobotProvider);
+    private static boolean alsoLogToDataLog = false;
 
     private static class LogUncaughtException implements Thread.UncaughtExceptionHandler {
         public void uncaughtException(final Thread t, final Throwable e) {
@@ -75,6 +72,10 @@ public final class Logger {
         Thread.setDefaultUncaughtExceptionHandler(new LogUncaughtException());
     }
 
+    public static void enableLoggingToDataLog(boolean enabled) {
+        alsoLogToDataLog = enabled;
+    }
+
     public static Logger get(final Category category) {
         return m_loggers.get(category);
     }
@@ -120,7 +121,7 @@ public final class Logger {
         if (m_logWriter != null) {
             m_logWriter.logStoredFormat(entry);
         }
-        if (ALSO_LOG_TO_DATALOG) {
+        if (alsoLogToDataLog) {
             DataLogManager.log(message);
         }
     }
