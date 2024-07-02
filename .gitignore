@@ -166,3 +166,6 @@ bin/
 
 # Don't commit logs written by the framework when running in sim
 /sim_robot_logs
+
+# Don't commit the cache of downloaded sim files
+/buildSim/
