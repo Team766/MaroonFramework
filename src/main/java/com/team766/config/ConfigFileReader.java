@@ -52,6 +52,9 @@ public class ConfigFileReader {
 	}
 
 	public void reloadFromFile() throws IOException {
+		var currentRelativePath = Paths.get("");
+		String s = currentRelativePath.toAbsolutePath().toString();
+		System.out.println("Current absolute path is: " + s);
 		System.out.println("Loading config file: " + m_fileName);
 		String jsonString = Files.readString(Paths.get(m_fileName));
 		reloadFromJson(jsonString);

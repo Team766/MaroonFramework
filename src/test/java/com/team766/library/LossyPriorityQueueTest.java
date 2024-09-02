@@ -1,10 +1,10 @@
 package com.team766.library;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Comparator;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LossyPriorityQueueTest {
 	@Test
@@ -22,5 +22,6 @@ public class LossyPriorityQueueTest {
 			assertEquals(i, queue.poll());
 		}
 		producerThread.join();
+		fail();
 	}
 }

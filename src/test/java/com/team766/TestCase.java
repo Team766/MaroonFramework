@@ -5,17 +5,21 @@ import com.team766.framework.Scheduler;
 import com.team766.hal.RobotProvider;
 import com.team766.hal.mock.TestRobotProvider;
 
-public abstract class TestCase extends junit.framework.TestCase {
+import org.junit.jupiter.api.Test;
 
-	@Override
-	protected void setUp() throws Exception {
-		ConfigFileReader.instance = new ConfigFileReader(this.getClass().getClassLoader().getResource("testConfig.txt").getPath());
+public class TestCase {
+
+	protected void setUp() {
+		ConfigFileReader.instance = new ConfigFileReader("/Users/rcahoon/frc/MaroonFramework_3/simConfig.txt");
 		RobotProvider.instance = new TestRobotProvider();
 
 		Scheduler.getInstance().reset();
 	}
 
-	protected void step() {
+	@Test
+	public void test() {
+		setUp();
+
 		Scheduler.getInstance().run();
 	}
 

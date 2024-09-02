@@ -8,10 +8,19 @@ public class DCMotor implements ElectricalDevice, MechanicalAngularDevice {
 	// TODO: Add thermal effects
 
 	public static DCMotor makeCIM() {
-		return new DCMotor(46.513, 0.018397, 0.091603053435115);
+		return new DCMotor(12, 5330, 2.7, 2.41, 131);
 	}
 	public static DCMotor make775Pro() {
-		return new DCMotor(163.450, 0.0052985, 0.08955223880597);
+		return new DCMotor(12, 18730, 0.7, 0.71, 134);
+	}
+	public static DCMotor makeFalcon500() {
+		return new DCMotor(12, 6380, 1.5, 4.69, 257);
+	}
+	public static DCMotor makeNeo() {
+		return new DCMotor(12, 5880, 1.3, 3.36, 166);
+	}
+	public static DCMotor makeNeo550() {
+		return new DCMotor(12, 11710, 1.1, 1.08, 111);
 	}
 
 	// Motor velocity constant in radian/second/volt
@@ -28,10 +37,10 @@ public class DCMotor implements ElectricalDevice, MechanicalAngularDevice {
 	private ElectricalDevice.Output electricalState = new ElectricalDevice.Output(0);
 	private MechanicalAngularDevice.Input mechanicalState = new MechanicalAngularDevice.Input(0);
 
-	public DCMotor(final double kV_, final double kT_, final double motorResistance_) {
-		this.kV = kV_;
-		this.kT = kT_;
-		this.motorResistance = motorResistance_;
+	public DCMotor(double referenceVoltage, double freeSpeedRpm, double freeCurrentAmps, double stallTorqueNewtonMeters, double stallCurrentAmps) {
+		this.motorResistance = referenceVoltage / stallCurrentAmps;
+		this.kV = freeSpeedRpm / 60.0 * 2 * Math.PI / (referenceVoltage - motorResistance * freeCurrentAmps);
+		this.kT = stallTorqueNewtonMeters / stallCurrentAmps;
 	}
 
 	@Override
