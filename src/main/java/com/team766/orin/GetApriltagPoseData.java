@@ -21,16 +21,14 @@ public class GetApriltagPoseData {
             return apriltags; // Can just return an array of zero apriltags here
         }
 
-        ArrayList<Double> data = new ArrayList<Double>();
-        for (double x : tagData) data.add(x);
-
+		int counter = 0;
         for (int i = 0; i < tagIds.length; i++) {
             AprilTag tag =
                     new AprilTag(
                             tagIds[i],
                             new Pose3d(
                                     new Translation3d(
-                                            data.remove(0), data.remove(0), data.remove(0)),
+                                            tagData[counter++], tagData[counter++], tagData[counter++]),
                                     new Rotation3d()));
             // Remove used values from array
 
