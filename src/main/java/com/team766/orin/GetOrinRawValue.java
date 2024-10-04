@@ -91,7 +91,7 @@ public class GetOrinRawValue {
         double[] arr = new double[1];
         arr[0] = Double.NEGATIVE_INFINITY;
         DoubleArrayEntry values = topic.getEntry(arr);
-        if (values.get()[0] == Double.NEGATIVE_INFINITY && values.get().length == 1) {
+        if (values.get().length == 1 && values.get()[0] == Double.NEGATIVE_INFINITY) {
             throw new ValueNotFoundOnTableError(key);
         }
 
