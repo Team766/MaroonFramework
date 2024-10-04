@@ -75,7 +75,7 @@ public class GetOrinRawValue {
         long[] arr = new long[1];
         arr[0] = Integer.MIN_VALUE;
         IntegerArrayEntry values = topic.getEntry(arr);
-		long[] array = values.get();
+        long[] array = values.get();
 
         if (array.length == 0 || (array[0] == Integer.MIN_VALUE && array.length == 1)) {
             throw new ValueNotFoundOnTableError(key);
@@ -90,8 +90,7 @@ public class GetOrinRawValue {
 
     public static double[] getDoubleArray(String key) throws ValueNotFoundOnTableError {
         DoubleArrayTopic topic = table.getDoubleArrayTopic(key);
-        double[] arr = new double[1];
-        arr[0] = Double.NEGATIVE_INFINITY;
+        double[] arr = new double[] {Double.NEGATIVE_INFINITY};
         DoubleArrayEntry values = topic.getEntry(arr);
         if (values.get().length == 1 && values.get()[0] == Double.NEGATIVE_INFINITY) {
             throw new ValueNotFoundOnTableError(key);
