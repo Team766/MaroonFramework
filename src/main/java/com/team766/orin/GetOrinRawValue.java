@@ -75,13 +75,15 @@ public class GetOrinRawValue {
         long[] arr = new long[1];
         arr[0] = Integer.MIN_VALUE;
         IntegerArrayEntry values = topic.getEntry(arr);
-        if (values.get()[0] == Integer.MIN_VALUE && values.get().length == 1) {
+		long[] array = values.get();
+
+        if (array.length == 0 || (array[0] == Integer.MIN_VALUE && array.length == 1)) {
             throw new ValueNotFoundOnTableError(key);
         }
 
-        int[] toReturn = new int[values.get().length];
-        for (int i = 0; i < values.get().length; i++) {
-            toReturn[i] = (int) values.get()[i];
+        int[] toReturn = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            toReturn[i] = (int) array[i];
         }
         return toReturn;
     }
