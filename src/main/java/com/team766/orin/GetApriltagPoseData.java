@@ -15,8 +15,8 @@ public class GetApriltagPoseData {
         double[] tagData;
 
         try {
-            tagIds = GetOrinRawValue.getIntArray("tag_id");
-            tagData = GetOrinRawValue.getDoubleArray("raw_pose");
+            tagIds = GetOrinRawValue.getTagIds();
+            tagData = GetOrinRawValue.getRawPoseData();
         } catch (ValueNotFoundOnTableError e) {
             return apriltags; // Can just return an array of zero apriltags here
         }

@@ -28,7 +28,40 @@ public class GetOrinRawValue {
 
     private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private static NetworkTable table = inst.getTable("/SmartDashboard");
+    private static DoubleArrayTopic pose = table.getDoubleArrayTopic("raw_pose");
+    private static IntegerArrayTopic tagId = table.getIntegerArrayTopic("tag_id");
 
+    public static double[] getRawPoseData() throws ValueNotFoundOnTableError{
+        double[] arr = new double[] {Double.NEGATIVE_INFINITY};
+        DoubleArrayEntry values = pose.getEntry(arr);
+        if (values.get().length == 1 && values.get()[0] == Double.NEGATIVE_INFINITY) {
+            throw new ValueNotFoundOnTableError("Pose Data Not Present on Table");
+        }
+
+        return values.get();
+    }
+
+    public static int[] getTagIds() throws ValueNotFoundOnTableError{
+        long[] arr = new long[1];
+        arr[0] = Integer.MIN_VALUE;
+        IntegerArrayEntry values = tagId.getEntry(arr);
+        long[] array = values.get();
+
+        if (array.length == 0 || (array[0] == Integer.MIN_VALUE && array.length == 1)) {
+            throw new ValueNotFoundOnTableError("Tag ID Data Not Present on Table");
+        }
+
+        int[] toReturn = new int[array.length];
+        for (int i = 0; i < array.length; i++) {
+            toReturn[i] = (int) array[i];
+        }
+        return toReturn;
+    }
+}
+
+
+//Placeholder methods - can iterate on these as needed
+/* 
     public static int getInt(String key) throws ValueNotFoundOnTableError {
         IntegerTopic topic = table.getIntegerTopic(key);
         IntegerEntry value = topic.getEntry(Integer.MIN_VALUE);
@@ -47,10 +80,10 @@ public class GetOrinRawValue {
         return value.get();
     }
 
-    /*
-     * Be careful to know that the boolean value is valid. If the value is not found, the default value is returned and no exception is thrown.
-     * This is because true/false are the only two possible values for a boolean - if one were to be the default it would be hard to know if the value was not found or if the value was the default.
-     */
+    
+    //Be careful to know that the boolean value is valid. If the value is not found, the default value is returned and no exception is thrown.
+    //This is because true/false are the only two possible values for a boolean - if one were to be the default it would be hard to know if the value was not found or if the value was the default.
+     
     public static boolean getBoolean(String key) {
         BooleanTopic topic = table.getBooleanTopic(key);
         BooleanEntry value = topic.getEntry(false);
@@ -98,4 +131,5 @@ public class GetOrinRawValue {
 
         return values.get();
     }
-}
+    */
+
