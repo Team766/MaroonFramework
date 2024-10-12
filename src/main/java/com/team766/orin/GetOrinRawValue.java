@@ -28,32 +28,33 @@ public class GetOrinRawValue {
 
     private static NetworkTableInstance inst = NetworkTableInstance.getDefault();
     private static NetworkTable table = inst.getTable("/SmartDashboard");
-    private static DoubleArrayTopic pose = table.getDoubleArrayTopic("raw_pose");
-    private static IntegerArrayTopic tagId = table.getIntegerArrayTopic("tag_id");
 
+    private static DoubleArrayTopic pose = table.getDoubleArrayTopic("raw_pose");
+    private static double[] arr = new double[] {Double.NEGATIVE_INFINITY};
+    private static DoubleArrayEntry poseValues = pose.getEntry(arr);
+
+    private static IntegerArrayTopic tagId = table.getIntegerArrayTopic("tag_id");
+    private static long[] array1 = new long[] {0l};
+    private static IntegerArrayEntry values = tagId.getEntry(array1);
+    
     public static double[] getRawPoseData() throws ValueNotFoundOnTableError{
-        double[] arr = new double[] {Double.NEGATIVE_INFINITY};
-        DoubleArrayEntry values = pose.getEntry(arr);
-        if (values.get().length == 1 && values.get()[0] == Double.NEGATIVE_INFINITY) {
+        if (poseValues.get().length == 1 && poseValues.get()[0] == Double.NEGATIVE_INFINITY) {
             throw new ValueNotFoundOnTableError("Pose Data Not Present on Table");
         }
 
-        return values.get();
+        return poseValues.get();
     }
 
     public static int[] getTagIds() throws ValueNotFoundOnTableError{
-        long[] arr = new long[1];
-        arr[0] = Integer.MIN_VALUE;
-        IntegerArrayEntry values = tagId.getEntry(arr);
-        long[] array = values.get();
+        long[] longValues = values.get();
 
-        if (array.length == 0 || (array[0] == Integer.MIN_VALUE && array.length == 1)) {
+        if (longValues.length == 0 || (longValues[0] == Integer.MIN_VALUE && longValues.length == 1)) {
             throw new ValueNotFoundOnTableError("Tag ID Data Not Present on Table");
         }
 
-        int[] toReturn = new int[array.length];
-        for (int i = 0; i < array.length; i++) {
-            toReturn[i] = (int) array[i];
+        int[] toReturn = new int[longValues.length];
+        for (int i = 0; i < longValues.length; i++) {
+            toReturn[i] = (int) longValues[i];
         }
         return toReturn;
     }
