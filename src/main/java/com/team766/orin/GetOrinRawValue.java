@@ -26,7 +26,7 @@ public class GetOrinRawValue {
     private static DoubleArrayEntry poseValues = pose.getEntry(arr);
 
     private static IntegerArrayTopic tagId = table.getIntegerArrayTopic("tag_id");
-    private static long[] array1 = new long[] {0l};
+    private static long[] array1 = new long[] {Integer.MIN_VALUE};
     private static IntegerArrayEntry tagIdValues = tagId.getEntry(array1);
 
     public static double[] getRawPoseData() throws ValueNotFoundOnTableError {
@@ -40,8 +40,7 @@ public class GetOrinRawValue {
     public static int[] getTagIds() throws ValueNotFoundOnTableError {
         long[] longValues = tagIdValues.get();
 
-        if (longValues.length == 0
-                || (longValues[0] == Integer.MIN_VALUE && longValues.length == 1)) {
+        if (longValues.length == 1 && longValues[0] == Integer.MIN_VALUE) {
             throw new ValueNotFoundOnTableError("Tag ID Data Not Present on Table");
         }
 
