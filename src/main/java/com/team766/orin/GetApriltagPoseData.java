@@ -21,6 +21,8 @@ public class GetApriltagPoseData {
             return apriltags; // Can just return an array of zero apriltags here
         }
 
+        if (tagData.length / 3 != tagIds.length) return apriltags;
+
         int counter = 0;
         for (int i = 0; i < tagIds.length; i++) {
             AprilTag tag =
