@@ -22,15 +22,13 @@ public class GetApriltagPoseData {
 
         if (tagData.length % 4 != 0 || tagData.length == 0) return apriltags;
 
-        for (int i = 0; i < tagData.length; i+=4) {
+        for (int i = 0; i < tagData.length; i += 4) {
             AprilTag tag =
                     new AprilTag(
                             (int) tagData[i],
                             new Pose3d(
                                     new Translation3d(
-                                            tagData[i+1],
-                                            tagData[i+2],
-                                            tagData[i+3]),
+                                            tagData[i + 1], tagData[i + 2], tagData[i + 3]),
                                     new Rotation3d()));
             apriltags.add(tag);
         }

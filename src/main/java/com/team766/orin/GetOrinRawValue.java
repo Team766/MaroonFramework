@@ -2,8 +2,6 @@ package com.team766.orin;
 
 import edu.wpi.first.networktables.DoubleArrayEntry;
 import edu.wpi.first.networktables.DoubleArrayTopic;
-import edu.wpi.first.networktables.IntegerArrayEntry;
-import edu.wpi.first.networktables.IntegerArrayTopic;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
