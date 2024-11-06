@@ -11,7 +11,6 @@ public class GetApriltagPoseData {
     public static ArrayList<AprilTag> getAllTags() {
         ArrayList<AprilTag> apriltags = new ArrayList<AprilTag>();
 
-        int[] tagIds;
         double[] tagData;
 
         try {
