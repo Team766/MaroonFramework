@@ -182,7 +182,7 @@ allprojects {
 
         // AdvantageKit
         maven {
-            url = uri(""https://frcmaven.wpi.edu/artifactory/littletonrobotics-mvn-release")
+            url = uri("https://frcmaven.wpi.edu/artifactory/littletonrobotics-mvn-release")
         }
     }
 
